@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.Desktop
 {
@@ -26,18 +25,18 @@ namespace OpenTabletDriver.Desktop
             set => current = value;
             get => current ??= SystemInterop.CurrentPlatform switch
             {
-                PluginPlatform.Windows => new AppInfo
+                SystemPlatform.Windows => new AppInfo
                 {
                     AppDataDirectory = GetExistingPathOrLast(Path.Join(ProgramDirectory, "userdata"), "$LOCALAPPDATA\\OpenTabletDriver")
                 },
-                PluginPlatform.Linux => new AppInfo
+                SystemPlatform.Linux => new AppInfo
                 {
                     ConfigurationDirectory = GetExistingPath("$XDG_DATA_HOME/OpenTabletDriver/Configurations", "~/.local/share/OpenTabletDriver/Configurations"),
                     AppDataDirectory = GetPath("$XDG_CONFIG_HOME/OpenTabletDriver", "~/.config/OpenTabletDriver"),
                     TemporaryDirectory = GetPath("$XDG_RUNTIME_DIR/OpenTabletDriver", "$TEMP/OpenTabletDriver"),
                     CacheDirectory = GetPath("$XDG_CACHE_HOME/OpenTabletDriver", "~/.cache/OpenTabletDriver"),
                 },
-                PluginPlatform.MacOS => new AppInfo()
+                SystemPlatform.MacOS => new AppInfo()
                 {
                     AppDataDirectory = GetPath("~/Library/Application Support/OpenTabletDriver"),
                     TemporaryDirectory = GetPath("$TMPDIR/OpenTabletDriver"),

@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HidSharp;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.Devices;
 
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {
-    [DeviceHub]
+    [Attributes.DeviceHub]
     public class HidSharpDeviceRootHub : IDeviceHub
     {
         public HidSharpDeviceRootHub()

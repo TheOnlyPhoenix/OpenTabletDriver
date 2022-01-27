@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Logging;
+using OpenTabletDriver.Logging;
 
 namespace OpenTabletDriver.UX.Tools
 {

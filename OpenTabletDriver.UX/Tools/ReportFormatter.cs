@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using OpenTabletDriver.Plugin.Tablet;
-using OpenTabletDriver.Plugin.Tablet.Touch;
+using OpenTabletDriver.Tablet;
+using OpenTabletDriver.Tablet.Touch;
 
 namespace OpenTabletDriver.UX.Tools
 {

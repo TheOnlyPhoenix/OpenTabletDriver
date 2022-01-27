@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
-using OpenTabletDriver.Plugin.Tablet;
-using OpenTabletDriver.Plugin.Tablet.Touch;
+using OpenTabletDriver.Tablet;
+using OpenTabletDriver.Tablet.Touch;
 
 namespace OpenTabletDriver.Configurations.Parsers.Wacom
 {

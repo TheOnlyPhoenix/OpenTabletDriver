@@ -1,6 +1,4 @@
-using System.IO;
 using HidSharp;
-using OpenTabletDriver.Plugin.Devices;
 
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {

@@ -7,8 +7,7 @@ using OpenTabletDriver.Desktop.Binding;
 using OpenTabletDriver.Desktop.Output;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Platform.Pointer;
+using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.Desktop.Migration
 {

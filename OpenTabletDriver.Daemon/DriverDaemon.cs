@@ -15,14 +15,12 @@ using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.Desktop.RPC;
 using OpenTabletDriver.Desktop.Updater;
-using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Devices;
-using OpenTabletDriver.Plugin.Logging;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Platform.Pointer;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Devices;
+using OpenTabletDriver.Logging;
+using OpenTabletDriver.Output;
+using OpenTabletDriver.Platform.Pointer;
 using OpenTabletDriver.SystemDrivers;
+using OpenTabletDriver.Tablet;
 
 #nullable enable
 

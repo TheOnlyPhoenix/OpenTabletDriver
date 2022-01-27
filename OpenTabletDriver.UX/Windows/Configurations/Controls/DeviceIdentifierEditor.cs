@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Eto.Drawing;
 using Eto.Forms;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Tablet;
 using OpenTabletDriver.UX.Controls.Generic;
 using OpenTabletDriver.UX.Controls.Generic.Dictionary;
 using OpenTabletDriver.UX.Controls.Generic.Reflection;

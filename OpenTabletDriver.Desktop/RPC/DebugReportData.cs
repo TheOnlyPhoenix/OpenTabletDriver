@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.RPC
 {

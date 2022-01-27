@@ -1,14 +1,13 @@
 using System;
+using OpenTabletDriver.Attributes;
 using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Desktop.Interop.Input.Absolute;
 using OpenTabletDriver.Native.Linux.Evdev;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Binding.LinuxArtistMode
 {
-    [PluginName("Linux Artist Mode"), SupportedPlatform(PluginPlatform.Linux)]
+    [PluginName("Linux Artist Mode"), SupportedPlatform(SystemPlatform.Linux)]
     public class LinuxArtistModeButtonBinding : IStateBinding
     {
         private readonly EvdevVirtualTablet virtualTablet = (EvdevVirtualTablet)DesktopInterop.VirtualTablet;

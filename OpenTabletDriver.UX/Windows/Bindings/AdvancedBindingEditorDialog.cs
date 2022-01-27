@@ -4,7 +4,6 @@ using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.UX.Controls;
 using OpenTabletDriver.UX.Controls.Generic;
 using OpenTabletDriver.UX.Controls.Generic.Reflection;
-using IBinding = OpenTabletDriver.Plugin.IBinding;
 
 namespace OpenTabletDriver.UX.Windows.Bindings
 {

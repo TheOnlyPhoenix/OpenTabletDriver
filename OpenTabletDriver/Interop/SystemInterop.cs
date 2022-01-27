@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.Interop
 {
@@ -9,18 +8,18 @@ namespace OpenTabletDriver.Interop
         {
         }
 
-        public static PluginPlatform CurrentPlatform
+        public static SystemPlatform CurrentPlatform
         {
             get
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    return PluginPlatform.Windows;
+                    return SystemPlatform.Windows;
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    return PluginPlatform.Linux;
+                    return SystemPlatform.Linux;
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    return PluginPlatform.MacOS;
+                    return SystemPlatform.MacOS;
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
-                    return PluginPlatform.FreeBSD;
+                    return SystemPlatform.FreeBSD;
                 else
                     return 0;
             }

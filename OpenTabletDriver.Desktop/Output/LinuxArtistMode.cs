@@ -1,13 +1,12 @@
 using System;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.DependencyInjection;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Platform.Pointer;
+using OpenTabletDriver.Attributes;
+using OpenTabletDriver.DependencyInjection;
+using OpenTabletDriver.Output;
+using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.Desktop.Output
 {
-    [PluginName("Artist Mode"), SupportedPlatform(PluginPlatform.Linux)]
+    [PluginName("Artist Mode"), SupportedPlatform(SystemPlatform.Linux)]
     public class LinuxArtistMode : AbsoluteOutputMode, IPointerProvider<IAbsolutePointer>
     {
         [Resolved]

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
-using OpenTabletDriver.Plugin.Tablet.Touch;
+using OpenTabletDriver.Tablet.Touch;
 
 namespace OpenTabletDriver.Configurations.Parsers.Wacom.IntuosV2
 {

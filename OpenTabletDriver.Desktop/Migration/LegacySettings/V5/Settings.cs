@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V5
 {

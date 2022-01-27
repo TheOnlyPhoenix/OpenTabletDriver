@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Devices;
-using OpenTabletDriver.Plugin.Tablet;
+using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
 
 namespace OpenTabletDriver.Devices
 {
     public class DeviceReader<T> : IDisposable where T : IDeviceReport
     {
-        public DeviceReader(IDeviceEndpoint endpoint, IReportParser<T> reportParser)
+        public DeviceReader(IDeviceEndpoint endpoint, Tablet.IReportParser<T> reportParser)
         {
             Endpoint = endpoint;
             Parser = reportParser;
@@ -35,9 +33,9 @@ namespace OpenTabletDriver.Devices
         public IDeviceEndpointStream ReportStream { protected set; get; }
 
         /// <summary>
-        /// The <see cref="IReportParser{T}"/> in which the device reports will be parsed with.
+        /// The <see cref="Tablet.IReportParser{T}"/> in which the device reports will be parsed with.
         /// </summary>
-        public IReportParser<T> Parser { private set; get; }
+        public Tablet.IReportParser<T> Parser { private set; get; }
 
         /// <summary>
         /// Whether or not to make an extra cloned report with data left unmodified.

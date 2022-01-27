@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using OpenTabletDriver.Desktop.Binding;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin.Platform.Pointer;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Platform.Pointer;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Profiles
 {

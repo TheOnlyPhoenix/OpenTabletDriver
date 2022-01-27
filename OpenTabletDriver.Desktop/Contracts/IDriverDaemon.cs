@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Octokit;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.Desktop.RPC;
-using OpenTabletDriver.Plugin.Devices;
-using OpenTabletDriver.Plugin.Logging;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Devices;
+using OpenTabletDriver.Logging;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Contracts
 {

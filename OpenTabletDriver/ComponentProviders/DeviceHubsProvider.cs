@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.Components;
-using OpenTabletDriver.Plugin.Devices;
+using DeviceHubAttribute = OpenTabletDriver.Attributes.DeviceHubAttribute;
+using IDeviceHub = OpenTabletDriver.Devices.IDeviceHub;
+using IDeviceHubsProvider = OpenTabletDriver.Components.IDeviceHubsProvider;
+using SupportedPlatformAttribute = OpenTabletDriver.Attributes.SupportedPlatformAttribute;
 
 namespace OpenTabletDriver.ComponentProviders
 {

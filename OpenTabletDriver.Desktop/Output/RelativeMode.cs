@@ -1,7 +1,7 @@
-﻿using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.DependencyInjection;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Platform.Pointer;
+﻿using OpenTabletDriver.Attributes;
+using OpenTabletDriver.DependencyInjection;
+using OpenTabletDriver.Output;
+using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.Desktop.Output
 {

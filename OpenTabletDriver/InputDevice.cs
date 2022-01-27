@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using OpenTabletDriver.Devices;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Devices;
-using OpenTabletDriver.Plugin.Tablet;
+using DeviceIdentifier = OpenTabletDriver.Tablet.DeviceIdentifier;
+using IDeviceEndpoint = OpenTabletDriver.Devices.IDeviceEndpoint;
+using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
+using TabletConfiguration = OpenTabletDriver.Tablet.TabletConfiguration;
 
 namespace OpenTabletDriver
 {

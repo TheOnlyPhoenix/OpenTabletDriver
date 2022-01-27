@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.DependencyInjection;
-using OpenTabletDriver.Plugin.Platform.Keyboard;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Attributes;
+using OpenTabletDriver.DependencyInjection;
+using OpenTabletDriver.Platform.Keyboard;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Binding
 {

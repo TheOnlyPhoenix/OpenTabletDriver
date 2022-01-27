@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Forms;
-using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Desktop.Profiles;
-using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Output;
+using OpenTabletDriver.Tablet;
 using OpenTabletDriver.UX.Controls.Bindings;
 using OpenTabletDriver.UX.Controls.Output;
 

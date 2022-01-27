@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
 
-namespace OpenTabletDriver.SystemDrivers.InfoProviders
+namespace OpenTabletDriver.SystemDrivers.Providers
 {
     internal abstract class ProcessModuleQueryableDriverInfoProvider : IDriverInfoProvider
     {
@@ -23,8 +22,8 @@ namespace OpenTabletDriver.SystemDrivers.InfoProviders
         {
             return SystemInterop.CurrentPlatform switch
             {
-                PluginPlatform.Windows => GetWinDriverInfo(),
-                PluginPlatform.Linux => GetLinuxDriverInfo(),
+                SystemPlatform.Windows => GetWinDriverInfo(),
+                SystemPlatform.Linux => GetLinuxDriverInfo(),
                 _ => null
             };
         }
@@ -72,7 +71,7 @@ namespace OpenTabletDriver.SystemDrivers.InfoProviders
         {
             switch (SystemInterop.CurrentPlatform)
             {
-                case PluginPlatform.Windows:
+                case SystemPlatform.Windows:
                 {
                     var pnputilProc = new Process
                     {
@@ -89,7 +88,7 @@ namespace OpenTabletDriver.SystemDrivers.InfoProviders
                     pnpUtil = pnputilProc.StandardOutput.ReadToEnd();
                     break;
                 }
-                case PluginPlatform.Linux:
+                case SystemPlatform.Linux:
                 {
                     linuxModules = File.ReadAllText("/proc/modules");
                     break;

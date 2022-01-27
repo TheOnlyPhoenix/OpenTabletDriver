@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTabletDriver.Native.Windows;
 using OpenTabletDriver.Native.Windows.Input;
-using OpenTabletDriver.Plugin.Platform.Keyboard;
+using OpenTabletDriver.Platform.Keyboard;
 
 namespace OpenTabletDriver.Desktop.Interop.Input.Keyboard
 {

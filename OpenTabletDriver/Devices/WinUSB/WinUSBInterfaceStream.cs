@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using OpenTabletDriver.Native.Windows.USB;
-using OpenTabletDriver.Plugin.Devices;
 using static OpenTabletDriver.Native.Windows.WinUsb;
 
 namespace OpenTabletDriver.Devices.WinUSB

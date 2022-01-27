@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eto.Drawing;
 using Eto.Forms;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Logging;
+using OpenTabletDriver.Logging;
 using OpenTabletDriver.UX.Tools;
 
 namespace OpenTabletDriver.UX.Controls

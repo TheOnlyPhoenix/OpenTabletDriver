@@ -1,5 +1,5 @@
 using System.Reflection;
-using OpenTabletDriver.Plugin.Attributes;
+using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.UX.Controls.Generic.Reflection
 {

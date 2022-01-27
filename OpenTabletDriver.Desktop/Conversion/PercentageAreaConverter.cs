@@ -1,7 +1,6 @@
 using System.Numerics;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Attributes;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Conversion
 {

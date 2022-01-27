@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.DependencyInjection;
-using OpenTabletDriver.Plugin.Logging;
+using OpenTabletDriver.Attributes;
+using OpenTabletDriver.DependencyInjection;
+using OpenTabletDriver.Logging;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
@@ -17,9 +15,9 @@ namespace OpenTabletDriver.Desktop.Reflection
         {
             var assemblies = new[]
             {
+                Assembly.Load("OpenTabletDriver"),
                 Assembly.Load("OpenTabletDriver.Desktop"),
-                Assembly.Load("OpenTabletDriver.Configurations"),
-                Assembly.Load("OpenTabletDriver.Plugin")
+                Assembly.Load("OpenTabletDriver.Configurations")
             };
 
             libTypes = (from type in typeof(IDriver).Assembly.GetExportedTypes()

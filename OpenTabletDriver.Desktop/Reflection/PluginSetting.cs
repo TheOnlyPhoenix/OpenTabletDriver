@@ -2,8 +2,7 @@ using System;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
+using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Components;
-using OpenTabletDriver.Plugin.Devices;
+using ICompositeDeviceHub = OpenTabletDriver.Components.ICompositeDeviceHub;
+using IDeviceHubsProvider = OpenTabletDriver.Components.IDeviceHubsProvider;
 
 #nullable enable
 

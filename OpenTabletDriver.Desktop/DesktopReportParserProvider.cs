@@ -1,6 +1,5 @@
-using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin.Components;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Components;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop
 {

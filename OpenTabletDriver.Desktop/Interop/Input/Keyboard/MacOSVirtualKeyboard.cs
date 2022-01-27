@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTabletDriver.Native.OSX;
 using OpenTabletDriver.Native.OSX.Generic;
 using OpenTabletDriver.Native.OSX.Input;
-using OpenTabletDriver.Plugin.Platform.Keyboard;
+using OpenTabletDriver.Platform.Keyboard;
 
 namespace OpenTabletDriver.Desktop.Interop.Input.Keyboard
 {

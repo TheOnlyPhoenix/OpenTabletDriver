@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using OpenTabletDriver.Desktop.Interop;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.Desktop.Diagnostics
 {
@@ -12,10 +11,10 @@ namespace OpenTabletDriver.Desktop.Diagnostics
             AddVariable("USER", "TEMP", "TMP", "TMPDIR");
             switch (DesktopInterop.CurrentPlatform)
             {
-                case PluginPlatform.Linux:
+                case SystemPlatform.Linux:
                     AddVariable("DISPLAY", "WAYLAND_DISPLAY", "PWD", "PATH");
                     break;
-                case PluginPlatform.Windows:
+                case SystemPlatform.Windows:
                     AddVariable("USERPROFILE");
                     break;
             }

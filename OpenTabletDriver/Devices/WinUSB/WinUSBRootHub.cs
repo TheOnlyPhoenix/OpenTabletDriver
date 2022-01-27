@@ -5,15 +5,12 @@ using System.Runtime.InteropServices;
 using OpenTabletDriver.Native.Windows.CM;
 using OpenTabletDriver.Native.Windows.SetupApiStructs;
 using OpenTabletDriver.Native.Windows.USB;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Attributes;
-using OpenTabletDriver.Plugin.Devices;
 using static OpenTabletDriver.Native.Windows.CfgMgr32;
 using static OpenTabletDriver.Native.Windows.SetupAPI;
 
 namespace OpenTabletDriver.Devices.WinUSB
 {
-    [DeviceHub, SupportedPlatform(PluginPlatform.Windows)]
+    [Attributes.DeviceHub, Attributes.SupportedPlatform(SystemPlatform.Windows)]
     public class WinUSBRootHub : CriticalFinalizerObject, IDeviceHub
     {
         private static readonly Guid[] _winUsbGuids = new Guid[]

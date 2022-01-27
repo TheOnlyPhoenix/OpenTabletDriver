@@ -1,7 +1,5 @@
-using System;
 using Eto.Forms;
-using OpenTabletDriver.Plugin.Tablet;
-using OpenTabletDriver.UX.Controls.Generic;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.UX.Windows.Configurations.Controls.Specifications
 {

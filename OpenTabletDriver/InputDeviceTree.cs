@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Tablet;
+using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
+using IOutputMode = OpenTabletDriver.Output.IOutputMode;
+using TabletConfiguration = OpenTabletDriver.Tablet.TabletConfiguration;
+using TabletReference = OpenTabletDriver.Tablet.TabletReference;
 
 #nullable enable
 

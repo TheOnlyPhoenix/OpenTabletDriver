@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTabletDriver", "OpenTab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTabletDriver.Native", "OpenTabletDriver.Native\OpenTabletDriver.Native.csproj", "{57A5101A-20F4-41AA-8649-2C3785DD5BA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTabletDriver.Plugin", "OpenTabletDriver.Plugin\OpenTabletDriver.Plugin.csproj", "{1EF3ED59-1D11-4814-907B-4F8C90B9032E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTabletDriver.Daemon", "OpenTabletDriver.Daemon\OpenTabletDriver.Daemon.csproj", "{18F3FBE6-110E-4F14-912F-14273028191C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTabletDriver.UX.Gtk", "OpenTabletDriver.UX.Gtk\OpenTabletDriver.UX.Gtk.csproj", "{7A31CE07-C732-4DCF-BBAD-01EFC55A1C60}"
@@ -68,18 +66,6 @@ Global
 		{57A5101A-20F4-41AA-8649-2C3785DD5BA2}.Release|x64.Build.0 = Release|Any CPU
 		{57A5101A-20F4-41AA-8649-2C3785DD5BA2}.Release|x86.ActiveCfg = Release|Any CPU
 		{57A5101A-20F4-41AA-8649-2C3785DD5BA2}.Release|x86.Build.0 = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|x64.Build.0 = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Debug|x86.Build.0 = Debug|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|x64.ActiveCfg = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|x64.Build.0 = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|x86.ActiveCfg = Release|Any CPU
-		{1EF3ED59-1D11-4814-907B-4F8C90B9032E}.Release|x86.Build.0 = Release|Any CPU
 		{18F3FBE6-110E-4F14-912F-14273028191C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18F3FBE6-110E-4F14-912F-14273028191C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18F3FBE6-110E-4F14-912F-14273028191C}.Debug|x64.ActiveCfg = Debug|Any CPU

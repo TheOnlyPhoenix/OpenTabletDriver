@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using OpenTabletDriver.Desktop.Interop;
-using OpenTabletDriver.Plugin.Timing;
 using Xunit;
 
 namespace OpenTabletDriver.Tests

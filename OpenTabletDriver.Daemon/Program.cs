@@ -5,16 +5,15 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTabletDriver.Components;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.RPC;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Components;
 
 namespace OpenTabletDriver.Daemon
 {
-    partial class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             using (var instance = new Instance("OpenTabletDriver.Daemon"))
             {

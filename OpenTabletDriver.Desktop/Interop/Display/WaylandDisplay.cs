@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using OpenTabletDriver.Plugin.Platform.Display;
+using OpenTabletDriver.Platform.Display;
 using WaylandNET.Client;
 using WaylandNET.Client.Protocol;
 

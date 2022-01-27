@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenTabletDriver.Native.Linux;
 using OpenTabletDriver.Native.Linux.Evdev;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Platform.Keyboard;
+using OpenTabletDriver.Platform.Keyboard;
 
 namespace OpenTabletDriver.Desktop.Interop.Input.Keyboard
 {

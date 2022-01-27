@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Components;
-using OpenTabletDriver.Plugin.Devices;
-using OpenTabletDriver.Plugin.Tablet;
+using DeviceIdentifier = OpenTabletDriver.Tablet.DeviceIdentifier;
+using ICompositeDeviceHub = OpenTabletDriver.Components.ICompositeDeviceHub;
+using IDeviceConfigurationProvider = OpenTabletDriver.Components.IDeviceConfigurationProvider;
+using IDeviceEndpoint = OpenTabletDriver.Devices.IDeviceEndpoint;
+using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
+using IReportParserProvider = OpenTabletDriver.Components.IReportParserProvider;
+using TabletConfiguration = OpenTabletDriver.Tablet.TabletConfiguration;
+using TabletReference = OpenTabletDriver.Tablet.TabletReference;
 
 #nullable enable
 
@@ -31,7 +35,7 @@ namespace OpenTabletDriver
         public InputDeviceTreeList InputDevices { get; } = new();
         public IEnumerable<TabletReference> Tablets => InputDevices.Select(c => c.CreateReference());
 
-        public IReportParser<IDeviceReport> GetReportParser(DeviceIdentifier identifier)
+        public Tablet.IReportParser<IDeviceReport> GetReportParser(DeviceIdentifier identifier)
         {
             return _reportParserProvider.GetReportParser(identifier.ReportParser);
         }
@@ -91,7 +95,7 @@ namespace OpenTabletDriver
                 }
             }
             catch (IOException iex) when (iex.Message.Contains("Unable to open HID class device")
-                && SystemInterop.CurrentPlatform == PluginPlatform.Linux)
+                && SystemInterop.CurrentPlatform == SystemPlatform.Linux)
             {
                 Log.Write(
                     "Driver",
@@ -101,7 +105,7 @@ namespace OpenTabletDriver
                 );
             }
             catch (ArgumentOutOfRangeException aex) when (aex.Message.Contains("Value range is [0, 15]")
-                && SystemInterop.CurrentPlatform == PluginPlatform.Linux)
+                && SystemInterop.CurrentPlatform == SystemPlatform.Linux)
             {
                 Log.Write(
                     "Driver",
@@ -183,7 +187,7 @@ namespace OpenTabletDriver
         {
             switch (SystemInterop.CurrentPlatform)
             {
-                case PluginPlatform.Windows:
+                case SystemPlatform.Windows:
                 {
                     var devName = device.DevicePath;
 
@@ -192,7 +196,7 @@ namespace OpenTabletDriver
 
                     return interfaceMatches && keyMatches;
                 }
-                case PluginPlatform.MacOS:
+                case SystemPlatform.MacOS:
                 {
                     var devName = device.DevicePath;
                     bool interfaceMatches = attributes.ContainsKey("MacInterface") ? Regex.IsMatch(devName, $"IOUSBHostInterface@{attributes["MacInterface"]}") : true;

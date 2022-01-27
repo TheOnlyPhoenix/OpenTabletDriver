@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using OpenTabletDriver.Desktop.Interop;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.UX
 {
@@ -14,14 +13,14 @@ namespace OpenTabletDriver.UX
 
         private readonly static ProcessStartInfo startInfo = DesktopInterop.CurrentPlatform switch
         {
-            PluginPlatform.Windows => new ProcessStartInfo
+            SystemPlatform.Windows => new ProcessStartInfo
             {
                 FileName = Path.Join(Directory.GetCurrentDirectory(), "OpenTabletDriver.Daemon.exe"),
                 Arguments = "",
                 WorkingDirectory = Directory.GetCurrentDirectory(),
                 CreateNoWindow = true
             },
-            PluginPlatform.MacOS => new ProcessStartInfo
+            SystemPlatform.MacOS => new ProcessStartInfo
             {
                 FileName = Path.Join(AppContext.BaseDirectory, "OpenTabletDriver.Daemon"),
                 Arguments = $"-c {Path.Join(AppContext.BaseDirectory, "Configurations")}"

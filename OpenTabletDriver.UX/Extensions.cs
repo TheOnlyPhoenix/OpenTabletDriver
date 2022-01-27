@@ -3,8 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Eto.Forms;
 using OpenTabletDriver.Desktop.Profiles;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Tablet;
 using StreamJsonRpc.Protocol;
 
 namespace OpenTabletDriver.UX

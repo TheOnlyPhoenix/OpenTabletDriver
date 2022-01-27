@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Tablet;
 using OpenTabletDriver.Tools.udev.Comparers;
 using udev.NET.Rules;
 using udev.NET.Rules.Names;

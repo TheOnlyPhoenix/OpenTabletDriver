@@ -10,9 +10,8 @@ using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Logging;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Logging;
+using OpenTabletDriver.Tablet;
 using OpenTabletDriver.UX.Controls;
 
 namespace OpenTabletDriver.UX
@@ -77,7 +76,7 @@ namespace OpenTabletDriver.UX
 
                 this.Size = new Size((int)minWidth, (int)minHeight);
 
-                if (DesktopInterop.CurrentPlatform == PluginPlatform.Windows)
+                if (DesktopInterop.CurrentPlatform == SystemPlatform.Windows)
                 {
                     var x = Screen.WorkingArea.Center.X - (minWidth / 2);
                     var y = Screen.WorkingArea.Center.Y - (minHeight / 2);
@@ -90,15 +89,15 @@ namespace OpenTabletDriver.UX
         {
             switch (DesktopInterop.CurrentPlatform)
             {
-                case PluginPlatform.MacOS:
+                case SystemPlatform.MacOS:
                     this.Padding = 10;
                     break;
             }
 
             bool enableDaemonWatchdog = DesktopInterop.CurrentPlatform switch
             {
-                PluginPlatform.Windows => true,
-                PluginPlatform.MacOS => true,
+                SystemPlatform.Windows => true,
+                SystemPlatform.MacOS => true,
                 _ => false,
             };
 
@@ -297,8 +296,8 @@ namespace OpenTabletDriver.UX
 
             switch (SystemInterop.CurrentPlatform)
             {
-                case PluginPlatform.Windows:
-                case PluginPlatform.MacOS:
+                case SystemPlatform.Windows:
+                case SystemPlatform.MacOS:
                 {
                     menuBar.Items.GetSubmenu("&Help").Items.Add(updater);
                     break;

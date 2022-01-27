@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using OpenTabletDriver.Native.OSX;
 using OpenTabletDriver.Native.OSX.Generic;
-using OpenTabletDriver.Plugin.Platform.Pointer;
+using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.Desktop.Interop.Input.Relative
 {

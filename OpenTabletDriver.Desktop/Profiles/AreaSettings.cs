@@ -1,8 +1,7 @@
 using System.Numerics;
 using Newtonsoft.Json;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Platform.Display;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Platform.Display;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Profiles
 {

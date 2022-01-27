@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using OpenTabletDriver.Desktop.Migration;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.Desktop
 {

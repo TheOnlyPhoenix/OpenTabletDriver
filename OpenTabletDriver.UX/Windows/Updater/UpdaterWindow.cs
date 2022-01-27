@@ -4,9 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Eto.Drawing;
 using Eto.Forms;
-using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
 using OpenTabletDriver.UX.Controls;
 using OpenTabletDriver.UX.Controls.Generic;
 
@@ -72,8 +70,8 @@ namespace OpenTabletDriver.UX.Windows.Updater
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string path = SystemInterop.CurrentPlatform switch
             {
-                PluginPlatform.Windows => Path.Join(basePath, "OpenTabletDriver.UX.Wpf.exe"),
-                PluginPlatform.MacOS => Path.Join(basePath, "OpenTabletDriver.UX.MacOS"),
+                SystemPlatform.Windows => Path.Join(basePath, "OpenTabletDriver.UX.Wpf.exe"),
+                SystemPlatform.MacOS => Path.Join(basePath, "OpenTabletDriver.UX.MacOS"),
                 _ => throw new NotSupportedException("Current platform does not support updating.")
             };
 

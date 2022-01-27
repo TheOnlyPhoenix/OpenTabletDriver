@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
-using OpenTabletDriver.Plugin;
 
 namespace OpenTabletDriver.UX
 {

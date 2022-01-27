@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using Eto.Forms;
 using OpenTabletDriver.Desktop.Contracts;
 using OpenTabletDriver.Desktop.RPC;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Logging;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Logging;
+using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.UX.RPC
 {

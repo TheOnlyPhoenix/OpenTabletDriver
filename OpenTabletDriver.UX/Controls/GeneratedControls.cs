@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Eto.Forms;
+using OpenTabletDriver.Attributes;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin.Attributes;
 using OpenTabletDriver.UX.Controls.Generic;
 using OpenTabletDriver.UX.Controls.Generic.Text;
 

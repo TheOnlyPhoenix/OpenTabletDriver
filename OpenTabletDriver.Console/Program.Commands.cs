@@ -1,19 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Plugin;
-using OpenTabletDriver.Plugin.Output;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Output;
+using OpenTabletDriver.Tablet;
 using static System.Console;
 
 namespace OpenTabletDriver.Console

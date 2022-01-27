@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using Eto.Drawing;
 using Eto.Forms;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Interop;
-using OpenTabletDriver.Plugin;
 using OpenTabletDriver.UX.Controls.Generic;
 
 namespace OpenTabletDriver.UX.Controls.Output.Area
@@ -227,7 +225,7 @@ namespace OpenTabletDriver.UX.Controls.Output.Area
         private readonly Color AreaBoundsFillColor = SystemColors.ControlBackground;
         private readonly Color AreaBoundsBorderColor = SystemInterop.CurrentPlatform switch
         {
-            PluginPlatform.Windows => new Color(64, 64, 64),
+            SystemPlatform.Windows => new Color(64, 64, 64),
             _ => SystemColors.Control
         };
 

@@ -1,4 +1,4 @@
-﻿using OpenTabletDriver.Plugin.Tablet;
+﻿using OpenTabletDriver.Tablet;
 using Xunit;
 
 namespace OpenTabletDriver.Tests

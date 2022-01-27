@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using OpenTabletDriver.Native.Windows;
 using OpenTabletDriver.Native.Windows.USB;
-using OpenTabletDriver.Plugin.Devices;
 using static OpenTabletDriver.Native.Windows.Windows;
 using static OpenTabletDriver.Native.Windows.WinUsb;
 

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTabletDriver.Plugin.Components;
-using OpenTabletDriver.Plugin.Tablet;
+using OpenTabletDriver.Components;
+using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Tablet;
 using Xunit;
 
 #nullable enable
@@ -17,7 +18,7 @@ namespace OpenTabletDriver.Tests
         {
             get
             {
-                var configurationProvider = new DriverServiceCollection()
+                var configurationProvider = new DesktopServiceCollection()
                     .BuildServiceProvider()
                     .GetRequiredService<IDeviceConfigurationProvider>();
 
@@ -38,7 +39,7 @@ namespace OpenTabletDriver.Tests
         [MemberData(nameof(Configurations_Have_ExistentParsers_Data))]
         public void Configurations_Have_ExistentParsers(string reportParserName)
         {
-            var parserProvider = new DriverServiceCollection()
+            var parserProvider = new DesktopServiceCollection()
                 .BuildServiceProvider()
                 .GetRequiredService<IReportParserProvider>();
 
@@ -176,7 +177,7 @@ namespace OpenTabletDriver.Tests
         {
             get
             {
-                var configurationProvider = new DriverServiceCollection()
+                var configurationProvider = new DesktopServiceCollection()
                     .BuildServiceProvider()
                     .GetRequiredService<IDeviceConfigurationProvider>();
 
