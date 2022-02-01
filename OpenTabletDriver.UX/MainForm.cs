@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Interop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Interop;
 using OpenTabletDriver.Logging;
 using OpenTabletDriver.Tablet;

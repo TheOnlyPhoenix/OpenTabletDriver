@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using OpenTabletDriver.Tablet;
 
+#nullable enable
+
 namespace OpenTabletDriver
 {
     public interface IDriver
@@ -9,12 +11,12 @@ namespace OpenTabletDriver
         /// <summary>
         /// Invoked whenever a tablet is either detected or is disconnected.
         /// </summary>
-        event EventHandler<IEnumerable<TabletReference>> TabletsChanged;
+        event EventHandler<IEnumerable<InputDevice>> InputDevicesChanged;
 
         /// <summary>
         /// The currently active and detected tablets.
         /// </summary>
-        IEnumerable<TabletReference> Tablets { get; }
+        InputDeviceCollection InputDevices { get; }
 
         /// <summary>
         /// Attempts to detect a tablet.

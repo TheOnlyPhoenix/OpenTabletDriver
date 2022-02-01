@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Octokit;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 
 #nullable enable
 
@@ -11,11 +12,8 @@ namespace OpenTabletDriver.Desktop.Updater
 {
     public class WindowsUpdater : Updater
     {
-        public WindowsUpdater()
-           : this(AssemblyVersion,
-               AppDomain.CurrentDomain.BaseDirectory,
-               AppInfo.Current.AppDataDirectory,
-               AppInfo.Current.BackupDirectory)
+        public WindowsUpdater(IAppInfo appInfo)
+           : this(AssemblyVersion, AppDomain.CurrentDomain.BaseDirectory, appInfo.AppDataDirectory, appInfo.BackupDirectory)
         {
         }
 
@@ -27,7 +25,7 @@ namespace OpenTabletDriver.Desktop.Updater
         {
         }
 
-        protected override string[] IncludeList { get; } = new[]
+        protected override string[] IncludeList { get; } =
         {
             "OpenTabletDriver.UX.Wpf.exe",
             "OpenTabletDriver.Daemon.exe"

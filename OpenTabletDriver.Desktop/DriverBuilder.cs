@@ -1,61 +1,54 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTabletDriver.Desktop.Interop;
+using OpenTabletDriver.Exceptions;
+using OpenTabletDriver.Interop;
 
 #nullable enable
 
 namespace OpenTabletDriver.Desktop
 {
-    public class DriverBuilder
+    public class DriverBuilder<T> : IHostBuilder<T> where T : IDriver
     {
-        private readonly DesktopServiceCollection _driverServices;
-        private bool _hasBuilt;
+        private readonly DesktopServiceCollection _serviceCollection;
+        private bool _built;
 
         public DriverBuilder()
         {
-            _driverServices = new DesktopServiceCollection();
+            _serviceCollection = DesktopServiceCollection.GetPlatformServiceCollection();
         }
 
         public DriverBuilder(DesktopServiceCollection serviceCollection)
         {
-            _driverServices = serviceCollection;
+            _serviceCollection = serviceCollection;
         }
 
-        public DriverBuilder ConfigureServices(Action<IServiceCollection> configure)
+        public IHostBuilder<T> ConfigureServices(Action<IServiceCollection> configure)
         {
-            if (_hasBuilt)
+            if (_built)
                 throw new DriverAlreadyBuiltException();
 
-            configure(_driverServices);
+            configure(_serviceCollection);
             return this;
         }
 
-        /// <summary>
-        /// Builds an instance of <see cref="Driver"/>.
-        /// </summary>
-        /// <param name="serviceCollection">The final service collection associated to the driver.</param>
-        /// <returns>The built Driver with its lifetime managed by <paramref name="serviceCollection"/>.</returns>
-        public T Build<T>(out IServiceCollection serviceCollection) where T : class, IDriver
+        public T Build(out IServiceProvider serviceProvider)
         {
-            if (_hasBuilt)
-                throw new DriverAlreadyBuiltException();
+            if (_built)
+                throw new InvalidOperationException("Cannot build service from the same service collection more than once.");
 
-            _driverServices.AddSingleton<IDriver, T>();
 #if DEBUG
-            var serviceProvider = _driverServices.BuildServiceProvider(new ServiceProviderOptions
+            serviceProvider = _serviceCollection.BuildServiceProvider(new ServiceProviderOptions()
             {
                 ValidateScopes = true,
                 ValidateOnBuild = true
             });
 #else
-            var serviceProvider = _driverServices.BuildServiceProvider();
+            serviceProvider = _serviceCollection.BuildServiceProvider();
 #endif
-            _hasBuilt = true;
-            serviceCollection = _driverServices;
+            _built = true;
 
-            if (serviceProvider.GetService<IDriver>() is not T driver)
-                throw new InvalidOperationException();
-
-            return driver;
+            return ActivatorUtilities.CreateInstance<T>(serviceProvider);
         }
     }
 }

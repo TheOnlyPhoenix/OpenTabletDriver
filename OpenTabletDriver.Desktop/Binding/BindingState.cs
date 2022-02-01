@@ -9,14 +9,14 @@ namespace OpenTabletDriver.Desktop.Binding
 
         protected bool PreviousState { set; get; }
 
-        public virtual void Invoke(TabletReference tablet, IDeviceReport report, bool newState)
+        public void Invoke(IDeviceReport report, bool newState)
         {
             if (Binding is IStateBinding stateBinding)
             {
                 if (newState && !PreviousState)
-                    stateBinding.Press(tablet, report);
+                    stateBinding.Press(report);
                 else if (!newState && PreviousState)
-                    stateBinding.Release(tablet, report);
+                    stateBinding.Release(report);
             }
 
             PreviousState = newState;

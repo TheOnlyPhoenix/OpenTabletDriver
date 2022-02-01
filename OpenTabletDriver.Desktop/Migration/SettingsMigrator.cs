@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using OpenTabletDriver.Desktop.Binding;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Output;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
@@ -13,9 +15,16 @@ namespace OpenTabletDriver.Desktop.Migration
 {
     using V5 = LegacySettings.V5;
 
-    public static class SettingsMigrator
+    public class SettingsMigrator
     {
-        public static void Migrate(AppInfo appInfo)
+        private readonly IServiceProvider _serviceProvider;
+
+        public SettingsMigrator(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public void Migrate(IAppInfo appInfo)
         {
             var file = new FileInfo(appInfo.SettingsFile);
 
@@ -24,7 +33,7 @@ namespace OpenTabletDriver.Desktop.Migration
                 Log.Write("Settings", "Settings have been migrated.");
 
                 // Back up existing settings file for safety
-                var backupDir = AppInfo.Current.BackupDirectory;
+                var backupDir = appInfo.BackupDirectory;
                 if (!Directory.Exists(backupDir))
                     Directory.CreateDirectory(backupDir);
 
@@ -36,15 +45,15 @@ namespace OpenTabletDriver.Desktop.Migration
             }
         }
 
-        private static Settings Migrate(FileInfo file)
+        private Settings Migrate(FileInfo file)
         {
             var v5 = Serialization.Deserialize<V5::Settings>(file);
             return v5.IsValid() ? Convert(v5) : null;
         }
 
-        private static Settings Convert(V5::Settings old)
+        private Settings Convert(V5::Settings old)
         {
-            var settings = Settings.GetDefaults();
+            var settings = Settings.GetDefaults(_serviceProvider);
 
             if (settings.Profiles.FirstOrDefault() is Profile profile)
             {
@@ -64,7 +73,7 @@ namespace OpenTabletDriver.Desktop.Migration
                 profile.Filters = SafeMigrateCollection(new PluginSettingStoreCollection(old.Filters.Concat(old.Interpolators)));
 
                 profile.BindingSettings.TipActivationThreshold = old.TipActivationPressure;
-                profile.BindingSettings.TipButton = SafeMigrate(old.TipButton, new PluginSettingStore(new MouseBinding { Button = nameof(MouseButton.Left) }));
+                profile.BindingSettings.TipButton = SafeMigrate(old.TipButton, new PluginSettingStore(typeof(MouseBinding), new { Button = nameof(MouseButton.Left) }));
                 profile.BindingSettings.PenButtons = SafeMigrateCollection(old.PenButtons);
                 profile.BindingSettings.AuxButtons = SafeMigrateCollection(old.AuxButtons);
             }
@@ -75,20 +84,20 @@ namespace OpenTabletDriver.Desktop.Migration
             return settings;
         }
 
-        private static readonly Dictionary<Regex, string> namespaceMigrationDict = new Dictionary<Regex, string>
+        private static readonly Dictionary<Regex, string> NamespaceMigrationDict = new Dictionary<Regex, string>
         {
             { new Regex(@"TabletDriverLib\.(.+?)$"), $"OpenTabletDriver.{{0}}" },
             { new Regex(@"OpenTabletDriver\.Binding\.(.+?)$"), $"OpenTabletDriver.Desktop.Binding.{{0}}" },
             { new Regex(@"OpenTabletDriver\.Output\.(.+?)$"), $"OpenTabletDriver.Desktop.Output.{{0}}" }
         };
 
-        private static readonly Dictionary<Regex, (string, string)> propertyMigrationDict = new Dictionary<Regex, (string, string)>
+        private static readonly Dictionary<Regex, (string, string)> PropertyMigrationDict = new Dictionary<Regex, (string, string)>
         {
             { new Regex(@"OpenTabletDriver\.Desktop\.Binding\.KeyBinding$"), ("^Property$", "Key") },
             { new Regex(@"OpenTabletDriver\.Desktop\.Binding\.MouseBinding$"), ("^Property$", "Button") }
         };
 
-        public static PluginSettingStore SafeMigrate(PluginSettingStore store, PluginSettingStore defaultStore = null)
+        public PluginSettingStore SafeMigrate(PluginSettingStore store, PluginSettingStore defaultStore = null)
         {
             store = SafeMigrateNamespace(store, defaultStore);
             store = MigrateProperty(store);
@@ -108,7 +117,7 @@ namespace OpenTabletDriver.Desktop.Migration
             if (string.IsNullOrWhiteSpace(input))
                 return input;
 
-            foreach (var pair in namespaceMigrationDict)
+            foreach (var pair in NamespaceMigrationDict)
             {
                 var regex = pair.Key;
                 var replacement = pair.Value;
@@ -125,7 +134,7 @@ namespace OpenTabletDriver.Desktop.Migration
         {
             if (store != null)
             {
-                foreach (var pair in propertyMigrationDict)
+                foreach (var pair in PropertyMigrationDict)
                 {
                     var type = pair.Key;
                     (var property, var replacementProperty) = pair.Value;
@@ -146,10 +155,10 @@ namespace OpenTabletDriver.Desktop.Migration
             return store;
         }
 
-        private static PluginSettingStore SafeMigrateNamespace(PluginSettingStore store, PluginSettingStore defaultStore)
+        private PluginSettingStore SafeMigrateNamespace(PluginSettingStore store, PluginSettingStore defaultStore)
         {
             MigrateNamespace(store);
-            if (store != null && PluginSettingStore.FromPath(store.Path) == null && defaultStore != null)
+            if (store != null && StoreFromTypePath(store.Path) == null && defaultStore != null)
             {
                 Log.Write("Settings", $"Invalid plugin path '{store.Path ?? "null"}' has been changed to '{defaultStore.Path}'", LogLevel.Warning);
                 store = defaultStore;
@@ -157,7 +166,14 @@ namespace OpenTabletDriver.Desktop.Migration
             return store;
         }
 
-        private static PluginSettingStoreCollection SafeMigrateCollection(PluginSettingStoreCollection collection)
+        private PluginSettingStore StoreFromTypePath(string path)
+        {
+            var pluginFactory = _serviceProvider.GetRequiredService<IPluginFactory>();
+            var type = pluginFactory.GetPluginType(path);
+            return new PluginSettingStore(type);
+        }
+
+        private PluginSettingStoreCollection SafeMigrateCollection(PluginSettingStoreCollection collection)
         {
             if (collection == null)
                 collection = new PluginSettingStoreCollection();

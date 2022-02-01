@@ -14,14 +14,14 @@ namespace OpenTabletDriver.Interop
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     return SystemPlatform.Windows;
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     return SystemPlatform.Linux;
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     return SystemPlatform.MacOS;
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
                     return SystemPlatform.FreeBSD;
-                else
-                    return 0;
+
+                return default;
             }
         }
     }

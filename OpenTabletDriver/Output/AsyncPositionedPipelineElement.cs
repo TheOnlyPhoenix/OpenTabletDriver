@@ -1,16 +1,29 @@
 using System;
 using OpenTabletDriver.Attributes;
-using OpenTabletDriver.DependencyInjection;
 
 namespace OpenTabletDriver.Output
 {
     public abstract class AsyncPositionedPipelineElement<T> : IPositionedPipelineElement<T>, IDisposable
     {
-        private readonly object synchronizationObject = new object();
-        private HPETDeltaStopwatch consumeWatch = new HPETDeltaStopwatch();
-        private ITimer scheduler;
-        private float? reportMsAvg;
-        private float frequency;
+        private readonly ITimer _scheduler;
+        private readonly HPETDeltaStopwatch _consumeWatch = new HPETDeltaStopwatch();
+
+        protected AsyncPositionedPipelineElement(ITimer scheduler)
+        {
+            _scheduler = scheduler;
+            _scheduler.Elapsed += () =>
+            {
+                lock (_synchronizationObject)
+                {
+                    UpdateState();
+                }
+            };
+            _scheduler.Start();
+        }
+
+        private readonly object _synchronizationObject = new object();
+        private float? _reportMsAvg;
+        private float _frequency;
 
         /// <summary>
         /// The current state of the <see cref="AsyncPositionedPipelineElement{T}"/>.
@@ -21,51 +34,29 @@ namespace OpenTabletDriver.Output
 
         public abstract PipelinePosition Position { get; }
 
-        [Resolved]
-        public ITimer Scheduler
-        {
-            set
-            {
-                this.scheduler = value;
-
-                if (this.scheduler != null)
-                {
-                    this.scheduler.Elapsed += () =>
-                    {
-                        lock (synchronizationObject)
-                        {
-                            UpdateState();
-                        }
-                    };
-                    this.scheduler.Start();
-                }
-            }
-            get => this.scheduler;
-        }
-
         [Property("Frequency"), Unit("hz"), DefaultPropertyValue(1000.0f)]
         public float Frequency
         {
             set
             {
-                this.frequency = value;
-                if (Scheduler.Enabled)
-                    Scheduler.Stop();
-                Scheduler.Interval = 1000f / value;
-                Scheduler.Start();
+                _frequency = value;
+                if (_scheduler.Enabled)
+                    _scheduler.Stop();
+                _scheduler.Interval = 1000f / value;
+                _scheduler.Start();
             }
-            get => this.frequency;
+            get => _frequency;
         }
 
         public void Consume(T value)
         {
-            lock (synchronizationObject)
+            lock (_synchronizationObject)
             {
                 State = value;
                 ConsumeState();
-                var consumeDelta = (float)consumeWatch.Restart().TotalMilliseconds;
+                var consumeDelta = (float)_consumeWatch.Restart().TotalMilliseconds;
                 if (consumeDelta < 150)
-                    reportMsAvg = (reportMsAvg + ((consumeDelta - reportMsAvg) * 0.1f)) ?? consumeDelta;
+                    _reportMsAvg = (_reportMsAvg + ((consumeDelta - _reportMsAvg) * 0.1f)) ?? consumeDelta;
             }
         }
 
@@ -100,7 +91,7 @@ namespace OpenTabletDriver.Output
         /// <returns>True if pen is in range</returns>
         protected bool PenIsInRange()
         {
-            return (float)consumeWatch.Elapsed.TotalMilliseconds < Math.Max(3, (reportMsAvg * 1.5f) ?? float.MaxValue);
+            return (float)_consumeWatch.Elapsed.TotalMilliseconds < Math.Max(3, (_reportMsAvg * 1.5f) ?? float.MaxValue);
         }
 
         /// <summary>
@@ -114,8 +105,7 @@ namespace OpenTabletDriver.Output
 
         public void Dispose()
         {
-            Scheduler?.Dispose();
-            Scheduler = null;
+            _scheduler?.Dispose();
         }
 
         ~AsyncPositionedPipelineElement() => Dispose();

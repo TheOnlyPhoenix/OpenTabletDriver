@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Profiles;
 using static System.Console;
 

@@ -1,14 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Interop;
 
-namespace OpenTabletDriver.Desktop
+namespace OpenTabletDriver.Desktop.Interop.AppInfo
 {
-    using static FileUtilities;
-
-    public class AppInfo
+    public abstract class AppInfo : IAppInfo
     {
         private string configurationDirectory,
             settingsFile,
@@ -18,37 +14,6 @@ namespace OpenTabletDriver.Desktop
             cacheDirectory,
             backupDirectory,
             trashDirectory;
-
-        private static AppInfo current;
-        public static AppInfo Current
-        {
-            set => current = value;
-            get => current ??= SystemInterop.CurrentPlatform switch
-            {
-                SystemPlatform.Windows => new AppInfo
-                {
-                    AppDataDirectory = GetExistingPathOrLast(Path.Join(ProgramDirectory, "userdata"), "$LOCALAPPDATA\\OpenTabletDriver")
-                },
-                SystemPlatform.Linux => new AppInfo
-                {
-                    ConfigurationDirectory = GetExistingPath("$XDG_DATA_HOME/OpenTabletDriver/Configurations", "~/.local/share/OpenTabletDriver/Configurations"),
-                    AppDataDirectory = GetPath("$XDG_CONFIG_HOME/OpenTabletDriver", "~/.config/OpenTabletDriver"),
-                    TemporaryDirectory = GetPath("$XDG_RUNTIME_DIR/OpenTabletDriver", "$TEMP/OpenTabletDriver"),
-                    CacheDirectory = GetPath("$XDG_CACHE_HOME/OpenTabletDriver", "~/.cache/OpenTabletDriver"),
-                },
-                SystemPlatform.MacOS => new AppInfo()
-                {
-                    AppDataDirectory = GetPath("~/Library/Application Support/OpenTabletDriver"),
-                    TemporaryDirectory = GetPath("$TMPDIR/OpenTabletDriver"),
-                    CacheDirectory = GetPath("~/Library/Caches/OpenTabletDriver")
-                },
-                _ => null
-            };
-        }
-
-        public static DesktopPluginManager PluginManager { get; } = new DesktopPluginManager();
-
-        public static PresetManager PresetManager { get; } = new PresetManager();
 
         public string AppDataDirectory { set; get; }
 
@@ -104,7 +69,7 @@ namespace OpenTabletDriver.Desktop
 
         private static string GetDirectory(params string[] directories)
         {
-            foreach (var dir in directories.Select(InjectEnvironmentVariables))
+            foreach (var dir in directories.Select(FileUtilities.InjectEnvironmentVariables))
                 if (Path.IsPathRooted(dir))
                     return dir;
 
@@ -113,17 +78,17 @@ namespace OpenTabletDriver.Desktop
 
         private static string GetDirectoryIfExists(params string[] directories)
         {
-            foreach (var dir in directories.Select(InjectEnvironmentVariables))
+            foreach (var dir in directories.Select(FileUtilities.InjectEnvironmentVariables))
                 if (Directory.Exists(dir))
                     return dir;
 
-            return InjectEnvironmentVariables(directories.Last());
+            return FileUtilities.InjectEnvironmentVariables(directories.Last());
         }
 
-        private string GetDefaultConfigurationDirectory() => GetExistingPathOrLast(
+        private string GetDefaultConfigurationDirectory() => FileUtilities.GetExistingPathOrLast(
             Path.Join(AppDataDirectory, "Configurations"),
             Path.Join(ProgramDirectory, "Configurations"),
-            Path.Join(Environment.CurrentDirectory, "Configurations")
+            Path.Join(System.Environment.CurrentDirectory, "Configurations")
         );
 
         private string GetDefaultSettingsFile() => Path.Join(AppDataDirectory, "settings.json");

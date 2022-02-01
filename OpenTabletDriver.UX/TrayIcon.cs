@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 
 namespace OpenTabletDriver.UX
 {

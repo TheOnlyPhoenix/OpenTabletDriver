@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Diagnostics;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Output;
 using OpenTabletDriver.Tablet;

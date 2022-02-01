@@ -1,12 +1,14 @@
 ﻿using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTabletDriver.Components;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.RPC;
 
 namespace OpenTabletDriver.Daemon
@@ -24,29 +26,32 @@ namespace OpenTabletDriver.Daemon
                     return;
                 }
 
+                var daemon = BuildDaemon(out var serviceProvider);
+                var appInfo = serviceProvider.GetRequiredService<IAppInfo>();
+
                 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                 {
                     var exception = (Exception)e.ExceptionObject;
-                    File.WriteAllLines(Path.Join(AppInfo.Current.AppDataDirectory, "daemon.log"),
+                    File.WriteAllLines(Path.Join(appInfo.AppDataDirectory, "daemon.log"),
                         new string[]
                         {
-                            DateTime.Now.ToString(),
+                            DateTime.Now.ToString(CultureInfo.InvariantCulture),
                             exception.GetType().FullName,
                             exception.Message,
                             exception.Source,
                             exception.StackTrace,
-                            exception.TargetSite.Name
+                            exception.TargetSite?.Name
                         }
                     );
                 };
 
                 var rootCommand = new RootCommand("OpenTabletDriver")
                 {
-                    new Option(new string[] { "--appdata", "-a" }, "Application data directory")
+                    new Option(new[] { "--appdata", "-a" }, "Application data directory")
                     {
                         Argument = new Argument<DirectoryInfo>("appdata")
                     },
-                    new Option(new string[] { "--config", "-c" }, "Configuration directory")
+                    new Option(new[] { "--config", "-c" }, "Configuration directory")
                     {
                         Argument = new Argument<DirectoryInfo> ("config")
                     }
@@ -54,30 +59,24 @@ namespace OpenTabletDriver.Daemon
                 rootCommand.Handler = CommandHandler.Create<DirectoryInfo, DirectoryInfo>((appdata, config) =>
                 {
                     if (!string.IsNullOrWhiteSpace(appdata?.FullName))
-                        AppInfo.Current.AppDataDirectory = appdata.FullName;
+                        appInfo.AppDataDirectory = appdata.FullName;
                     if (!string.IsNullOrWhiteSpace(config?.FullName))
-                        AppInfo.Current.ConfigurationDirectory = config.FullName;
+                        appInfo.ConfigurationDirectory = config.FullName;
                 });
-                rootCommand.Invoke(args);
+                await rootCommand.InvokeAsync(args);
 
-                var host = new RpcHost<DriverDaemon>("OpenTabletDriver.Daemon");
-                host.ConnectionStateChanged += (sender, state) =>
+                var rpcHost = new RpcHost<DriverDaemon>("OpenTabletDriver.Daemon");
+                rpcHost.ConnectionStateChanged += (sender, state) =>
                     Log.Write("IPC", $"{(state ? "Connected to" : "Disconnected from")} a client.", LogLevel.Debug);
 
-                await host.Run(BuildDaemon());
+                daemon.Initialize();
+                await rpcHost.Run(daemon);
             }
         }
 
-        static DriverDaemon BuildDaemon()
+        private static DriverDaemon BuildDaemon(out IServiceProvider serviceProvider)
         {
-            return new DriverDaemon(new DriverBuilder()
-                .ConfigureServices(serviceCollection =>
-                {
-                    serviceCollection.AddSingleton<IDeviceConfigurationProvider, DesktopDeviceConfigurationProvider>();
-                    serviceCollection.AddSingleton<IReportParserProvider, DesktopReportParserProvider>();
-                })
-                .Build<Driver>(out _)
-            );
+            return new DaemonBuilder().Build(out serviceProvider);
         }
     }
 }

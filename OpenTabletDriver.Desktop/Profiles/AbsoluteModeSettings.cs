@@ -1,4 +1,7 @@
+using System;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Platform.Display;
 using OpenTabletDriver.Tablet;
 
@@ -44,13 +47,13 @@ namespace OpenTabletDriver.Desktop.Profiles
             get => _lockar;
         }
 
-        public static AbsoluteModeSettings GetDefaults(DigitizerSpecifications digitizer)
+        public static AbsoluteModeSettings GetDefaults(IServiceProvider serviceProvider, DigitizerSpecifications digitizer)
         {
-            var display = AppInfo.PluginManager.GetService<IVirtualScreen>();
+            var virtualScreen = serviceProvider.GetRequiredService<IVirtualScreen>();
 
             return new AbsoluteModeSettings
             {
-                Display = AreaSettings.GetDefaults(display),
+                Display = AreaSettings.GetDefaults(virtualScreen),
                 Tablet = AreaSettings.GetDefaults(digitizer),
                 EnableClipping = true
             };

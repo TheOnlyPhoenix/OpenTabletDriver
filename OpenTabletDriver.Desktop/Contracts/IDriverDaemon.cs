@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octokit;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.Desktop.RPC;
 using OpenTabletDriver.Devices;
 using OpenTabletDriver.Logging;
-using OpenTabletDriver.Tablet;
+
+#nullable enable
 
 namespace OpenTabletDriver.Desktop.Contracts
 {
@@ -14,7 +16,7 @@ namespace OpenTabletDriver.Desktop.Contracts
     {
         event EventHandler<LogMessage> Message;
         event EventHandler<DebugReportData> DeviceReport;
-        event EventHandler<IEnumerable<TabletReference>> TabletsChanged;
+        event EventHandler<IEnumerable<InputDevice>>? TabletsChanged;
 
         Task WriteMessage(LogMessage message);
 
@@ -25,14 +27,14 @@ namespace OpenTabletDriver.Desktop.Contracts
 
         Task<IEnumerable<SerializedDeviceEndpoint>> GetDevices();
 
-        Task<IEnumerable<TabletReference>> GetTablets();
-        Task<IEnumerable<TabletReference>> DetectTablets();
+        Task<IEnumerable<InputDevice>> GetTablets();
+        Task<IEnumerable<InputDevice>> DetectTablets();
 
         Task SetSettings(Settings settings);
         Task<Settings> GetSettings();
         Task ResetSettings();
 
-        Task<AppInfo> GetApplicationInfo();
+        Task<IAppInfo> GetApplicationInfo();
 
         Task SetTabletDebug(bool isEnabled);
         Task<string> RequestDeviceString(int vendorID, int productID, int index);
@@ -42,5 +44,6 @@ namespace OpenTabletDriver.Desktop.Contracts
         Task<bool> HasUpdate();
         Task<Release> GetUpdateInfo();
         Task InstallUpdate();
+        void Initialize();
     }
 }

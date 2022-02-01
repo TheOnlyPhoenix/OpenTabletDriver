@@ -1,29 +1,58 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTabletDriver.ComponentProviders;
 using OpenTabletDriver.Components;
 using OpenTabletDriver.Configurations;
+using OpenTabletDriver.Desktop.Diagnostics;
+using OpenTabletDriver.Desktop.Interop;
+using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Devices;
+using OpenTabletDriver.Interop;
 
 #nullable enable
 
 namespace OpenTabletDriver.Desktop
 {
+    using static ServiceDescriptor;
+
     public class DesktopServiceCollection : ServiceCollection
     {
-        private static IEnumerable<ServiceDescriptor> RequiredServices => new ServiceDescriptor[]
+        private static readonly IEnumerable<ServiceDescriptor> RequiredServices = new[]
         {
-            ServiceDescriptor.Singleton<IReportParserProvider, ReportParserProvider>(),
-            ServiceDescriptor.Singleton<IDeviceHubsProvider, DeviceHubsProvider>(serviceProvider => new DeviceHubsProvider(serviceProvider)),
-            ServiceDescriptor.Singleton<ICompositeDeviceHub, RootHub>(serviceProvider => RootHub.WithProvider(serviceProvider)),
-            ServiceDescriptor.Singleton<IDeviceConfigurationProvider, DeviceConfigurationProvider>()
+            // Core Services
+            Singleton<IDriver, Driver>(),
+            Singleton<IReportParserProvider, ReportParserProvider>(),
+            Singleton<IDeviceHubsProvider, DeviceHubsProvider>(p => new DeviceHubsProvider(p)),
+            Singleton<ICompositeDeviceHub, RootHub>(RootHub.WithProvider),
+            Singleton<IDeviceConfigurationProvider, DesktopDeviceConfigurationProvider>(),
+            Singleton<IReportParserProvider, DesktopReportParserProvider>(),
+            // Desktop Services
+            Transient<EnvironmentDictionary, EnvironmentDictionary>(),
+            Singleton<IPluginManager, PluginManager>(),
+            Transient<IPluginFactory, PluginFactory>(),
+            // TODO: null updater for Linux
         };
 
         public DesktopServiceCollection()
         {
-            foreach (var serviceDescriptor in RequiredServices)
-                this.Add(serviceDescriptor);
+            this.AddServices(RequiredServices);
+        }
+
+        protected DesktopServiceCollection(IEnumerable<ServiceDescriptor> overridingServices) : this()
+        {
+            this.AddServices(overridingServices);
+        }
+
+        public static DesktopServiceCollection GetPlatformServiceCollection()
+        {
+            return SystemInterop.CurrentPlatform switch
+            {
+                SystemPlatform.Windows => new DesktopWindowsServiceCollection(),
+                SystemPlatform.Linux => new DesktopLinuxServiceCollection(),
+                SystemPlatform.MacOS => new DesktopMacOSServiceCollection(),
+                _ => throw new PlatformNotSupportedException("This platform is not supported by OpenTabletDriver.")
+            };
         }
     }
 }

@@ -9,6 +9,6 @@ namespace OpenTabletDriver.Tablet
         string Bottom { get; }
         string Right { get; }
 
-        Area Convert(TabletReference tablet, double top, double left, double bottom, double right);
+        Area Convert(InputDevice tablet, double top, double left, double bottom, double right);
     }
 }

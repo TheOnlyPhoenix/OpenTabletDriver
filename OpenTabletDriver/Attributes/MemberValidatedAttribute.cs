@@ -2,38 +2,38 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
+
+#nullable enable
 
 namespace OpenTabletDriver.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class PropertyValidatedAttribute : Attribute
+    public class MemberValidatedAttribute : Attribute
     {
-        public PropertyValidatedAttribute(string memberName)
+        public MemberValidatedAttribute(string memberName, bool requiresInstance = false)
         {
             MemberName = memberName;
         }
 
-        /// <summary>
-        /// The name of the member in which the property this is assigned to is allowed to have.
-        /// </summary>
-        /// <remarks>
-        /// This member must return <see cref="IEnumerable{T}"/> statically.
-        /// </remarks>
         public string MemberName { get; }
+        public bool RequiresInstance { get; }
 
-        public T GetValue<T>(PropertyInfo property)
+        public T GetValue<T>(IServiceProvider serviceProvider, PropertyInfo property)
         {
-            var sourceType = property.ReflectedType;
+            var sourceType = property.ReflectedType!;
             var member = sourceType.GetMember(MemberName).First();
+            var instance = RequiresInstance ? serviceProvider.GetRequiredService(sourceType) : null;
+
             try
             {
-                return member.MemberType switch
+                var obj = member.MemberType switch
                 {
-                    MemberTypes.Property => (T)sourceType.GetProperty(MemberName).GetValue(null),
-                    MemberTypes.Field => (T)sourceType.GetField(MemberName).GetValue(null),
-                    MemberTypes.Method => (T)sourceType.GetMethod(MemberName).Invoke(null, null),
+                    MemberTypes.Property => sourceType.GetProperty(MemberName)!.GetValue(instance),
+                    MemberTypes.Field => sourceType.GetField(MemberName)!.GetValue(instance),
+                    MemberTypes.Method => sourceType.GetMethod(MemberName)!.Invoke(instance, new [] { serviceProvider }),
                     _ => default
                 };
+                return (T)obj!;
             }
             catch (Exception e)
             {

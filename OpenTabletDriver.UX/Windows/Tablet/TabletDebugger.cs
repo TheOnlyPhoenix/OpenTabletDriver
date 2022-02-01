@@ -7,6 +7,7 @@ using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.RPC;
 using OpenTabletDriver.Tablet;
 using OpenTabletDriver.UX.Controls.Generic;

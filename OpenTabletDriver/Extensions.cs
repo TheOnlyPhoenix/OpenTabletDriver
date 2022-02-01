@@ -4,7 +4,11 @@ namespace OpenTabletDriver
 {
     internal static class Extensions
     {
-        public static bool TryGet<TSource, TValue>(this TSource source, Func<TSource, TValue> predicate, out TValue value)
+        public static bool TryGet<TSource, TValue>(
+            this TSource source,
+            Func<TSource, TValue> predicate,
+            out TValue value
+        )
         {
             try
             {
@@ -15,10 +19,15 @@ namespace OpenTabletDriver
             {
                 Log.Exception(ex);
             }
+
             value = default;
             return false;
         }
 
-        public static TValue SafeGet<TSource, TValue>(this TSource source, Func<TSource, TValue> predicate, TValue fallback) => TryGet(source, predicate, out var value) ? value : fallback;
+        public static TValue SafeGet<TSource, TValue>(
+            this TSource source,
+            Func<TSource, TValue> predicate,
+            TValue fallback
+        ) => TryGet(source, predicate, out var value) ? value : fallback;
     }
 }

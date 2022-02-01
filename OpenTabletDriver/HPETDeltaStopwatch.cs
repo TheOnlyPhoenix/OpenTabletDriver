@@ -3,8 +3,13 @@ using System.Diagnostics;
 
 namespace OpenTabletDriver
 {
-    public class HPETDeltaStopwatch
+    public sealed class HPETDeltaStopwatch
     {
+        private static Stopwatch internalWatch = Stopwatch.StartNew();
+        private TimeSpan start;
+        private TimeSpan end;
+        private bool isRunning;
+
         public HPETDeltaStopwatch(bool startRunning = true)
         {
             isRunning = startRunning;
@@ -24,6 +29,16 @@ namespace OpenTabletDriver
             }
         }
 
+        public TimeSpan Stop()
+        {
+            if (isRunning)
+            {
+                isRunning = false;
+                end = internalWatch.Elapsed;
+            }
+            return end - start;
+        }
+
         public TimeSpan Restart()
         {
             if (isRunning)
@@ -41,26 +56,11 @@ namespace OpenTabletDriver
             }
         }
 
-        public TimeSpan Stop()
-        {
-            if (isRunning)
-            {
-                isRunning = false;
-                end = internalWatch.Elapsed;
-            }
-            return end - start;
-        }
-
         public TimeSpan Reset()
         {
             var delta = Stop();
             start = end = default;
             return delta;
         }
-
-        private static Stopwatch internalWatch = Stopwatch.StartNew();
-        protected TimeSpan start;
-        protected TimeSpan end;
-        protected bool isRunning;
     }
 }

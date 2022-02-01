@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.IO;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 
 namespace OpenTabletDriver.Desktop
 {
-    public class PresetManager
+    public class PresetManager : IPresetManager
     {
-        public PresetManager()
+        public PresetManager(IAppInfo appInfo)
         {
-            PresetDirectory = new DirectoryInfo(AppInfo.Current.PresetDirectory);
+            _presetDirectory = new DirectoryInfo(appInfo.PresetDirectory);
         }
 
-        public DirectoryInfo PresetDirectory { get; }
+        private readonly DirectoryInfo _presetDirectory;
 
         private List<Preset> Presets { get; } = new List<Preset>();
 
@@ -23,7 +24,7 @@ namespace OpenTabletDriver.Desktop
 
         private void Load()
         {
-            foreach (var preset in PresetDirectory.EnumerateFiles("*.json"))
+            foreach (var preset in _presetDirectory.EnumerateFiles("*.json"))
             {
                 var settings = Settings.Deserialize(preset);
                 if (settings != null)

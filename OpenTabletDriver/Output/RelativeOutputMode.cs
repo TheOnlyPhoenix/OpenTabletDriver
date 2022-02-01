@@ -16,10 +16,16 @@ namespace OpenTabletDriver.Output
         private HPETDeltaStopwatch stopwatch = new HPETDeltaStopwatch(true);
         private bool skipReport;
 
+        public RelativeOutputMode(InputDevice tablet, IRelativePointer relativePointer)
+            : base(tablet)
+        {
+            Pointer = relativePointer;
+        }
+
         /// <summary>
         /// The class in which the final relative positioned output is handled.
         /// </summary>
-        public abstract IRelativePointer Pointer { set; get; }
+        public IRelativePointer Pointer { get; }
 
         private Vector2 sensitivity;
 

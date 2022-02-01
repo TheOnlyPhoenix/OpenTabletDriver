@@ -11,11 +11,6 @@ namespace OpenTabletDriver.Desktop
         }
 
         public string Name { get; }
-        private Settings Settings;
-
-        public Settings GetSettings()
-        {
-            return JsonConvert.DeserializeObject<Settings>(JsonConvert.SerializeObject(Settings));
-        }
+        public Settings Settings { get; }
     }
 }

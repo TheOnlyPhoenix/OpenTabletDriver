@@ -6,6 +6,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Interop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.UX.Dialogs;
 using StreamJsonRpc;

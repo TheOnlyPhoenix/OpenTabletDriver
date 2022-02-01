@@ -1,8 +1,7 @@
+using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using OpenTabletDriver.Attributes;
-using OpenTabletDriver.DependencyInjection;
-using OpenTabletDriver.Desktop.Interop;
-using OpenTabletDriver.Desktop.Interop.Input.Keyboard;
 using OpenTabletDriver.Platform.Keyboard;
 using OpenTabletDriver.Tablet;
 
@@ -13,34 +12,34 @@ namespace OpenTabletDriver.Desktop.Binding
     {
         private const string PLUGIN_NAME = "Key Binding";
 
-        [Resolved]
-        public IVirtualKeyboard Keyboard { set; get; }
+        private readonly InputDevice _device;
+        private readonly IVirtualKeyboard _keyboard;
 
-        [Property("Key"), PropertyValidated(nameof(ValidKeys))]
+        public KeyBinding(InputDevice device, IVirtualKeyboard keyboard)
+        {
+            _device = device;
+            _keyboard = keyboard;
+        }
+
+        [Property("Key"), MemberValidated(nameof(GetValidKeys))]
         public string Key { set; get; }
 
-        public void Press(TabletReference tablet, IDeviceReport report)
+        public void Press(IDeviceReport report)
         {
             if (!string.IsNullOrWhiteSpace(Key))
-                Keyboard.Press(Key);
+                _keyboard.Press(Key);
         }
 
-        public void Release(TabletReference tablet, IDeviceReport report)
+        public void Release(IDeviceReport report)
         {
             if (!string.IsNullOrWhiteSpace(Key))
-                Keyboard.Release(Key);
+                _keyboard.Release(Key);
         }
 
-        private static IEnumerable<string> validKeys;
-        public static IEnumerable<string> ValidKeys
+        public static IEnumerable<string> GetValidKeys(IServiceProvider serviceProvider)
         {
-            get => validKeys ??= DesktopInterop.CurrentPlatform switch
-            {
-                SystemPlatform.Windows => WindowsVirtualKeyboard.EtoKeysymToVK.Keys,
-                SystemPlatform.Linux => EvdevVirtualKeyboard.EtoKeysymToEventCode.Keys,
-                SystemPlatform.MacOS => MacOSVirtualKeyboard.EtoKeysymToVK.Keys,
-                _ => null
-            };
+            var keysProvider = serviceProvider.GetRequiredService<IKeysProvider>();
+            return keysProvider.EtoToNative.Keys;
         }
 
         public override string ToString() => $"{PLUGIN_NAME}: {Key}";

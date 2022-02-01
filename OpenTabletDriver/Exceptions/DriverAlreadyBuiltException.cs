@@ -2,7 +2,7 @@ using System;
 
 #nullable enable
 
-namespace OpenTabletDriver
+namespace OpenTabletDriver.Exceptions
 {
     public class DriverAlreadyBuiltException : Exception
     {

@@ -8,73 +8,73 @@ namespace OpenTabletDriver.Desktop.Profiles
 {
     public class BindingSettings : ViewModel
     {
-        private float tP, eP;
-        private PluginSettingStore tipButton, eraserButton, mouseScrollUp, mouseScrollDown;
-        private PluginSettingStoreCollection penButtons = new PluginSettingStoreCollection(),
-            auxButtons = new PluginSettingStoreCollection(),
-            mouseButtons = new PluginSettingStoreCollection();
+        private float _tP, _eP;
+        private PluginSettingStore _tipButton, _eraserButton, _mouseScrollUp, _mouseScrollDown;
+        private PluginSettingStoreCollection _penButtons = new PluginSettingStoreCollection(),
+            _auxButtons = new PluginSettingStoreCollection(),
+            _mouseButtons = new PluginSettingStoreCollection();
 
         [JsonProperty("TipActivationThreshold")]
         public float TipActivationThreshold
         {
-            set => this.RaiseAndSetIfChanged(ref this.tP, value);
-            get => this.tP;
+            set => RaiseAndSetIfChanged(ref _tP, value);
+            get => _tP;
         }
 
         [JsonProperty("TipButton")]
         public PluginSettingStore TipButton
         {
-            set => this.RaiseAndSetIfChanged(ref this.tipButton, value);
-            get => this.tipButton;
+            set => RaiseAndSetIfChanged(ref _tipButton, value);
+            get => _tipButton;
         }
 
         [JsonProperty("EraserActivationThreshold")]
         public float EraserActivationThreshold
         {
-            set => this.RaiseAndSetIfChanged(ref this.eP, value);
-            get => this.eP;
+            set => RaiseAndSetIfChanged(ref _eP, value);
+            get => _eP;
         }
 
         [JsonProperty("EraserButton")]
         public PluginSettingStore EraserButton
         {
-            set => this.RaiseAndSetIfChanged(ref this.eraserButton, value);
-            get => this.eraserButton;
+            set => RaiseAndSetIfChanged(ref _eraserButton, value);
+            get => _eraserButton;
         }
 
         [JsonProperty("PenButtons")]
         public PluginSettingStoreCollection PenButtons
         {
-            set => this.RaiseAndSetIfChanged(ref this.penButtons, value);
-            get => this.penButtons;
+            set => RaiseAndSetIfChanged(ref _penButtons, value);
+            get => _penButtons;
         }
 
         [JsonProperty("AuxButtons")]
         public PluginSettingStoreCollection AuxButtons
         {
-            set => this.RaiseAndSetIfChanged(ref this.auxButtons, value);
-            get => this.auxButtons;
+            set => RaiseAndSetIfChanged(ref _auxButtons, value);
+            get => _auxButtons;
         }
 
         [JsonProperty("MouseButtons")]
         public PluginSettingStoreCollection MouseButtons
         {
-            set => this.RaiseAndSetIfChanged(ref this.mouseButtons, value);
-            get => this.mouseButtons;
+            set => RaiseAndSetIfChanged(ref _mouseButtons, value);
+            get => _mouseButtons;
         }
 
         [JsonProperty("MouseScrollUp")]
         public PluginSettingStore MouseScrollUp
         {
-            set => this.RaiseAndSetIfChanged(ref this.mouseScrollUp, value);
-            get => this.mouseScrollUp;
+            set => RaiseAndSetIfChanged(ref _mouseScrollUp, value);
+            get => _mouseScrollUp;
         }
 
         [JsonProperty("MouseScrollDown")]
         public PluginSettingStore MouseScrollDown
         {
-            set => this.RaiseAndSetIfChanged(ref this.mouseScrollDown, value);
-            get => this.mouseScrollDown;
+            set => RaiseAndSetIfChanged(ref _mouseScrollDown, value);
+            get => _mouseScrollDown;
         }
 
         public static BindingSettings GetDefaults(TabletSpecifications tabletSpecifications)
@@ -82,7 +82,8 @@ namespace OpenTabletDriver.Desktop.Profiles
             var bindingSettings = new BindingSettings
             {
                 TipButton = new PluginSettingStore(
-                    new MouseBinding
+                    typeof(MouseBinding),
+                    new
                     {
                         Button = nameof(MouseButton.Left)
                     }

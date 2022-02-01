@@ -8,15 +8,16 @@ namespace OpenTabletDriver.Output
 {
     public abstract class OutputMode : PipelineManager<IDeviceReport>, IOutputMode
     {
-        public OutputMode()
+        public OutputMode(InputDevice tablet)
         {
+            Tablet = tablet;
             Passthrough = true;
         }
 
-        private bool passthrough;
-        private TabletReference tablet;
-        private IList<IPositionedPipelineElement<IDeviceReport>> elements;
-        private IPipelineElement<IDeviceReport> entryElement;
+        private bool _passthrough;
+        private InputDevice _tablet;
+        private IList<IPositionedPipelineElement<IDeviceReport>> _elements;
+        private IPipelineElement<IDeviceReport> _entryElement;
 
         public event Action<IDeviceReport> Emit;
 
@@ -24,21 +25,21 @@ namespace OpenTabletDriver.Output
         {
             private set
             {
-                Action<IDeviceReport> output = this.OnOutput;
-                if (value && !passthrough)
+                Action<IDeviceReport> output = OnOutput;
+                if (value && !_passthrough)
                 {
-                    this.entryElement = this;
+                    _entryElement = this;
                     Link(this, output);
-                    this.passthrough = true;
+                    _passthrough = true;
                 }
-                else if (!value && passthrough)
+                else if (!value && _passthrough)
                 {
-                    this.entryElement = null;
+                    _entryElement = null;
                     Unlink(this, output);
-                    this.passthrough = false;
+                    _passthrough = false;
                 }
             }
-            get => this.passthrough;
+            get => _passthrough;
         }
 
         protected IList<IPositionedPipelineElement<IDeviceReport>> PreTransformElements { private set; get; } = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
@@ -50,7 +51,7 @@ namespace OpenTabletDriver.Output
         {
             set
             {
-                this.elements = value;
+                _elements = value;
 
                 Passthrough = false;
                 DestroyInternalLinks();
@@ -60,25 +61,25 @@ namespace OpenTabletDriver.Output
                     PreTransformElements = GroupElements(Elements, PipelinePosition.PreTransform);
                     PostTransformElements = GroupElements(Elements, PipelinePosition.PostTransform);
 
-                    Action<IDeviceReport> output = this.OnOutput;
+                    Action<IDeviceReport> output = OnOutput;
 
                     if (PreTransformElements.Any() && !PostTransformElements.Any())
                     {
-                        entryElement = PreTransformElements.First();
+                        _entryElement = PreTransformElements.First();
 
                         // PreTransform --> Transform --> Output
                         LinkAll(PreTransformElements, this, output);
                     }
                     else if (PostTransformElements.Any() && !PreTransformElements.Any())
                     {
-                        entryElement = this;
+                        _entryElement = this;
 
                         // Transform --> PostTransform --> Output
                         LinkAll(this, PostTransformElements, output);
                     }
                     else if (PreTransformElements.Any() && PostTransformElements.Any())
                     {
-                        entryElement = PreTransformElements.First();
+                        _entryElement = PreTransformElements.First();
 
                         // PreTransform --> Transform --> PostTransform --> Output
                         LinkAll(PreTransformElements, this, PostTransformElements, output);
@@ -91,17 +92,17 @@ namespace OpenTabletDriver.Output
                     PostTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
                 }
             }
-            get => this.elements;
+            get => _elements;
         }
 
-        public virtual TabletReference Tablet
+        public InputDevice Tablet
         {
             set
             {
-                this.tablet = value;
-                this.TransformationMatrix = CreateTransformationMatrix();
+                _tablet = value;
+                TransformationMatrix = CreateTransformationMatrix();
             }
-            get => this.tablet;
+            get => _tablet;
         }
 
         public virtual void Consume(IDeviceReport report)
@@ -113,7 +114,7 @@ namespace OpenTabletDriver.Output
             Emit?.Invoke(report);
         }
 
-        public virtual void Read(IDeviceReport deviceReport) => entryElement?.Consume(deviceReport);
+        public virtual void Read(IDeviceReport deviceReport) => _entryElement?.Consume(deviceReport);
 
         protected abstract Matrix3x2 CreateTransformationMatrix();
         protected abstract IAbsolutePositionReport Transform(IAbsolutePositionReport tabletReport);
@@ -121,7 +122,7 @@ namespace OpenTabletDriver.Output
 
         private void DestroyInternalLinks()
         {
-            Action<IDeviceReport> output = this.OnOutput;
+            Action<IDeviceReport> output = OnOutput;
 
             if (PreTransformElements.Any() && !PostTransformElements.Any())
             {

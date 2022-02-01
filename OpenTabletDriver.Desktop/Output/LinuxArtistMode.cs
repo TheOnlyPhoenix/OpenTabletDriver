@@ -1,21 +1,14 @@
-using System;
 using OpenTabletDriver.Attributes;
-using OpenTabletDriver.DependencyInjection;
 using OpenTabletDriver.Output;
 using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.Desktop.Output
 {
     [PluginName("Artist Mode"), SupportedPlatform(SystemPlatform.Linux)]
-    public class LinuxArtistMode : AbsoluteOutputMode, IPointerProvider<IAbsolutePointer>
+    public class LinuxArtistMode : AbsoluteOutputMode
     {
-        [Resolved]
-        public IPressureHandler VirtualTablet { get; set; }
-
-        public override IAbsolutePointer Pointer
+        public LinuxArtistMode(InputDevice tablet, IPressureHandler pressureHandler) : base(tablet, pressureHandler)
         {
-            set => throw new NotSupportedException();
-            get => (IAbsolutePointer)VirtualTablet;
         }
     }
 }

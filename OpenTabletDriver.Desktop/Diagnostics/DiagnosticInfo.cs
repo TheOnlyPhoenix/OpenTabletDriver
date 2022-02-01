@@ -12,10 +12,15 @@ namespace OpenTabletDriver.Desktop.Diagnostics
 {
     public class DiagnosticInfo
     {
-        public DiagnosticInfo(IEnumerable<LogMessage> log, IEnumerable<SerializedDeviceEndpoint> devices)
+        public DiagnosticInfo(
+            IEnumerable<LogMessage> log,
+            IEnumerable<SerializedDeviceEndpoint> devices,
+            EnvironmentDictionary environmentDictionary
+        )
         {
             ConsoleLog = log;
             Devices = devices;
+            EnvironmentVariables = environmentDictionary;
         }
 
         [JsonProperty("App Version")]
@@ -28,7 +33,7 @@ namespace OpenTabletDriver.Desktop.Diagnostics
         public OperatingSystem OperatingSystem { private set; get; } = Environment.OSVersion;
 
         [JsonProperty("Environment Variables")]
-        public IDictionary<string, string> EnvironmentVariables { private set; get; } = new EnvironmentDictionary();
+        public IDictionary<string, string> EnvironmentVariables { private set; get; }
 
         [JsonProperty("HID Devices")]
         public IEnumerable<SerializedDeviceEndpoint> Devices { private set; get; }

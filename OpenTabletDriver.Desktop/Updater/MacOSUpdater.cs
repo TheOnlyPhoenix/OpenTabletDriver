@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Tar;
 using Octokit;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 
 #pragma warning disable 618
 #nullable enable
@@ -15,11 +16,8 @@ namespace OpenTabletDriver.Desktop.Updater
 {
     public class MacOSUpdater : Updater
     {
-        public MacOSUpdater()
-            : this(AssemblyVersion,
-                AppDomain.CurrentDomain.BaseDirectory,
-                AppInfo.Current.AppDataDirectory,
-                AppInfo.Current.BackupDirectory)
+        public MacOSUpdater(IAppInfo appInfo)
+            : this(AssemblyVersion, AppDomain.CurrentDomain.BaseDirectory, appInfo.AppDataDirectory, appInfo.BackupDirectory)
         {
         }
 

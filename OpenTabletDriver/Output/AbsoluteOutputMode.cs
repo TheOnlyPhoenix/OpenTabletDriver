@@ -14,6 +14,12 @@ namespace OpenTabletDriver.Output
         private Vector2 min, max;
         private Area outputArea, inputArea;
 
+        public AbsoluteOutputMode(InputDevice tablet, IAbsolutePointer absolutePointer)
+            : base(tablet)
+        {
+            Pointer = absolutePointer;
+        }
+
         /// <summary>
         /// The area in which the tablet's input is transformed to.
         /// </summary>
@@ -43,7 +49,7 @@ namespace OpenTabletDriver.Output
         /// <summary>
         /// The class in which the final absolute positioned output is handled.
         /// </summary>
-        public abstract IAbsolutePointer Pointer { set; get; }
+        public IAbsolutePointer Pointer { get; }
 
         /// <summary>
         /// Whether to clip all tablet inputs to the assigned areas.

@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using OpenTabletDriver.Components;
+using OpenTabletDriver.Devices;
 using OpenTabletDriver.Interop;
-using DeviceIdentifier = OpenTabletDriver.Tablet.DeviceIdentifier;
-using ICompositeDeviceHub = OpenTabletDriver.Components.ICompositeDeviceHub;
-using IDeviceConfigurationProvider = OpenTabletDriver.Components.IDeviceConfigurationProvider;
-using IDeviceEndpoint = OpenTabletDriver.Devices.IDeviceEndpoint;
-using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
-using IReportParserProvider = OpenTabletDriver.Components.IReportParserProvider;
-using TabletConfiguration = OpenTabletDriver.Tablet.TabletConfiguration;
-using TabletReference = OpenTabletDriver.Tablet.TabletReference;
+using OpenTabletDriver.Tablet;
 
 #nullable enable
 
@@ -29,13 +24,12 @@ namespace OpenTabletDriver
         private readonly IReportParserProvider _reportParserProvider;
         private readonly IDeviceConfigurationProvider _deviceConfigurationProvider;
 
-        public event EventHandler<IEnumerable<TabletReference>>? TabletsChanged;
+        public event EventHandler<IEnumerable<InputDevice>>? InputDevicesChanged;
 
         public ICompositeDeviceHub CompositeDeviceHub { get; }
-        public InputDeviceTreeList InputDevices { get; } = new();
-        public IEnumerable<TabletReference> Tablets => InputDevices.Select(c => c.CreateReference());
+        public InputDeviceCollection InputDevices { get; } = new();
 
-        public Tablet.IReportParser<IDeviceReport> GetReportParser(DeviceIdentifier identifier)
+        public IReportParser<IDeviceReport> GetReportParser(DeviceIdentifier identifier)
         {
             return _reportParserProvider.GetReportParser(identifier.ReportParser);
         }
@@ -49,7 +43,7 @@ namespace OpenTabletDriver
             InputDevices.Clear();
             foreach (var config in _deviceConfigurationProvider.TabletConfigurations)
             {
-                if (Match(config) is InputDeviceTree tree)
+                if (Match(config) is InputDevice tree)
                 {
                     success = true;
                     InputDevices.Add(tree);
@@ -57,12 +51,12 @@ namespace OpenTabletDriver
                     tree.Disconnected += (sender, e) =>
                     {
                         InputDevices.Remove(tree);
-                        TabletsChanged?.Invoke(this, Tablets);
+                        InputDevicesChanged?.Invoke(this, InputDevices);
                     };
                 }
             }
 
-            TabletsChanged?.Invoke(this, Tablets);
+            InputDevicesChanged?.Invoke(this, InputDevices);
 
             if (!success)
             {
@@ -72,26 +66,26 @@ namespace OpenTabletDriver
             return success;
         }
 
-        protected virtual InputDeviceTree? Match(TabletConfiguration config)
+        protected virtual InputDevice? Match(TabletConfiguration config)
         {
             Log.Debug("Detect", $"Searching for tablet '{config.Name}'");
             try
             {
-                var devices = new List<InputDevice>();
-                if (MatchDevice(config, config.DigitizerIdentifiers) is InputDevice digitizer)
+                var devices = new List<InputDeviceEndpoint>();
+                if (MatchDevice(config, config.DigitizerIdentifiers) is InputDeviceEndpoint digitizer)
                 {
                     Log.Write("Detect", $"Found tablet '{config.Name}'");
                     devices.Add(digitizer);
 
                     if (config.AuxilaryDeviceIdentifiers.Any())
                     {
-                        if (MatchDevice(config, config.AuxilaryDeviceIdentifiers) is InputDevice aux)
+                        if (MatchDevice(config, config.AuxilaryDeviceIdentifiers) is InputDeviceEndpoint aux)
                             devices.Add(aux);
                         else
                             Log.Write("Detect", "Failed to find auxiliary device, express keys may be unavailable.", LogLevel.Warning);
                     }
 
-                    return new InputDeviceTree(config, devices);
+                    return new InputDevice(config, devices);
                 }
             }
             catch (IOException iex) when (iex.Message.Contains("Unable to open HID class device")
@@ -121,7 +115,7 @@ namespace OpenTabletDriver
             return null;
         }
 
-        private InputDevice? MatchDevice(TabletConfiguration config, IList<DeviceIdentifier> identifiers)
+        private InputDeviceEndpoint? MatchDevice(TabletConfiguration config, IList<DeviceIdentifier> identifiers)
         {
             foreach (var identifier in identifiers)
             {
@@ -134,7 +128,7 @@ namespace OpenTabletDriver
                 {
                     try
                     {
-                        return new InputDevice(this, dev, config, identifier);
+                        return new InputDeviceEndpoint(this, dev, config, identifier);
                     }
                     catch (Exception ex)
                     {
@@ -211,8 +205,8 @@ namespace OpenTabletDriver
 
         public void Dispose()
         {
-            foreach (InputDeviceTree tree in InputDevices.ToList())
-                foreach (InputDevice dev in tree.InputDevices.ToList())
+            foreach (InputDevice tree in InputDevices.ToList())
+                foreach (InputDeviceEndpoint dev in tree.Endpoints.ToList())
                     dev.Dispose();
         }
     }

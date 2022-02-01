@@ -12,6 +12,12 @@ namespace OpenTabletDriver.Tests
     public class TimerTests
     {
         private const double TOLERANCE = 0.075;
+        private readonly ITimer _timer;
+
+        public TimerTests(ITimer timer)
+        {
+            _timer = timer;
+        }
 
         [Theory]
         [InlineData(0.1f, 5f)]
@@ -25,19 +31,18 @@ namespace OpenTabletDriver.Tests
                 return;
 
             var expectedFires = (int)(interval * 1000 / interval * duration);
-            var timer = DesktopInterop.Timer;
             var list = new List<double>(expectedFires);
             var watch = new HPETDeltaStopwatch(true);
 
-            timer.Interval = interval;
-            timer.Elapsed += () =>
+            _timer.Interval = interval;
+            _timer.Elapsed += () =>
             {
                 list.Add(watch.Restart().TotalMilliseconds);
             };
 
-            timer.Start();
+            _timer.Start();
             Thread.Sleep(TimeSpan.FromSeconds(duration));
-            timer.Stop();
+            _timer.Stop();
 
             // Windows timers are not guaranteed to stop immediately
             Thread.Sleep(TimeSpan.FromMilliseconds(50));

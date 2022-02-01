@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
+using OpenTabletDriver.Interop;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
@@ -46,7 +47,7 @@ namespace OpenTabletDriver.Desktop.Reflection
             }
         }
 
-        protected Assembly LoadAssemblyFromFile(FileInfo file)
+        private Assembly LoadAssemblyFromFile(FileInfo file)
         {
             try
             {
@@ -82,7 +83,7 @@ namespace OpenTabletDriver.Desktop.Reflection
 
         private static string ToDllName(string dllName)
         {
-            return DesktopInterop.CurrentPlatform switch
+            return SystemInterop.CurrentPlatform switch
             {
                 SystemPlatform.Windows => $"{dllName}.dll",
                 SystemPlatform.Linux => $"lib{dllName}.so",

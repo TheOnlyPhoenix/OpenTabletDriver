@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using OpenTabletDriver.Desktop.Output;
 using OpenTabletDriver.Desktop.Reflection;
@@ -56,13 +57,13 @@ namespace OpenTabletDriver.Desktop.Profiles
             get => bindings;
         }
 
-        public static Profile GetDefaults(TabletReference tablet)
+        public static Profile GetDefaults(IServiceProvider serviceProvider, InputDevice tablet)
         {
             return new Profile
             {
                 Tablet = tablet.Properties.Name,
                 OutputMode = new PluginSettingStore(typeof(AbsoluteMode)),
-                AbsoluteModeSettings = AbsoluteModeSettings.GetDefaults(tablet.Properties.Specifications.Digitizer),
+                AbsoluteModeSettings = AbsoluteModeSettings.GetDefaults(serviceProvider, tablet.Properties.Specifications.Digitizer),
                 RelativeModeSettings = RelativeModeSettings.GetDefaults(),
                 BindingSettings = BindingSettings.GetDefaults(tablet.Properties.Specifications)
             };

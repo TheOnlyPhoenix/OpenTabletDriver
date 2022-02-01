@@ -1,5 +1,7 @@
 using System.Numerics;
 
+#nullable enable
+
 namespace OpenTabletDriver.Platform.Display
 {
     public interface IDisplay

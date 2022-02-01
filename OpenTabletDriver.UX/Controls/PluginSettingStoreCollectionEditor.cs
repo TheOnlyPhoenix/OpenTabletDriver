@@ -4,6 +4,7 @@ using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.UX.Controls.Generic.Reflection;
 

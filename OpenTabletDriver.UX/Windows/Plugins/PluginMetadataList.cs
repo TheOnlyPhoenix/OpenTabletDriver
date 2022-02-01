@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
+using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.UX.Controls.Generic;
 
