@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octokit;
+using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
+using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.Desktop.RPC;
 using OpenTabletDriver.Devices;
@@ -17,6 +19,8 @@ namespace OpenTabletDriver.Desktop.Contracts
         event EventHandler<LogMessage> Message;
         event EventHandler<DebugReportData> DeviceReport;
         event EventHandler<IEnumerable<InputDevice>>? TabletsChanged;
+
+        Task Initialize();
 
         Task WriteMessage(LogMessage message);
 
@@ -34,16 +38,25 @@ namespace OpenTabletDriver.Desktop.Contracts
         Task<Settings> GetSettings();
         Task ResetSettings();
 
-        Task<IAppInfo> GetApplicationInfo();
+        Task SetPreset(string name);
+        Task<IEnumerable<string>> GetPresets();
+        Task SavePreset(string name, Settings settings);
+
+        Task<AppInfo> GetApplicationInfo();
+        Task<DiagnosticInfo> GetDiagnostics();
 
         Task SetTabletDebug(bool isEnabled);
         Task<string> RequestDeviceString(int vendorID, int productID, int index);
 
         Task<IEnumerable<LogMessage>> GetCurrentLog();
 
+        Task<PluginSettings> GetDefaults(string path);
+
+        Task<TypeProxy> GetProxiedType(string typeName);
+        Task<IEnumerable<TypeProxy>> GetMatchingTypes(string typeName);
+
         Task<bool> HasUpdate();
         Task<Release> GetUpdateInfo();
         Task InstallUpdate();
-        void Initialize();
     }
 }

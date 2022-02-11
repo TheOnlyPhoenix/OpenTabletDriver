@@ -26,7 +26,7 @@ namespace OpenTabletDriver.Desktop.Binding.LinuxArtistMode
             "Pen Button 3"
         };
 
-        [Property("Button"), MemberValidated(nameof(ValidButtons))]
+        [Setting("Button"), MemberValidated(nameof(ValidButtons))]
         public string Button { set; get; }
 
         public void Press(IDeviceReport report)

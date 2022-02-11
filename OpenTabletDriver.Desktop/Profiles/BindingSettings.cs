@@ -9,10 +9,10 @@ namespace OpenTabletDriver.Desktop.Profiles
     public class BindingSettings : ViewModel
     {
         private float _tP, _eP;
-        private PluginSettingStore _tipButton, _eraserButton, _mouseScrollUp, _mouseScrollDown;
-        private PluginSettingStoreCollection _penButtons = new PluginSettingStoreCollection(),
-            _auxButtons = new PluginSettingStoreCollection(),
-            _mouseButtons = new PluginSettingStoreCollection();
+        private PluginSettings _tipButton, _eraserButton, _mouseScrollUp, _mouseScrollDown;
+        private PluginSettingsCollection _penButtons = new PluginSettingsCollection(),
+            _auxButtons = new PluginSettingsCollection(),
+            _mouseButtons = new PluginSettingsCollection();
 
         [JsonProperty("TipActivationThreshold")]
         public float TipActivationThreshold
@@ -22,7 +22,7 @@ namespace OpenTabletDriver.Desktop.Profiles
         }
 
         [JsonProperty("TipButton")]
-        public PluginSettingStore TipButton
+        public PluginSettings TipButton
         {
             set => RaiseAndSetIfChanged(ref _tipButton, value);
             get => _tipButton;
@@ -36,42 +36,42 @@ namespace OpenTabletDriver.Desktop.Profiles
         }
 
         [JsonProperty("EraserButton")]
-        public PluginSettingStore EraserButton
+        public PluginSettings EraserButton
         {
             set => RaiseAndSetIfChanged(ref _eraserButton, value);
             get => _eraserButton;
         }
 
         [JsonProperty("PenButtons")]
-        public PluginSettingStoreCollection PenButtons
+        public PluginSettingsCollection PenButtons
         {
             set => RaiseAndSetIfChanged(ref _penButtons, value);
             get => _penButtons;
         }
 
         [JsonProperty("AuxButtons")]
-        public PluginSettingStoreCollection AuxButtons
+        public PluginSettingsCollection AuxButtons
         {
             set => RaiseAndSetIfChanged(ref _auxButtons, value);
             get => _auxButtons;
         }
 
         [JsonProperty("MouseButtons")]
-        public PluginSettingStoreCollection MouseButtons
+        public PluginSettingsCollection MouseButtons
         {
             set => RaiseAndSetIfChanged(ref _mouseButtons, value);
             get => _mouseButtons;
         }
 
         [JsonProperty("MouseScrollUp")]
-        public PluginSettingStore MouseScrollUp
+        public PluginSettings MouseScrollUp
         {
             set => RaiseAndSetIfChanged(ref _mouseScrollUp, value);
             get => _mouseScrollUp;
         }
 
         [JsonProperty("MouseScrollDown")]
-        public PluginSettingStore MouseScrollDown
+        public PluginSettings MouseScrollDown
         {
             set => RaiseAndSetIfChanged(ref _mouseScrollDown, value);
             get => _mouseScrollDown;
@@ -81,16 +81,16 @@ namespace OpenTabletDriver.Desktop.Profiles
         {
             var bindingSettings = new BindingSettings
             {
-                TipButton = new PluginSettingStore(
+                TipButton = new PluginSettings(
                     typeof(MouseBinding),
                     new
                     {
                         Button = nameof(MouseButton.Left)
                     }
                 ),
-                PenButtons = new PluginSettingStoreCollection(),
-                AuxButtons = new PluginSettingStoreCollection(),
-                MouseButtons = new PluginSettingStoreCollection()
+                PenButtons = new PluginSettingsCollection(),
+                AuxButtons = new PluginSettingsCollection(),
+                MouseButtons = new PluginSettingsCollection()
             };
             bindingSettings.MatchSpecifications(tabletSpecifications);
             return bindingSettings;

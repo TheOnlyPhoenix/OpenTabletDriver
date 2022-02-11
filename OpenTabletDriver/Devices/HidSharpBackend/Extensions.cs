@@ -1,10 +1,10 @@
 using System;
 
-namespace OpenTabletDriver
+namespace OpenTabletDriver.Devices.HidSharpBackend
 {
     internal static class Extensions
     {
-        public static bool TryGet<TSource, TValue>(
+        private static bool TryGet<TSource, TValue>(
             this TSource source,
             Func<TSource, TValue> predicate,
             out TValue value

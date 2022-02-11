@@ -20,8 +20,8 @@ namespace OpenTabletDriver.UX.Controls
 
         private StackLayout layout;
 
-        private PluginSettingStore store;
-        public PluginSettingStore Store
+        private PluginSettings store;
+        public PluginSettings Store
         {
             set
             {
@@ -47,11 +47,11 @@ namespace OpenTabletDriver.UX.Controls
             }
         }
 
-        public BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettingStore> StoreBinding
+        public BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings> StoreBinding
         {
             get
             {
-                return new BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettingStore>(
+                return new BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings>(
                     this,
                     c => c.Store,
                     (c, v) => c.Store = v,
@@ -61,12 +61,12 @@ namespace OpenTabletDriver.UX.Controls
             }
         }
 
-        protected virtual IEnumerable<Control> GetHeaderControlsForStore(PluginSettingStore store)
+        protected virtual IEnumerable<Control> GetHeaderControlsForStore(PluginSettings store)
         {
             return Array.Empty<Control>();
         }
 
-        private IEnumerable<Control> GetControlsForStore(PluginSettingStore store)
+        private IEnumerable<Control> GetControlsForStore(PluginSettings store)
         {
             if (store != null)
             {
@@ -79,11 +79,11 @@ namespace OpenTabletDriver.UX.Controls
             }
         }
 
-        private IEnumerable<Control> GetControlsForType(PluginSettingStore store, Type type)
+        private IEnumerable<Control> GetControlsForType(PluginSettings store, Type type)
         {
             var properties = from property in type.GetProperties()
                              let attrs = property.GetCustomAttributes(true)
-                             where attrs.Any(a => a is PropertyAttribute)
+                             where attrs.Any(a => a is SettingAttribute)
                              select property;
 
             foreach (var property in properties)

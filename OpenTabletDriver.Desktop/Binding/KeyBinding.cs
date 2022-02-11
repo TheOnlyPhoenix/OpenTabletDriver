@@ -15,13 +15,15 @@ namespace OpenTabletDriver.Desktop.Binding
         private readonly InputDevice _device;
         private readonly IVirtualKeyboard _keyboard;
 
-        public KeyBinding(InputDevice device, IVirtualKeyboard keyboard)
+        public KeyBinding(InputDevice device, IVirtualKeyboard keyboard, ISettingsProvider settingsProvider)
         {
             _device = device;
             _keyboard = keyboard;
+
+            settingsProvider.Inject(this);
         }
 
-        [Property("Key"), MemberValidated(nameof(GetValidKeys))]
+        [Setting("Key"), MemberValidated(nameof(GetValidKeys))]
         public string Key { set; get; }
 
         public void Press(IDeviceReport report)

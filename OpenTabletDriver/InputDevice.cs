@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 using OpenTabletDriver.Output;
 using OpenTabletDriver.Tablet;
 
@@ -50,6 +51,7 @@ namespace OpenTabletDriver
         /// <summary>
         /// The active output mode at the end of the data pipeline for all data to be processed.
         /// </summary>
+        [JsonIgnore]
         public IOutputMode? OutputMode { set; get; }
 
         private void HandleReport(object? sender, IDeviceReport report)

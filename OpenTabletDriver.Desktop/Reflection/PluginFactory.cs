@@ -37,10 +37,22 @@ namespace OpenTabletDriver.Desktop.Reflection
             _pluginTypes = internalTypes.Concat(_libraryTypes).ToImmutableArray();
         }
 
-        public T? Construct<T>(string name, params object[] args) where T : class
+        public T? Construct<T>(PluginSettings? settings, params object[] args) where T : class
         {
-            // TODO: handle plugin settings
-            var type = GetPluginType(name);
+            if (settings == null)
+                return null;
+
+            var path = settings.Path!;
+
+            var settingsProvider = new PluginSettingsProvider(settings);
+            var newArgs = args.Append(settingsProvider).ToArray();
+
+            return Construct<T>(path, newArgs);
+        }
+
+        public T? Construct<T>(string path, params object[] args) where T : class
+        {
+            var type = GetPluginType(path);
             if (type != null)
             {
                 try
@@ -54,21 +66,38 @@ namespace OpenTabletDriver.Desktop.Reflection
                 }
                 catch (Exception e)
                 {
-                    Log.Write("Plugin", $"Unable to construct object '{name}'", LogLevel.Error);
+                    Log.Write("Plugin", $"Unable to construct object '{path}'", LogLevel.Error);
                     Log.Exception(e);
                 }
             }
             else
             {
-                Log.Write("Plugin", $"No constructor found for '{name}'", LogLevel.Error);
+                Log.Write("Plugin", $"No constructor found for '{path}'", LogLevel.Error);
             }
 
             return null;
         }
 
-        public TypeInfo? GetPluginType(string name)
+        public TypeInfo? GetPluginType(string path)
         {
-            return _pluginTypes.FirstOrDefault(t => t.FullName == name);
+            return _pluginTypes.FirstOrDefault(t => t.FullName == path);
+        }
+
+        public IEnumerable<TypeInfo> GetMatchingTypes(Type baseType)
+        {
+            return from type in _pluginTypes
+                where type.IsAssignableTo(baseType)
+                where !type.IsAbstract
+                where IsPlatformSupported(type)
+                where !IsPluginIgnored(type)
+                select type;
+        }
+
+        public string? GetFriendlyName(string path)
+        {
+            var type = GetPluginType(path);
+            var name = type?.GetCustomAttribute<PluginNameAttribute>()?.Name;
+            return name;
         }
 
         private bool IsPluginType(Type type)

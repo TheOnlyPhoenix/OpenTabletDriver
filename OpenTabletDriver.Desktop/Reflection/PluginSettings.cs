@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
@@ -9,45 +10,37 @@ using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
-    public class PluginSettingStore
+    public class PluginSettings
     {
-        public PluginSettingStore(Type type, bool enable = true)
+        public PluginSettings(Type type, bool enable = true)
         {
             Path = type.FullName!;
             Settings = GetSettingsForType(type);
             Enable = enable;
         }
 
-        public PluginSettingStore(Type type, object settings, bool enable = true)
+        public PluginSettings(Type type, IEnumerable<PluginSetting> settings, bool enable = true)
+        {
+            Path = type.FullName!;
+            Settings = new ObservableCollection<PluginSetting>(settings);
+            Enable = enable;
+        }
+
+        public PluginSettings(Type type, object settings, bool enable = true)
         {
             Path = type.FullName!;
             Settings = GetSettingsFromObject(settings);
             Enable = enable;
         }
 
-        public PluginSettingStore(object? source, bool enable = true)
-        {
-            if (source != null)
-            {
-                var sourceType = source.GetType();
-                Path = sourceType.FullName;
-                Settings = GetSettingsForType(sourceType, source);
-                Enable = enable;
-            }
-            else
-            {
-                throw new NullReferenceException("Creating a plugin setting store from a null object is not allowed.");
-            }
-        }
-
         [JsonConstructor]
-        private PluginSettingStore()
+        private PluginSettings()
         {
         }
 
-        public string? Path { set; get; }
+        public string Path { set; get; } = string.Empty;
 
-        public ObservableCollection<PluginSetting>? Settings { get; }
+        public ObservableCollection<PluginSetting> Settings { get; } = new ObservableCollection<PluginSetting>();
 
         public bool Enable { set; get; }
 
@@ -67,7 +60,7 @@ namespace OpenTabletDriver.Desktop.Reflection
             }
             get
             {
-                var result = Settings!.FirstOrDefault(s => s.Property == propertyName);
+                var result = Settings?.FirstOrDefault(s => s.Property == propertyName);
                 if (result == null)
                 {
                     var newSetting = new PluginSetting(propertyName, null);
@@ -78,10 +71,17 @@ namespace OpenTabletDriver.Desktop.Reflection
             }
         }
 
+        public override string ToString()
+        {
+            var settings = Settings.Select(s => s.ToString());
+            var formattedSettings = Settings.Any() ? " [" + string.Join("],[", settings) + "]" : string.Empty;
+            return Path + formattedSettings;
+        }
+
         private static ObservableCollection<PluginSetting> GetSettingsForType(Type targetType, object? source = null)
         {
             var settings = from property in targetType.GetProperties()
-                where property.GetCustomAttribute<PropertyAttribute>() != null
+                where property.GetCustomAttribute<SettingAttribute>() != null
                 select new PluginSetting(property, source == null ? null : property.GetValue(source));
 
             return new ObservableCollection<PluginSetting>(settings);
@@ -90,9 +90,15 @@ namespace OpenTabletDriver.Desktop.Reflection
         private static ObservableCollection<PluginSetting> GetSettingsFromObject(object obj)
         {
             var type = obj.GetType();
-            var properties = type.GetProperties();
+            if (type.IsAssignableTo(typeof(PluginSettings)))
+            {
+                throw new ArgumentException(
+                    $"Attempted to generate settings from a {nameof(PluginSettings)}.",
+                    nameof(obj)
+                );
+            }
 
-            var settings = from property in properties
+            var settings = from property in type.GetProperties()
                 let name = property.Name
                 let value = property.GetValue(obj)
                 select new PluginSetting(name, value);

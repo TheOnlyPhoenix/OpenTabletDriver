@@ -27,9 +27,9 @@ namespace OpenTabletDriver.UX.Controls
             { typeof(TimeSpan), GetMaskedTextBox<TimeSpan> }
         };
 
-        public static Control GetControlForProperty(PluginSettingStore store, PropertyInfo property)
+        public static Control GetControlForProperty(PluginSettings store, PropertyInfo property)
         {
-            var attr = property.GetCustomAttribute<PropertyAttribute>();
+            var attr = property.GetCustomAttribute<SettingAttribute>();
             PluginSetting setting = store[property];
 
             if (setting == null)
@@ -83,7 +83,7 @@ namespace OpenTabletDriver.UX.Controls
             else if (property.PropertyType == typeof(bool))
             {
                 string description = property.Name;
-                if (property.GetCustomAttribute<BooleanPropertyAttribute>() is BooleanPropertyAttribute attribute)
+                if (property.GetCustomAttribute<SettingDescriptionAttribute>() is SettingDescriptionAttribute attribute)
                     description = attribute.Description;
 
                 var checkbox = new CheckBox
@@ -102,7 +102,7 @@ namespace OpenTabletDriver.UX.Controls
             {
                 var tb = GetMaskedTextBox<FloatNumberBox, float>(property, binding);
 
-                if (property.GetCustomAttribute<SliderPropertyAttribute>() is SliderPropertyAttribute sliderAttr)
+                if (property.GetCustomAttribute<SliderSettingAttribute>() is SliderSettingAttribute sliderAttr)
                 {
                     // TODO: replace with slider when possible (https://github.com/picoe/Eto/issues/1772)
                     tb.ToolTip = $"Minimum: {sliderAttr.Min}, Maximum: {sliderAttr.Max}";

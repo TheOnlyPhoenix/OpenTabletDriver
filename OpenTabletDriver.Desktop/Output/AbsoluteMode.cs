@@ -7,8 +7,13 @@ namespace OpenTabletDriver.Desktop.Output
     [PluginName("Absolute Mode")]
     public class AbsoluteMode : AbsoluteOutputMode, IPointerProvider<IAbsolutePointer>
     {
-        public AbsoluteMode(InputDevice tablet, IAbsolutePointer absolutePointer) : base(tablet, absolutePointer)
+        public AbsoluteMode(
+            InputDevice tablet,
+            IAbsolutePointer absolutePointer,
+            ISettingsProvider settingsProvider
+        ) : base(tablet, absolutePointer)
         {
+            settingsProvider.Inject(this);
         }
     }
 }

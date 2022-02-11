@@ -54,28 +54,9 @@ namespace OpenTabletDriver.Desktop.Reflection
             return Value == null ? default : Value.Type != JTokenType.Null ? Value.ToObject(asType) : default;
         }
 
-        public T GetValueOrDefault<T>(PropertyInfo property)
+        public override string ToString()
         {
-            if (this.HasValue)
-            {
-                return GetValue<T>();
-            }
-            else
-            {
-                if (property.GetCustomAttribute<DefaultPropertyValueAttribute>() is DefaultPropertyValueAttribute defaults)
-                {
-                    try
-                    {
-                        SetValue(defaults.Value);
-                        return (T)defaults.Value;
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Write(nameof(PluginSetting), $"Failed to get custom default of {property.Name}: {e.Message}");
-                    }
-                }
-                return default;
-            }
+            return Property + ": " + Value;
         }
     }
 }

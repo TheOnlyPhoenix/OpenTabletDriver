@@ -52,8 +52,8 @@ namespace OpenTabletDriver.UX.Controls
 
         public event EventHandler<EventArgs> StoreChanged;
 
-        private PluginSettingStore store;
-        public PluginSettingStore Store
+        private PluginSettings store;
+        public PluginSettings Store
         {
             set
             {
@@ -63,11 +63,11 @@ namespace OpenTabletDriver.UX.Controls
             get => this.store;
         }
 
-        public BindableBinding<BindingDisplay, PluginSettingStore> StoreBinding
+        public BindableBinding<BindingDisplay, PluginSettings> StoreBinding
         {
             get
             {
-                return new BindableBinding<BindingDisplay, PluginSettingStore>(
+                return new BindableBinding<BindingDisplay, PluginSettings>(
                     this,
                     c => c.Store,
                     (c, v) => c.Store = v,

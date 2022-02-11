@@ -16,15 +16,21 @@ namespace OpenTabletDriver.Desktop.Conversion
 
         private const float XP_PEN_AREA_CONSTANT = 3.937f;
 
-        public Area Convert(InputDevice tablet, double w, double h, double x, double y)
+        public AngledArea Convert(InputDevice tablet, double w, double h, double x, double y)
         {
             double conversionFactor = XP_PEN_AREA_CONSTANT;
-            var width = w / conversionFactor;
-            var height = h / conversionFactor;
-            var offsetX = (width / 2) + (x / conversionFactor);
-            var offsetY = (height / 2) + (y / conversionFactor);
+            var width = (float) (w / conversionFactor);
+            var height = (float) (h / conversionFactor);
+            var offsetX = (float) (width / 2 + x / conversionFactor);
+            var offsetY = (float) (height / 2 + y / conversionFactor);
 
-            return new Area((float)width, (float)height, new Vector2((float)offsetX, (float)offsetY), 0f);
+            return new AngledArea
+            {
+                Width = width,
+                Height = height,
+                Position = new Vector2(offsetX, offsetY),
+                Rotation = 0
+            };
         }
     }
 }

@@ -8,9 +8,9 @@ using OpenTabletDriver.Platform.Pointer;
 
 namespace OpenTabletDriver.UX.Windows.Bindings
 {
-    public class BindingEditorDialog : Dialog<PluginSettingStore>
+    public class BindingEditorDialog : Dialog<PluginSettings>
     {
-        public BindingEditorDialog(PluginSettingStore currentBinding = null)
+        public BindingEditorDialog(PluginSettings currentBinding = null)
         {
             Title = "Binding Editor";
             Result = currentBinding;
@@ -99,8 +99,8 @@ namespace OpenTabletDriver.UX.Windows.Bindings
 
             private const string TOOLTIP = "Press a key, combination of keys, or a mouse button.";
 
-            private PluginSettingStore store;
-            public PluginSettingStore Store
+            private PluginSettings store;
+            public PluginSettings Store
             {
                 set
                 {
@@ -117,7 +117,7 @@ namespace OpenTabletDriver.UX.Windows.Bindings
 
             protected override void OnKeyDown(KeyEventArgs e)
             {
-                PluginSettingStore store;
+                PluginSettings store;
                 Keys keys = e.KeyData;
 
                 if (keys == Keys.None)
@@ -134,12 +134,12 @@ namespace OpenTabletDriver.UX.Windows.Bindings
 
                 if ((keys & Keys.ModifierMask) == 0)
                 {
-                    store = new PluginSettingStore(typeof(KeyBinding));
+                    store = new PluginSettings(typeof(KeyBinding));
                     store[nameof(KeyBinding.Key)].SetValue(keys.ToString());
                 }
                 else
                 {
-                    store = new PluginSettingStore(typeof(MultiKeyBinding));
+                    store = new PluginSettings(typeof(MultiKeyBinding));
                     store[nameof(MultiKeyBinding.Keys)].SetValue(CreateShortcutString(keys));
                 }
                 this.Store = store;
@@ -147,7 +147,7 @@ namespace OpenTabletDriver.UX.Windows.Bindings
 
             protected override void OnMouseDown(MouseEventArgs e)
             {
-                var store = new PluginSettingStore(typeof(MouseBinding));
+                var store = new PluginSettings(typeof(MouseBinding));
                 store[nameof(MouseBinding.Button)].SetValue(ParseMouseButton(e));
                 this.Store = store;
             }

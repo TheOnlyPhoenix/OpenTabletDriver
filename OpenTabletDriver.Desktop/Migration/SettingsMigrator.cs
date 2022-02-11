@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTabletDriver.Desktop.Binding;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Output;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
-using OpenTabletDriver.Platform.Pointer;
+using OpenTabletDriver.Output;
+
+#nullable enable
 
 namespace OpenTabletDriver.Desktop.Migration
 {
-    using V5 = LegacySettings.V5;
+    using V6 = LegacySettings.V6;
 
     public class SettingsMigrator
     {
@@ -45,43 +47,86 @@ namespace OpenTabletDriver.Desktop.Migration
             }
         }
 
-        private Settings Migrate(FileInfo file)
+        private Settings? Migrate(FileInfo file)
         {
-            var v5 = Serialization.Deserialize<V5::Settings>(file);
-            return v5.IsValid() ? Convert(v5) : null;
+            var v6 = Serialization.Deserialize<V6::Settings>(file);
+            return v6.IsValid() ? Convert(v6) : null;
         }
 
-        private Settings Convert(V5::Settings old)
+        private Settings? Convert(V6::Settings oldSettings)
         {
-            var settings = Settings.GetDefaults(_serviceProvider);
-
-            if (settings.Profiles.FirstOrDefault() is Profile profile)
+            var settings = new Settings
             {
-                profile.OutputMode = SafeMigrate(old.OutputMode, new PluginSettingStore(typeof(AbsoluteMode)));
+                Tools = new PluginSettingsCollection(oldSettings.Tools)
+            };
 
-                profile.AbsoluteModeSettings.Display.Area = old.GetDisplayArea();
-                profile.AbsoluteModeSettings.Tablet.Area = old.GetTabletArea();
-                profile.AbsoluteModeSettings.EnableAreaLimiting = old.EnableAreaLimiting;
-                profile.AbsoluteModeSettings.EnableClipping = old.EnableClipping;
-                profile.AbsoluteModeSettings.LockAspectRatio = old.LockAspectRatio;
-
-                profile.RelativeModeSettings.XSensitivity = old.XSensitivity;
-                profile.RelativeModeSettings.YSensitivity = old.YSensitivity;
-                profile.RelativeModeSettings.RelativeRotation = old.RelativeRotation;
-                profile.RelativeModeSettings.ResetTime = old.ResetTime;
-
-                profile.Filters = SafeMigrateCollection(new PluginSettingStoreCollection(old.Filters.Concat(old.Interpolators)));
-
-                profile.BindingSettings.TipActivationThreshold = old.TipActivationPressure;
-                profile.BindingSettings.TipButton = SafeMigrate(old.TipButton, new PluginSettingStore(typeof(MouseBinding), new { Button = nameof(MouseButton.Left) }));
-                profile.BindingSettings.PenButtons = SafeMigrateCollection(old.PenButtons);
-                profile.BindingSettings.AuxButtons = SafeMigrateCollection(old.AuxButtons);
+            foreach (var oldProfile in oldSettings.Profiles)
+            {
+                var newProfile = new Profile
+                {
+                    Tablet = oldProfile.Tablet,
+                    Filters = oldProfile.Filters,
+                    BindingSettings = oldProfile.BindingSettings,
+                    OutputMode = MigrateOutputModeSettings(oldSettings, oldProfile)
+                };
+                settings.Profiles.Add(newProfile);
             }
 
-            settings.LockUsableAreaDisplay = old.LockUsableAreaDisplay;
-            settings.LockUsableAreaTablet = old.LockUsableAreaTablet;
+            if (settings.Profiles.Any() && settings.Profiles.All(p => !string.IsNullOrWhiteSpace(p.Tablet)))
+                return settings;
 
-            return settings;
+            return null;
+        }
+
+        private PluginSettings? MigrateOutputModeSettings(V6::Settings oldSettings, V6::Profile oldProfile)
+        {
+            var pluginFactory =  _serviceProvider.GetRequiredService<IPluginFactory>();
+
+            var oldSetting = oldProfile.OutputMode;
+            var type = pluginFactory.GetPluginType(oldSetting.Path);
+            if (type == null)
+                return null;
+
+            bool isAbsolute = type.IsAssignableTo(typeof(AbsoluteOutputMode));
+            bool isRelative = type.IsAssignableTo(typeof(RelativeOutputMode));
+
+            if (isAbsolute)
+            {
+                var absSettings = oldProfile.AbsoluteModeSettings;
+                return new PluginSettings(type, new
+                {
+                    Input = new AngledArea
+                    {
+                        Width = absSettings.Tablet.Width,
+                        Height = absSettings.Tablet.Height,
+                        Position = new Vector2(absSettings.Tablet.X, absSettings.Tablet.Y),
+                        Rotation = absSettings.Tablet.Rotation
+                    },
+                    Output = new Area
+                    {
+                        Width = absSettings.Display.Width,
+                        Height = absSettings.Display.Height,
+                        Position = new Vector2(absSettings.Display.X, absSettings.Display.Y)
+                    },
+                    LockAspectRatio = absSettings.LockAspectRatio,
+                    AreaClipping = absSettings.EnableClipping,
+                    AreaLimiting = absSettings.EnableAreaLimiting,
+                    AreaBounds = oldSettings.LockUsableAreaDisplay || oldSettings.LockUsableAreaTablet
+                });
+            }
+
+            if (isRelative)
+            {
+                var relSettings = oldProfile.RelativeModeSettings;
+                return new PluginSettings(type, new
+                {
+                    Sensitivity = new Vector2(relSettings.XSensitivity, relSettings.YSensitivity),
+                    Rotation = relSettings.RelativeRotation,
+                    ResetDelay = relSettings.ResetTime
+                });
+            }
+
+            return null;
         }
 
         private static readonly Dictionary<Regex, string> NamespaceMigrationDict = new Dictionary<Regex, string>
@@ -97,22 +142,22 @@ namespace OpenTabletDriver.Desktop.Migration
             { new Regex(@"OpenTabletDriver\.Desktop\.Binding\.MouseBinding$"), ("^Property$", "Button") }
         };
 
-        public PluginSettingStore SafeMigrate(PluginSettingStore store, PluginSettingStore defaultStore = null)
+        private PluginSettings? SafeMigrate(PluginSettings? store, PluginSettings? defaultStore = null)
         {
             store = SafeMigrateNamespace(store, defaultStore);
             store = MigrateProperty(store);
             return store;
         }
 
-        public static void MigrateNamespace(PluginSettingStore store)
+        private static void MigrateNamespace(PluginSettings? store)
         {
             if (store != null)
             {
-                store.Path = MigrateNamespace(store.Path);
+                store.Path = MigrateNamespace(store.Path) ?? string.Empty;
             }
         }
 
-        public static string MigrateNamespace(string input)
+        private static string? MigrateNamespace(string? input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return input;
@@ -130,18 +175,18 @@ namespace OpenTabletDriver.Desktop.Migration
             return input;
         }
 
-        public static PluginSettingStore MigrateProperty(PluginSettingStore store)
+        private static PluginSettings? MigrateProperty(PluginSettings? store)
         {
             if (store != null)
             {
                 foreach (var pair in PropertyMigrationDict)
                 {
                     var type = pair.Key;
-                    (var property, var replacementProperty) = pair.Value;
+                    var (property, replacementProperty) = pair.Value;
 
-                    if (type.IsMatch(store.Path))
+                    if (type.IsMatch(store.Path ?? string.Empty))
                     {
-                        foreach (var setting in store.Settings)
+                        foreach (var setting in store.Settings!)
                         {
                             if (Regex.IsMatch(setting.Property, property))
                             {
@@ -155,28 +200,31 @@ namespace OpenTabletDriver.Desktop.Migration
             return store;
         }
 
-        private PluginSettingStore SafeMigrateNamespace(PluginSettingStore store, PluginSettingStore defaultStore)
+        private PluginSettings? SafeMigrateNamespace(PluginSettings? store, PluginSettings? defaultStore)
         {
             MigrateNamespace(store);
             if (store != null && StoreFromTypePath(store.Path) == null && defaultStore != null)
             {
-                Log.Write("Settings", $"Invalid plugin path '{store.Path ?? "null"}' has been changed to '{defaultStore.Path}'", LogLevel.Warning);
+                Log.Write("Settings", $"Invalid plugin path '{store.Path}' has been changed to '{defaultStore.Path}'", LogLevel.Warning);
                 store = defaultStore;
             }
             return store;
         }
 
-        private PluginSettingStore StoreFromTypePath(string path)
+        private PluginSettings? StoreFromTypePath(string? path)
         {
             var pluginFactory = _serviceProvider.GetRequiredService<IPluginFactory>();
-            var type = pluginFactory.GetPluginType(path);
-            return new PluginSettingStore(type);
+            var type = pluginFactory.GetPluginType(path ?? string.Empty);
+            if (type == null)
+                return null;
+
+            return new PluginSettings(type);
         }
 
-        private PluginSettingStoreCollection SafeMigrateCollection(PluginSettingStoreCollection collection)
+        private PluginSettingsCollection SafeMigrateCollection(PluginSettingsCollection? collection)
         {
             if (collection == null)
-                collection = new PluginSettingStoreCollection();
+                collection = new PluginSettingsCollection();
 
             for (int i = 0; i < collection.Count; i++)
                 collection[i] = SafeMigrate(collection[i]);

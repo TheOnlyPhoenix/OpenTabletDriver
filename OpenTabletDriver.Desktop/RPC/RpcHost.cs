@@ -8,14 +8,14 @@ namespace OpenTabletDriver.Desktop.RPC
 {
     public class RpcHost<T> where T : class
     {
-        private JsonRpc rpc;
-        private readonly string pipeName;
+        private JsonRpc _rpc;
+        private readonly string _pipeName;
 
         public event EventHandler<bool> ConnectionStateChanged;
 
         public RpcHost(string pipeName)
         {
-            this.pipeName = pipeName;
+            _pipeName = pipeName;
         }
 
         public async Task Run(T host)
@@ -29,8 +29,8 @@ namespace OpenTabletDriver.Desktop.RPC
                     try
                     {
                         ConnectionStateChanged?.Invoke(this, true);
-                        this.rpc = JsonRpc.Attach(stream, host);
-                        await this.rpc.Completion;
+                        _rpc = JsonRpc.Attach(stream, host);
+                        await _rpc.Completion;
                     }
                     catch (ObjectDisposedException)
                     {
@@ -43,7 +43,7 @@ namespace OpenTabletDriver.Desktop.RPC
                         Log.Exception(ex);
                     }
                     ConnectionStateChanged?.Invoke(this, false);
-                    this.rpc.Dispose();
+                    _rpc.Dispose();
                     await stream.DisposeAsync();
                 });
             }
@@ -52,7 +52,7 @@ namespace OpenTabletDriver.Desktop.RPC
         private NamedPipeServerStream CreateStream()
         {
             return new NamedPipeServerStream(
-                this.pipeName,
+                _pipeName,
                 PipeDirection.InOut,
                 NamedPipeServerStream.MaxAllowedServerInstances,
                 PipeTransmissionMode.Byte,

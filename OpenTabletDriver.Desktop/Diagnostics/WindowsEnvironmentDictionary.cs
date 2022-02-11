@@ -1,16 +1,17 @@
-namespace OpenTabletDriver.Desktop.Diagnostics;
-
-public sealed class WindowsEnvironmentDictionary : EnvironmentDictionary
+namespace OpenTabletDriver.Desktop.Diagnostics
 {
-    private static readonly string[] EnvironmentVariables = new[]
+    public sealed class WindowsEnvironmentDictionary : EnvironmentDictionary
     {
-        "USER",
-        "TEMP",
-        "TMP",
-        "TMPDIR"
-    };
+        private static readonly string[] EnvironmentVariables = new[]
+        {
+            "USER",
+            "TEMP",
+            "TMP",
+            "TMPDIR"
+        };
 
-    public WindowsEnvironmentDictionary() : base(EnvironmentVariables)
-    {
+        public WindowsEnvironmentDictionary() : base(EnvironmentVariables)
+        {
+        }
     }
 }

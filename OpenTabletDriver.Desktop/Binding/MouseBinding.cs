@@ -13,15 +13,17 @@ namespace OpenTabletDriver.Desktop.Binding
         private readonly InputDevice _device;
         private readonly IMouseButtonHandler _pointer;
 
-        public MouseBinding(InputDevice device, IMouseButtonHandler pointer)
+        public MouseBinding(InputDevice device, IMouseButtonHandler pointer, ISettingsProvider settingsProvider)
         {
             _device = device;
             _pointer = pointer;
+
+            settingsProvider.Inject(this);
         }
 
         private const string PLUGIN_NAME = "Mouse Button Binding";
 
-        [Property("Button"), MemberValidated(nameof(ValidButtons))]
+        [Setting("Button"), MemberValidated(nameof(ValidButtons))]
         public string Button { set; get; }
 
         public void Press(IDeviceReport report)

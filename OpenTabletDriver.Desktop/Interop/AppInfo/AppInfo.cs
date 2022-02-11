@@ -4,65 +4,65 @@ using System.Linq;
 
 namespace OpenTabletDriver.Desktop.Interop.AppInfo
 {
-    public abstract class AppInfo : IAppInfo
+    public class AppInfo : IAppInfo
     {
-        private string configurationDirectory,
-            settingsFile,
-            pluginDirectory,
-            presetDirectory,
-            temporaryDirectory,
-            cacheDirectory,
-            backupDirectory,
-            trashDirectory;
+        private string _configurationDirectory,
+            _settingsFile,
+            _pluginDirectory,
+            _presetDirectory,
+            _temporaryDirectory,
+            _cacheDirectory,
+            _backupDirectory,
+            _trashDirectory;
 
         public string AppDataDirectory { set; get; }
 
         public string ConfigurationDirectory
         {
-            set => this.configurationDirectory = value;
-            get => this.configurationDirectory ?? GetDefaultConfigurationDirectory();
+            set => _configurationDirectory = value;
+            get => _configurationDirectory ?? GetDefaultConfigurationDirectory();
         }
 
         public string SettingsFile
         {
-            set => this.settingsFile = value;
-            get => this.settingsFile ?? GetDefaultSettingsFile();
+            set => _settingsFile = value;
+            get => _settingsFile ?? GetDefaultSettingsFile();
         }
 
         public string PluginDirectory
         {
-            set => this.pluginDirectory = value;
-            get => this.pluginDirectory ?? GetDefaultPluginDirectory();
+            set => _pluginDirectory = value;
+            get => _pluginDirectory ?? GetDefaultPluginDirectory();
         }
 
         public string PresetDirectory
         {
-            set => this.presetDirectory = value;
-            get => this.presetDirectory ?? GetDefaultPresetDirectory();
+            set => _presetDirectory = value;
+            get => _presetDirectory ?? GetDefaultPresetDirectory();
         }
 
         public string TemporaryDirectory
         {
-            set => this.temporaryDirectory = value;
-            get => this.temporaryDirectory ?? GetDefaultTemporaryDirectory();
+            set => _temporaryDirectory = value;
+            get => _temporaryDirectory ?? GetDefaultTemporaryDirectory();
         }
 
         public string CacheDirectory
         {
-            set => this.cacheDirectory = value;
-            get => this.cacheDirectory ?? GetDefaultCacheDirectory();
+            set => _cacheDirectory = value;
+            get => _cacheDirectory ?? GetDefaultCacheDirectory();
         }
 
         public string BackupDirectory
         {
-            set => this.backupDirectory = value;
-            get => this.backupDirectory ?? GetDefaultBackupDirectory();
+            set => _backupDirectory = value;
+            get => _backupDirectory ?? GetDefaultBackupDirectory();
         }
 
         public string TrashDirectory
         {
-            set => this.trashDirectory = value;
-            get => this.trashDirectory ?? GetDefaultTrashDirectory();
+            set => _trashDirectory = value;
+            get => _trashDirectory ?? GetDefaultTrashDirectory();
         }
 
         public static string ProgramDirectory => AppContext.BaseDirectory;

@@ -13,12 +13,13 @@ namespace OpenTabletDriver.Attributes
         public MemberValidatedAttribute(string memberName, bool requiresInstance = false)
         {
             MemberName = memberName;
+            RequiresInstance = requiresInstance;
         }
 
         public string MemberName { get; }
         public bool RequiresInstance { get; }
 
-        public T GetValue<T>(IServiceProvider serviceProvider, PropertyInfo property)
+        public T? GetValue<T>(IServiceProvider serviceProvider, PropertyInfo property)
         {
             var sourceType = property.ReflectedType!;
             var member = sourceType.GetMember(MemberName).First();
@@ -33,7 +34,7 @@ namespace OpenTabletDriver.Attributes
                     MemberTypes.Method => sourceType.GetMethod(MemberName)!.Invoke(instance, new [] { serviceProvider }),
                     _ => default
                 };
-                return (T)obj!;
+                return (T?)obj;
             }
             catch (Exception e)
             {

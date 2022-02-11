@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Output
@@ -34,7 +35,7 @@ namespace OpenTabletDriver.Output
 
         public abstract PipelinePosition Position { get; }
 
-        [Property("Frequency"), Unit("hz"), DefaultPropertyValue(1000.0f)]
+        [Setting("Frequency"), Unit("hz"), DefaultValue(1000.0f)]
         public float Frequency
         {
             set

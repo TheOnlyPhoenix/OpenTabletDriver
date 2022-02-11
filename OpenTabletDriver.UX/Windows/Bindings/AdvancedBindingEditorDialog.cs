@@ -7,9 +7,9 @@ using OpenTabletDriver.UX.Controls.Generic.Reflection;
 
 namespace OpenTabletDriver.UX.Windows.Bindings
 {
-    public class AdvancedBindingEditorDialog : Dialog<PluginSettingStore>
+    public class AdvancedBindingEditorDialog : Dialog<PluginSettings>
     {
-        public AdvancedBindingEditorDialog(PluginSettingStore currentBinding = null)
+        public AdvancedBindingEditorDialog(PluginSettings currentBinding = null)
         {
             Title = "Advanced Binding Editor";
             Result = currentBinding;
@@ -69,7 +69,7 @@ namespace OpenTabletDriver.UX.Windows.Bindings
                 }
             };
 
-            bindingTypeDropDown.SelectedItemBinding.Convert(t => new PluginSettingStore(t)).Bind(settingStoreEditor.StoreBinding);
+            bindingTypeDropDown.SelectedItemBinding.Convert(t => new PluginSettings(t)).Bind(settingStoreEditor.StoreBinding);
             bindingTypeDropDown.SelectedItem = currentBinding?.GetTypeInfo();
         }
 

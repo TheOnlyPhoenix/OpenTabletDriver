@@ -7,8 +7,13 @@ namespace OpenTabletDriver.Desktop.Output
     [PluginName("Artist Mode"), SupportedPlatform(SystemPlatform.Linux)]
     public class LinuxArtistMode : AbsoluteOutputMode
     {
-        public LinuxArtistMode(InputDevice tablet, IPressureHandler pressureHandler) : base(tablet, pressureHandler)
+        public LinuxArtistMode(
+            InputDevice tablet,
+            IPressureHandler pressureHandler,
+            ISettingsProvider settingsProvider
+        ) : base(tablet, pressureHandler)
         {
+            settingsProvider.Inject(this);
         }
     }
 }

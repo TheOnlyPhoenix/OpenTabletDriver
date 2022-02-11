@@ -69,7 +69,7 @@ namespace OpenTabletDriver.Daemon
                 rpcHost.ConnectionStateChanged += (sender, state) =>
                     Log.Write("IPC", $"{(state ? "Connected to" : "Disconnected from")} a client.", LogLevel.Debug);
 
-                daemon.Initialize();
+                await daemon.Initialize();
                 await rpcHost.Run(daemon);
             }
         }

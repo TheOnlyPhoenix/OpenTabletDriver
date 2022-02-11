@@ -6,17 +6,17 @@ namespace OpenTabletDriver.Attributes
     /// Creates a slider for a property value between <see cref="Min"/> and <see cref="Max"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class SliderPropertyAttribute : PropertyAttribute
+    public class SliderSettingAttribute : SettingAttribute
     {
-        public SliderPropertyAttribute(string displayName, float min, float max, float defaultValue = 0f) : base(displayName)
+        public SliderSettingAttribute(string displayName, float min, float max, float defaultValue = 0f) : base(displayName)
         {
             Min = min;
             Max = max;
             DefaultValue = defaultValue;
         }
 
-        public float Min { set; get; }
-        public float Max { set; get; }
-        public float DefaultValue { set; get; }
+        public float Min { get; }
+        public float Max { get; }
+        public float DefaultValue { get; }
     }
 }

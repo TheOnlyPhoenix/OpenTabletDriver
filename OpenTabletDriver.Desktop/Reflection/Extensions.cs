@@ -1,39 +1,105 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using OpenTabletDriver.Attributes;
+
+#nullable enable
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
-    internal static class Extensions
+    public static class Extensions
     {
-        public static void CopyTo(this DirectoryInfo source, DirectoryInfo destination)
+        public static string GetFullyQualifiedName(this Type type)
         {
-            if (!source.Exists)
+            if (type.GenericTypeArguments.Any())
             {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + source.FullName);
+                var name = type.Name;
+                var index = name.IndexOf('`');
+                var query = type.GenericTypeArguments.Select(t => t.GetFullyQualifiedName());
+                return type.Namespace + "." + name[..index] + "<" + string.Join(", ", query) + ">";
             }
 
-            // If the destination directory doesn't exist, create it.
-            destination.Create();
+            return type.GetFullName();
+        }
 
-            // Get the files in the directory and copy them to the new location.
-            foreach (var file in source.GetFiles())
-            {
-                string tempPath = Path.Combine(destination.FullName, file.Name);
-                file.CopyTo(tempPath, false);
-            }
+        public static string GetFullName(this Type type)
+        {
+            return type.Namespace + "." + type.Name;
+        }
 
-            foreach (DirectoryInfo subdir in source.GetDirectories())
+        public static PluginSettings GetDefaultSettings(
+            this Type type,
+            IServiceProvider serviceProvider,
+            params object[] additionalDeps
+        )
+        {
+            var settings = EnumerateDefaultSettings(type, serviceProvider, additionalDeps);
+            return new PluginSettings(type, settings);
+        }
+
+        private static IEnumerable<PluginSetting> EnumerateDefaultSettings(this Type type, IServiceProvider serviceProvider,
+            object[] additionalDeps)
+        {
+            var settingProperties = from property in type.GetProperties()
+                where property.GetCustomAttribute<SettingAttribute>() != null
+                select property;
+
+            foreach (var property in settingProperties)
             {
-                CopyTo(
-                    new DirectoryInfo(subdir.FullName),
-                    new DirectoryInfo(Path.Combine(destination.FullName, subdir.Name))
-                );
+                var defaultValue = GetDefaultValue(type, property, serviceProvider, additionalDeps);
+                if (defaultValue != null)
+                {
+                    yield return new PluginSetting(property, defaultValue);
+                }
             }
+        }
+
+        private static object? GetDefaultValue(
+            this Type type,
+            PropertyInfo property,
+            IServiceProvider serviceProvider,
+            object[] additionalServices
+        )
+        {
+            var value = property.GetCustomAttribute<DefaultValueAttribute>()?.Value;
+            return value ?? property.GetCustomAttribute<MemberSourcedDefaultsAttribute>()
+                ?.GetDefaultValue(serviceProvider, type, additionalServices);
+        }
+
+        private static object? GetDefaultValue(
+            this MemberSourcedDefaultsAttribute attribute,
+            IServiceProvider serviceProvider,
+            Type sourceType,
+            object[] additionalServices
+        )
+        {
+            const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
+
+            var targetMemberName = attribute.TargetMemberName;
+
+            if (sourceType.GetMethod(targetMemberName, bindingFlags) is MethodInfo defaultMethod)
+                return defaultMethod.InvokeWithProvider(serviceProvider, additionalServices);
+
+            if (sourceType.GetProperty(targetMemberName, bindingFlags) is PropertyInfo defaultProperty)
+                return defaultProperty.GetValue(null);
+
+            if (sourceType.GetField(targetMemberName, bindingFlags) is FieldInfo defaultField)
+                return defaultField.GetValue(null);
+
+            return null;
+        }
+
+        private static object? InvokeWithProvider(this MethodInfo method, IServiceProvider provider, object[] additionalServices)
+        {
+            var args = from parameter in method.GetParameters()
+                let type = parameter.ParameterType
+                select provider.GetService(type) ?? additionalServices.First(s => s.GetType().IsAssignableTo(type));
+
+            return method.Invoke(null, args.ToArray());
         }
     }
 }

@@ -1,9 +1,10 @@
-namespace OpenTabletDriver.Desktop.Interop.Environment;
-
-public class LinuxEnvironmentHandler : EnvironmentHandler
+namespace OpenTabletDriver.Desktop.Interop.Environment
 {
-    public override void Open(string path)
+    public class LinuxEnvironmentHandler : EnvironmentHandler
     {
-        Exec("xdg-open", $"\"{path}\"");
+        public override void Open(string path)
+        {
+            Exec("xdg-open", $"\"{path}\"");
+        }
     }
 }

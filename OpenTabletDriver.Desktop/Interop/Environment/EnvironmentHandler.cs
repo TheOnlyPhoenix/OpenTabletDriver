@@ -2,34 +2,35 @@ using System;
 using System.Diagnostics;
 using OpenTabletDriver.Platform.Environment;
 
-namespace OpenTabletDriver.Desktop.Interop.Environment;
-
-public abstract class EnvironmentHandler : IEnvironmentHandler
+namespace OpenTabletDriver.Desktop.Interop.Environment
 {
-    public abstract void Open(string path);
-    public virtual void OpenFolder(string path) => Open(path);
-
-    protected void Exec(string executable, string args)
+    public abstract class EnvironmentHandler : IEnvironmentHandler
     {
-        try
-        {
-            Process.Start(executable, args);
-        }
-        catch (Exception e)
-        {
-            Log.Exception(e);
-        }
-    }
+        public abstract void Open(string path);
+        public virtual void OpenFolder(string path) => Open(path);
 
-    protected void Exec(ProcessStartInfo startInfo)
-    {
-        try
+        protected void Exec(string executable, string args)
         {
-            Process.Start(startInfo);
+            try
+            {
+                Process.Start(executable, args);
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e);
+            }
         }
-        catch (Exception e)
+
+        protected void Exec(ProcessStartInfo startInfo)
         {
-            Log.Exception(e);
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e);
+            }
         }
     }
 }

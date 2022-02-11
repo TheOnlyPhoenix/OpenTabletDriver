@@ -1,12 +1,19 @@
+using OpenTabletDriver.Desktop.Reflection;
+using OpenTabletDriver.Platform.Pointer;
 using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Binding
 {
     public class ThresholdBindingState : BindingState
     {
-        private InputDevice _device;
+        private readonly InputDevice _device;
 
-        public ThresholdBindingState(InputDevice device)
+        public ThresholdBindingState(
+            IPluginFactory pluginFactory,
+            InputDevice device,
+            IMouseButtonHandler mouseButtonHandler,
+            PluginSettings settings
+        ) : base(pluginFactory, device, mouseButtonHandler, settings)
         {
             _device = device;
         }

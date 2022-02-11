@@ -8,11 +8,11 @@ namespace OpenTabletDriver.Desktop
     {
         static Serialization()
         {
-            serializer.Error += SerializationErrorHandler;
-            serializer.Converters.Add(new VersionConverter());
+            Serializer.Error += SerializationErrorHandler;
+            Serializer.Converters.Add(new VersionConverter());
         }
 
-        private static readonly JsonSerializer serializer = new JsonSerializer
+        private static readonly JsonSerializer Serializer = new JsonSerializer
         {
             Formatting = Formatting.Indented
         };
@@ -54,12 +54,12 @@ namespace OpenTabletDriver.Desktop
 
         public static T Deserialize<T>(JsonTextReader textReader)
         {
-            return serializer.Deserialize<T>(textReader);
+            return Serializer.Deserialize<T>(textReader);
         }
 
         public static void Serialize(JsonTextWriter textWriter, object value)
         {
-            serializer.Serialize(textWriter, value);
+            Serializer.Serialize(textWriter, value);
         }
     }
 }

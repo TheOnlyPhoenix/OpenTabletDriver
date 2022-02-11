@@ -31,8 +31,8 @@ namespace OpenTabletDriver.UX.Controls.Output
             absoluteModeEditor.SettingsBinding.Bind(ProfileBinding.Child(p => p.AbsoluteModeSettings));
             relativeModeEditor.SettingsBinding.Bind(ProfileBinding.Child(p => p.RelativeModeSettings));
 
-            outputModeSelector.SelectedItemBinding.Convert<PluginSettingStore>(
-                c => PluginSettingStore.FromPath(c?.FullName),
+            outputModeSelector.SelectedItemBinding.Convert<PluginSettings>(
+                c => PluginSettings.FromPath(c?.FullName),
                 v => v?.GetTypeInfo()
             ).Bind(ProfileBinding.Child(c => c.OutputMode));
 
@@ -112,7 +112,7 @@ namespace OpenTabletDriver.UX.Controls.Output
             absoluteModeEditor.displayAreaEditor.AreaBounds = bgs;
         }
 
-        private void UpdateOutputMode(PluginSettingStore store)
+        private void UpdateOutputMode(PluginSettings store)
         {
             bool showAbsolute = false;
             bool showRelative = false;

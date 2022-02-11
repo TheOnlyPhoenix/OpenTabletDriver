@@ -5,18 +5,18 @@ using System.Reflection;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
-    public class PluginSettingStoreCollection : ObservableCollection<PluginSettingStore>
+    public class PluginSettingsCollection : ObservableCollection<PluginSettings>
     {
-        public PluginSettingStoreCollection()
+        public PluginSettingsCollection()
         {
         }
 
-        public PluginSettingStoreCollection(IEnumerable<PluginSettingStore> collection)
+        public PluginSettingsCollection(IEnumerable<PluginSettings> collection)
             : base(collection)
         {
         }
 
-        public PluginSettingStoreCollection Trim()
+        public PluginSettingsCollection Trim()
         {
             while (true)
             {
@@ -27,7 +27,7 @@ namespace OpenTabletDriver.Desktop.Reflection
             return this;
         }
 
-        public PluginSettingStoreCollection SetExpectedCount(int expectedCount)
+        public PluginSettingsCollection SetExpectedCount(int expectedCount)
         {
             while (Count < expectedCount)
                 Add(null);
@@ -35,12 +35,12 @@ namespace OpenTabletDriver.Desktop.Reflection
             return this;
         }
 
-        public PluginSettingStore FromType(TypeInfo type)
+        public PluginSettings FromType(TypeInfo type)
         {
             if (type == null)
                 return null;
 
-            var store = this.FirstOrDefault(s => s.Path == type.FullName) ?? new PluginSettingStore(type, false);
+            var store = this.FirstOrDefault(s => s.Path == type.FullName) ?? new PluginSettings(type, false);
             if (!this.Contains(store))
                 this.Add(store);
             return store;

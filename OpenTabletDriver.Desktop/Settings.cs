@@ -3,54 +3,37 @@ using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using OpenTabletDriver.Desktop.Interop.AppInfo;
-using OpenTabletDriver.Desktop.Migration;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
+
+#nullable enable
 
 namespace OpenTabletDriver.Desktop
 {
     public class Settings : ViewModel
     {
-        private ProfileCollection _profiles;
-        private bool _lockUsableAreaDisplay, _lockUsableAreaTablet;
-        private PluginSettingStoreCollection _tools = new PluginSettingStoreCollection();
+        private ProfileCollection _profiles = new ProfileCollection();
+        private PluginSettingsCollection _tools = new PluginSettingsCollection();
 
         [JsonProperty("Profiles")]
         public ProfileCollection Profiles
         {
-            set => this.RaiseAndSetIfChanged(ref _profiles, value);
+            set => RaiseAndSetIfChanged(ref _profiles, value);
             get => _profiles;
         }
 
-        [JsonProperty("LockUsableAreaDisplay")]
-        public bool LockUsableAreaDisplay
-        {
-            set => this.RaiseAndSetIfChanged(ref this._lockUsableAreaDisplay, value);
-            get => this._lockUsableAreaDisplay;
-        }
-
-        [JsonProperty("LockUsableAreaTablet")]
-        public bool LockUsableAreaTablet
-        {
-            set => this.RaiseAndSetIfChanged(ref this._lockUsableAreaTablet, value);
-            get => this._lockUsableAreaTablet;
-        }
-
         [JsonProperty("Tools")]
-        public PluginSettingStoreCollection Tools
+        public PluginSettingsCollection Tools
         {
-            set => RaiseAndSetIfChanged(ref this._tools, value);
-            get => this._tools;
+            set => RaiseAndSetIfChanged(ref _tools, value);
+            get => _tools;
         }
 
-        public static Settings GetDefaults(IServiceProvider serviceProvider)
+        public static Settings GetDefaults()
         {
             return new Settings
             {
-                Profiles = new ProfileCollection(serviceProvider),
-                LockUsableAreaDisplay = true,
-                LockUsableAreaTablet = true
+                Profiles = new ProfileCollection()
             };
         }
 
@@ -66,7 +49,7 @@ namespace OpenTabletDriver.Desktop
             Formatting = Formatting.Indented
         };
 
-        private static void SerializationErrorHandler(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+        private static void SerializationErrorHandler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
         {
             args.ErrorContext.Handled = true;
             if (args.ErrorContext.Path is string path)
@@ -75,9 +58,9 @@ namespace OpenTabletDriver.Desktop
                     return;
 
                 var property = args.CurrentObject.GetType().GetProperty(path);
-                if (property != null && property.PropertyType == typeof(PluginSettingStore))
+                if (property != null && property.PropertyType == typeof(PluginSettings))
                 {
-                    var match = propertyValueRegex.Match(args.ErrorContext.Error.Message);
+                    var match = PropertyValueRegex.Match(args.ErrorContext.Error.Message);
                     if (match.Success)
                     {
                         // TODO: Fix settings auto migration
@@ -99,10 +82,10 @@ namespace OpenTabletDriver.Desktop
             Log.Exception(args.ErrorContext.Error);
         }
 
-        private static Regex propertyValueRegex = new Regex(PROPERTY_VALUE_REGEX, RegexOptions.Compiled);
+        private static readonly Regex PropertyValueRegex = new Regex(PROPERTY_VALUE_REGEX, RegexOptions.Compiled);
         private const string PROPERTY_VALUE_REGEX = "\\\"(.+?)\\\"";
 
-        public static Settings Deserialize(FileInfo file)
+        public static Settings? Deserialize(FileInfo file)
         {
             using (var stream = file.OpenRead())
             using (var sr = new StreamReader(stream))
@@ -116,9 +99,9 @@ namespace OpenTabletDriver.Desktop
             using (var sr = new StreamReader(stream))
             using (var jr = new JsonTextReader(sr))
             {
-                void PropertyWatch(object _, PropertyChangedEventArgs p)
+                void PropertyWatch(object? _, PropertyChangedEventArgs p)
                 {
-                    var prop = settings.GetType().GetProperty(p.PropertyName).GetValue(settings);
+                    settings.GetType().GetProperty(p.PropertyName!)?.GetValue(settings);
                     Log.Write("Settings", $"Recovered '{p.PropertyName}'", LogLevel.Debug);
                 }
 

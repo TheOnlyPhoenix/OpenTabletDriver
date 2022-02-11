@@ -97,7 +97,7 @@ namespace OpenTabletDriver.UX.Controls.Bindings
             eraserButton.StoreBinding.Bind(SettingsBinding.Child(c => c.EraserButton));
             tipThreshold.ValueBinding.Bind(SettingsBinding.Child(c => c.TipActivationThreshold));
             eraserThreshold.ValueBinding.Bind(SettingsBinding.Child(c => c.EraserActivationThreshold));
-            penButtons.ItemSourceBinding.Bind(SettingsBinding.Child(c => (IList<PluginSettingStore>)c.PenButtons));
+            penButtons.ItemSourceBinding.Bind(SettingsBinding.Child(c => (IList<PluginSettings>)c.PenButtons));
         }
 
         private BindingDisplay tipButton, eraserButton;

@@ -8,7 +8,7 @@ namespace OpenTabletDriver.Output
 {
     public abstract class OutputMode : PipelineManager<IDeviceReport>, IOutputMode
     {
-        public OutputMode(InputDevice tablet)
+        protected OutputMode(InputDevice tablet)
         {
             Tablet = tablet;
             Passthrough = true;
@@ -42,8 +42,8 @@ namespace OpenTabletDriver.Output
             get => _passthrough;
         }
 
-        protected IList<IPositionedPipelineElement<IDeviceReport>> PreTransformElements { private set; get; } = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
-        protected IList<IPositionedPipelineElement<IDeviceReport>> PostTransformElements { private set; get; } = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
+        private IList<IPositionedPipelineElement<IDeviceReport>> _preTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
+        private IList<IPositionedPipelineElement<IDeviceReport>> _postTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
 
         public Matrix3x2 TransformationMatrix { protected set; get; }
 
@@ -56,40 +56,40 @@ namespace OpenTabletDriver.Output
                 Passthrough = false;
                 DestroyInternalLinks();
 
-                if (Elements != null && Elements.Count > 0)
+                if (Elements != null && Elements.Any())
                 {
-                    PreTransformElements = GroupElements(Elements, PipelinePosition.PreTransform);
-                    PostTransformElements = GroupElements(Elements, PipelinePosition.PostTransform);
+                    _preTransformElements = GroupElements(Elements, PipelinePosition.PreTransform);
+                    _postTransformElements = GroupElements(Elements, PipelinePosition.PostTransform);
 
                     Action<IDeviceReport> output = OnOutput;
 
-                    if (PreTransformElements.Any() && !PostTransformElements.Any())
+                    if (_preTransformElements.Any() && !_postTransformElements.Any())
                     {
-                        _entryElement = PreTransformElements.First();
+                        _entryElement = _preTransformElements.First();
 
                         // PreTransform --> Transform --> Output
-                        LinkAll(PreTransformElements, this, output);
+                        LinkAll(_preTransformElements, this, output);
                     }
-                    else if (PostTransformElements.Any() && !PreTransformElements.Any())
+                    else if (_postTransformElements.Any() && !_preTransformElements.Any())
                     {
                         _entryElement = this;
 
                         // Transform --> PostTransform --> Output
-                        LinkAll(this, PostTransformElements, output);
+                        LinkAll(this, _postTransformElements, output);
                     }
-                    else if (PreTransformElements.Any() && PostTransformElements.Any())
+                    else if (_preTransformElements.Any() && _postTransformElements.Any())
                     {
-                        _entryElement = PreTransformElements.First();
+                        _entryElement = _preTransformElements.First();
 
                         // PreTransform --> Transform --> PostTransform --> Output
-                        LinkAll(PreTransformElements, this, PostTransformElements, output);
+                        LinkAll(_preTransformElements, this, _postTransformElements, output);
                     }
                 }
                 else
                 {
                     Passthrough = true;
-                    PreTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
-                    PostTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
+                    _preTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
+                    _postTransformElements = Array.Empty<IPositionedPipelineElement<IDeviceReport>>();
                 }
             }
             get => _elements;
@@ -124,17 +124,17 @@ namespace OpenTabletDriver.Output
         {
             Action<IDeviceReport> output = OnOutput;
 
-            if (PreTransformElements.Any() && !PostTransformElements.Any())
+            if (_preTransformElements.Any() && !_postTransformElements.Any())
             {
-                UnlinkAll(PreTransformElements, this, output);
+                UnlinkAll(_preTransformElements, this, output);
             }
-            else if (PostTransformElements.Any() && !PreTransformElements.Any())
+            else if (_postTransformElements.Any() && !_preTransformElements.Any())
             {
-                UnlinkAll(this, PostTransformElements, output);
+                UnlinkAll(this, _postTransformElements, output);
             }
-            else if (PreTransformElements.Any() && PostTransformElements.Any())
+            else if (_preTransformElements.Any() && _postTransformElements.Any())
             {
-                UnlinkAll(PreTransformElements, this, PostTransformElements, output);
+                UnlinkAll(_preTransformElements, this, _postTransformElements, output);
             }
         }
     }

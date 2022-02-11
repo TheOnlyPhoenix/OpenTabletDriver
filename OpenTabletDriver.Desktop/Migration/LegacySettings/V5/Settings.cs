@@ -6,8 +6,8 @@ namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V5
 {
     internal class Settings
     {
-        public PluginSettingStore OutputMode { get; set; }
-        public PluginSettingStoreCollection Filters { get; set; }
+        public PluginSettings OutputMode { get; set; }
+        public PluginSettingsCollection Filters { get; set; }
 
         public bool AutoHook { get; set; }
         public bool LockUsableAreaDisplay { get; set; }
@@ -34,16 +34,16 @@ namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V5
         public TimeSpan ResetTime { get; set; }
 
         public float TipActivationPressure { get; set; }
-        public PluginSettingStore TipButton { get; set; }
+        public PluginSettings TipButton { get; set; }
 
         public float EraserActivationPressure { get; set; }
-        public PluginSettingStore EraserButton { get; set; }
+        public PluginSettings EraserButton { get; set; }
 
-        public PluginSettingStoreCollection PenButtons { get; set; }
-        public PluginSettingStoreCollection AuxButtons { get; set; }
+        public PluginSettingsCollection PenButtons { get; set; }
+        public PluginSettingsCollection AuxButtons { get; set; }
 
-        public PluginSettingStoreCollection Tools { get; set; }
-        public PluginSettingStoreCollection Interpolators { get; set; }
+        public PluginSettingsCollection Tools { get; set; }
+        public PluginSettingsCollection Interpolators { get; set; }
 
         public Area GetDisplayArea() => new Area
         {
@@ -52,7 +52,7 @@ namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V5
             Position = new Vector2(DisplayXOffset, DisplayYOffset)
         };
 
-        public Area GetTabletArea() => new Area
+        public AngledArea GetTabletArea() => new AngledArea
         {
             Width = TabletWidth,
             Height = TabletHeight,

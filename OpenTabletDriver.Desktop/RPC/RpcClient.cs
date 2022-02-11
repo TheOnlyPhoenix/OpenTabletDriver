@@ -1,62 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Threading.Tasks;
 using StreamJsonRpc;
+
+#nullable enable
 
 namespace OpenTabletDriver.Desktop.RPC
 {
     public class RpcClient<T> where T : class
     {
-        private readonly string pipeName;
-        private NamedPipeClientStream stream;
-        private JsonRpc rpc;
-        private IList<Action<T>> reconnectHooks = new List<Action<T>>();
-
-        public T Instance { private set; get; }
-
-        public event EventHandler Connected;
-        public event EventHandler Disconnected;
+        private readonly string _pipeName;
 
         public RpcClient(string pipeName)
         {
-            this.pipeName = pipeName;
+            _pipeName = pipeName;
         }
+
+        private NamedPipeClientStream? _stream;
+        private JsonRpc? _rpc;
+
+        public T? Instance { private set; get; }
+
+        public event EventHandler? Connected;
+        public event EventHandler? Disconnected;
 
         public async Task Connect()
         {
-            this.stream = GetStream();
-            await this.stream.ConnectAsync();
+            _stream = GetStream();
+            await _stream.ConnectAsync();
 
-            rpc = new JsonRpc(this.stream);
-            rpc.Disconnected += (_, _) =>
+            _rpc = new JsonRpc(_stream);
+            _rpc.Disconnected += (_, _) =>
             {
-                this.stream.Dispose();
+                _stream.Dispose();
                 OnDisconnected();
-                rpc.Dispose();
+                _rpc.Dispose();
             };
 
-            this.Instance = this.rpc.Attach<T>();
-            rpc.StartListening();
+            Instance = _rpc.Attach<T>();
+            _rpc.StartListening();
 
             OnConnected();
         }
 
         protected virtual void OnConnected()
         {
-            this.Connected?.Invoke(this, EventArgs.Empty);
+            Connected?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void OnDisconnected()
+        private void OnDisconnected()
         {
-            this.Disconnected?.Invoke(this, EventArgs.Empty);
+            Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         private NamedPipeClientStream GetStream()
         {
             return new NamedPipeClientStream(
                 ".",
-                this.pipeName,
+                _pipeName,
                 PipeDirection.InOut,
                 PipeOptions.Asynchronous | PipeOptions.WriteThrough | PipeOptions.CurrentUserOnly
             );

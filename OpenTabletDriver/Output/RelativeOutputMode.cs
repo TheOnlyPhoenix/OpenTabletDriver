@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Numerics;
 using OpenTabletDriver.Attributes;
 using OpenTabletDriver.Platform.Pointer;
@@ -12,9 +13,7 @@ namespace OpenTabletDriver.Output
     [PluginIgnore]
     public abstract class RelativeOutputMode : OutputMode
     {
-        private Vector2? lastPos;
-        private HPETDeltaStopwatch stopwatch = new HPETDeltaStopwatch(true);
-        private bool skipReport;
+        private readonly HPETDeltaStopwatch _stopwatch = new HPETDeltaStopwatch(true);
 
         public RelativeOutputMode(InputDevice tablet, IRelativePointer relativePointer)
             : base(tablet)
@@ -22,12 +21,15 @@ namespace OpenTabletDriver.Output
             Pointer = relativePointer;
         }
 
+        private Vector2? _lastPos;
+        private bool _skipReport;
+
         /// <summary>
         /// The class in which the final relative positioned output is handled.
         /// </summary>
         public IRelativePointer Pointer { get; }
 
-        private Vector2 sensitivity;
+        private Vector2 _sensitivity;
 
         /// <summary>
         /// The sensitivity vector in which input will be transformed.
@@ -35,62 +37,65 @@ namespace OpenTabletDriver.Output
         /// This sensitivity is in mm/px.
         /// </remarks>
         /// </summary>
+        [Setting("Sensitivity"), MemberSourcedDefaults(nameof(GetDefaultSensitivity))]
         public Vector2 Sensitivity
         {
             set
             {
-                this.sensitivity = value;
-                this.TransformationMatrix = CreateTransformationMatrix();
+                _sensitivity = value;
+                TransformationMatrix = CreateTransformationMatrix();
             }
-            get => this.sensitivity;
+            get => _sensitivity;
         }
 
-        private float rotation;
+        private float _rotation;
 
         /// <summary>
         /// The angle of rotation to be applied to the input.
         /// </summary>
+        [Setting("Rotation"), DefaultValue(0f)]
         public float Rotation
         {
             set
             {
-                this.rotation = value;
-                this.TransformationMatrix = CreateTransformationMatrix();
+                _rotation = value;
+                TransformationMatrix = CreateTransformationMatrix();
             }
-            get => this.rotation;
+            get => _rotation;
         }
 
         /// <summary>
         /// The delay in which to reset the last known position in relative positioning.
         /// </summary>
-        public TimeSpan ResetTime { set; get; }
+        [Setting("Reset Delay"), MemberSourcedDefaults(nameof(GetDefaultResetDelay))]
+        public TimeSpan ResetDelay { set; get; }
 
         protected override Matrix3x2 CreateTransformationMatrix()
         {
-            this.skipReport = true; // Prevents cursor from jumping on sensitivity change
+            _skipReport = true; // Prevents cursor from jumping on sensitivity change
 
             var transform = Matrix3x2.CreateRotation(
-                (float)(-Rotation * System.Math.PI / 180));
+                (float)(-Rotation * Math.PI / 180));
 
             var digitizer = Tablet?.Properties.Specifications.Digitizer;
             return transform *= Matrix3x2.CreateScale(
-                sensitivity.X * ((digitizer?.Width / digitizer?.MaxX) ?? 0.01f),
-                sensitivity.Y * ((digitizer?.Height / digitizer?.MaxY) ?? 0.01f));
+                _sensitivity.X * ((digitizer?.Width / digitizer?.MaxX) ?? 0.01f),
+                _sensitivity.Y * ((digitizer?.Height / digitizer?.MaxY) ?? 0.01f));
         }
 
         protected override IAbsolutePositionReport Transform(IAbsolutePositionReport report)
         {
-            var deltaTime = stopwatch.Restart();
+            var deltaTime = _stopwatch.Restart();
 
-            var pos = Vector2.Transform(report.Position, this.TransformationMatrix);
-            var delta = pos - this.lastPos;
+            var pos = Vector2.Transform(report.Position, TransformationMatrix);
+            var delta = pos - _lastPos;
 
-            this.lastPos = pos;
-            report.Position = deltaTime < ResetTime ? delta.GetValueOrDefault() : Vector2.Zero;
+            _lastPos = pos;
+            report.Position = deltaTime < ResetDelay ? delta.GetValueOrDefault() : Vector2.Zero;
 
-            if (skipReport)
+            if (_skipReport)
             {
-                skipReport = false;
+                _skipReport = false;
                 return null;
             }
 
@@ -120,6 +125,16 @@ namespace OpenTabletDriver.Output
                     synchronousPointer.Reset();
                 synchronousPointer.Flush();
             }
+        }
+
+        public static Vector2 GetDefaultSensitivity()
+        {
+            return new Vector2(10, 10);
+        }
+
+        public static TimeSpan GetDefaultResetDelay()
+        {
+            return TimeSpan.FromMilliseconds(500);
         }
     }
 }

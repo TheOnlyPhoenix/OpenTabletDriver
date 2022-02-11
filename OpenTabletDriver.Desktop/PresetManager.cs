@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
 
 namespace OpenTabletDriver.Desktop
@@ -13,6 +14,8 @@ namespace OpenTabletDriver.Desktop
 
         private readonly DirectoryInfo _presetDirectory;
 
+        private const string FILE_EXTENSION = ".json";
+
         private List<Preset> Presets { get; } = new List<Preset>();
 
         public IReadOnlyCollection<Preset> GetPresets() => Presets;
@@ -24,17 +27,17 @@ namespace OpenTabletDriver.Desktop
 
         private void Load()
         {
-            foreach (var preset in _presetDirectory.EnumerateFiles("*.json"))
+            foreach (var file in _presetDirectory.EnumerateFiles("*.json"))
             {
-                var settings = Settings.Deserialize(preset);
+                var settings = Settings.Deserialize(file);
                 if (settings != null)
                 {
-                    Presets.Add(new Preset(preset.Name.Replace(preset.Extension, string.Empty), settings));
-                    Log.Write("Settings", $"Loaded preset '{preset.Name}'", LogLevel.Info);
+                    Presets.Add(new Preset(file.Name.Replace(file.Extension, string.Empty), settings));
+                    Log.Write("Settings", $"Loaded preset '{file.Name}'", LogLevel.Info);
                 }
                 else
                 {
-                    Log.Write("Settings", $"Invalid settings file '{preset.Name}' attempted to load into presets", LogLevel.Warning);
+                    Log.Write("Settings", $"Invalid settings file '{file.Name}' attempted to load into presets", LogLevel.Warning);
                 }
             }
         }
@@ -44,6 +47,21 @@ namespace OpenTabletDriver.Desktop
             Presets.Clear();
             Load();
             Log.Write("Settings", $"Presets have been refreshed. Loaded {Presets.Count} presets.", LogLevel.Info);
+        }
+
+        public void Save(string name, Settings settings)
+        {
+            if (!_presetDirectory.Exists)
+                _presetDirectory.Create();
+
+            var files = _presetDirectory.EnumerateFiles("*" + FILE_EXTENSION);
+            var oldFile = files.FirstOrDefault(f => f.Name.Replace(FILE_EXTENSION, string.Empty) == name);
+
+            oldFile?.Delete();
+            var path = Path.Join(_presetDirectory.FullName, name + FILE_EXTENSION);
+            Serialization.Serialize(File.Create(path), settings);
+
+            Refresh();
         }
     }
 }

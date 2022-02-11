@@ -13,10 +13,12 @@ namespace OpenTabletDriver.Desktop.Binding
         private readonly InputDevice _device;
         private readonly IVirtualKeyboard _keyboard;
 
-        public MultiKeyBinding(InputDevice device, IVirtualKeyboard keyboard)
+        public MultiKeyBinding(InputDevice device, IVirtualKeyboard keyboard, ISettingsProvider settingsProvider)
         {
             _device = device;
             _keyboard = keyboard;
+
+            settingsProvider.Inject(this);
         }
 
         private const string PLUGIN_NAME = "Multi-Key Binding";
@@ -25,7 +27,7 @@ namespace OpenTabletDriver.Desktop.Binding
         private IList<string> _keys;
         private string _keysString;
 
-        [Property("Keys")]
+        [Setting("Keys")]
         public string Keys
         {
             set

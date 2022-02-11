@@ -1,5 +1,8 @@
-﻿using System.Numerics;
+﻿using System.ComponentModel;
+using System.Numerics;
 using OpenTabletDriver.Attributes;
+using OpenTabletDriver.Attributes.UI;
+using OpenTabletDriver.Platform.Display;
 using OpenTabletDriver.Platform.Pointer;
 using OpenTabletDriver.Tablet;
 
@@ -11,45 +14,53 @@ namespace OpenTabletDriver.Output
     [PluginIgnore]
     public abstract class AbsoluteOutputMode : OutputMode
     {
-        private Vector2 min, max;
-        private Area outputArea, inputArea;
-
-        public AbsoluteOutputMode(InputDevice tablet, IAbsolutePointer absolutePointer)
+        protected AbsoluteOutputMode(InputDevice tablet, IAbsolutePointer absolutePointer)
             : base(tablet)
         {
             Pointer = absolutePointer;
         }
 
+        private Vector2 _min, _max;
+        private AngledArea _inputArea;
+        private Area _outputArea;
+
         /// <summary>
         /// The area in which the tablet's input is transformed to.
         /// </summary>
-        public Area Input
+        [Setting("Input Area")]
+        [MemberSourcedDefaults(nameof(GetDefaultInputArea), typeof(DigitizerSpecifications))]
+        [AspectRatioLock(nameof(Output), nameof(LockAspectRatio))]
+        public AngledArea Input
         {
             set
             {
-                this.inputArea = value;
-                this.TransformationMatrix = CreateTransformationMatrix();
+                _inputArea = value;
+                TransformationMatrix = CreateTransformationMatrix();
             }
-            get => this.inputArea;
+            get => _inputArea;
         }
 
         /// <summary>
         /// The area in which the final processed output is transformed to.
         /// </summary>
+        [Setting("Output Area")]
+        [MemberSourcedDefaults(nameof(GetDefaultOutputArea), typeof(IVirtualScreen))]
+        [AspectRatioLock(nameof(Input), nameof(LockAspectRatio))]
         public Area Output
         {
             set
             {
-                this.outputArea = value;
-                this.TransformationMatrix = CreateTransformationMatrix();
+                _outputArea = value;
+                TransformationMatrix = CreateTransformationMatrix();
             }
-            get => this.outputArea;
+            get => _outputArea;
         }
 
         /// <summary>
-        /// The class in which the final absolute positioned output is handled.
+        /// Whether to lock aspect ratio when applying area settings.
         /// </summary>
-        public IAbsolutePointer Pointer { get; }
+        [Setting("Lock Aspect Ratio"), DefaultValue(false)]
+        public bool LockAspectRatio { set; get; }
 
         /// <summary>
         /// Whether to clip all tablet inputs to the assigned areas.
@@ -58,6 +69,7 @@ namespace OpenTabletDriver.Output
         /// If false, input outside of the area can escape the assigned areas, but still will be transformed.
         /// If true, input outside of the area will be clipped to the edges of the assigned areas.
         /// </remarks>
+        [Setting("Area Clipping"), DefaultValue(true)]
         public bool AreaClipping { set; get; }
 
         /// <summary>
@@ -66,7 +78,16 @@ namespace OpenTabletDriver.Output
         /// <remarks>
         /// If true, <see cref="AreaClipping"/> is automatically implied true.
         /// </remarks>
+        [Setting("Area Limiting"), DefaultValue(true)]
         public bool AreaLimiting { set; get; }
+
+        [Setting("Keep inside maximum bounds"), DefaultValue(true)]
+        public bool AreaBounds { set; get; }
+
+        /// <summary>
+        /// The class in which the final absolute positioned output is handled.
+        /// </summary>
+        public IAbsolutePointer Pointer { get; }
 
         protected override Matrix3x2 CreateTransformationMatrix()
         {
@@ -82,8 +103,8 @@ namespace OpenTabletDriver.Output
                 var minY = Output?.Position.Y - halfDisplayHeight ?? 0;
                 var maxY = Output?.Position.Y + Output?.Height - halfDisplayHeight ?? 0;
 
-                this.min = new Vector2(minX, minY);
-                this.max = new Vector2(maxX, maxY);
+                _min = new Vector2(minX, minY);
+                _max = new Vector2(maxX, maxY);
 
                 return transform;
             }
@@ -93,7 +114,7 @@ namespace OpenTabletDriver.Output
             }
         }
 
-        protected static Matrix3x2 CalculateTransformation(Area input, Area output, DigitizerSpecifications digitizer)
+        private static Matrix3x2 CalculateTransformation(AngledArea input, Area output, DigitizerSpecifications digitizer)
         {
             // Convert raw tablet data to millimeters
             var res = Matrix3x2.CreateScale(
@@ -126,10 +147,10 @@ namespace OpenTabletDriver.Output
         protected override IAbsolutePositionReport Transform(IAbsolutePositionReport report)
         {
             // Apply transformation
-            var pos = Vector2.Transform(report.Position, this.TransformationMatrix);
+            var pos = Vector2.Transform(report.Position, TransformationMatrix);
 
             // Clipping to display bounds
-            var clippedPoint = Vector2.Clamp(pos, this.min, this.max);
+            var clippedPoint = Vector2.Clamp(pos, _min, _max);
             if (AreaLimiting && clippedPoint != pos)
                 return null;
 
@@ -164,6 +185,27 @@ namespace OpenTabletDriver.Output
                     synchronousPointer.Reset();
                 synchronousPointer.Flush();
             }
+        }
+
+        public static AngledArea GetDefaultInputArea(DigitizerSpecifications digitizer)
+        {
+            return new AngledArea
+            {
+                Width = digitizer.Width,
+                Height = digitizer.Height,
+                Position = new Vector2(digitizer.Width / 2, digitizer.Height / 2),
+                Rotation = 0
+            };
+        }
+
+        public static Area GetDefaultOutputArea(IVirtualScreen virtualScreen)
+        {
+            return new Area
+            {
+                Width = virtualScreen.Width,
+                Height = virtualScreen.Height,
+                Position = new Vector2(virtualScreen.Width / 2, virtualScreen.Height / 2)
+            };
         }
     }
 }

@@ -4,7 +4,7 @@ using OpenTabletDriver.UX.Controls.Generic;
 
 namespace OpenTabletDriver.UX.Controls.Bindings
 {
-    public class BindingDisplayList : GeneratedItemList<PluginSettingStore>
+    public class BindingDisplayList : GeneratedItemList<PluginSettings>
     {
         public string Prefix { set; get; }
 
@@ -13,7 +13,7 @@ namespace OpenTabletDriver.UX.Controls.Bindings
             return $"{Prefix} {index + 1}";
         }
 
-        protected override Control CreateControl(int index, DirectBinding<PluginSettingStore> itemBinding)
+        protected override Control CreateControl(int index, DirectBinding<PluginSettings> itemBinding)
         {
             BindingDisplay display = new BindingDisplay();
             display.StoreBinding.Bind(itemBinding);

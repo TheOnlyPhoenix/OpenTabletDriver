@@ -20,4 +20,8 @@
     <ProjectReference Include="..\OpenTabletDriver.Configurations\OpenTabletDriver.Configurations.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migration\LegacySettings\V6" />
+  </ItemGroup>
+
 </Project>

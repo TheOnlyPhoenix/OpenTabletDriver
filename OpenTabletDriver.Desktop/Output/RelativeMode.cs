@@ -7,8 +7,13 @@ namespace OpenTabletDriver.Desktop.Output
     [PluginName("Relative Mode")]
     public class RelativeMode : RelativeOutputMode, IPointerProvider<IRelativePointer>
     {
-        public RelativeMode(InputDevice tablet, IRelativePointer relativePointer) : base(tablet, relativePointer)
+        public RelativeMode(
+            InputDevice tablet,
+            IRelativePointer relativePointer,
+            ISettingsProvider settingsProvider
+        ) : base(tablet, relativePointer)
         {
+            settingsProvider.Inject(this);
         }
     }
 }

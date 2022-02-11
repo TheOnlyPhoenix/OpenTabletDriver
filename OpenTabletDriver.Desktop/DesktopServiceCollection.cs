@@ -30,6 +30,8 @@ namespace OpenTabletDriver.Desktop
             // Desktop Services
             Transient<EnvironmentDictionary, EnvironmentDictionary>(),
             Singleton<IPluginManager, PluginManager>(),
+            Singleton<ISettingsManager, SettingsManager>(),
+            Singleton<IPresetManager, PresetManager>(),
             Transient<IPluginFactory, PluginFactory>(),
             // TODO: null updater for Linux
         };

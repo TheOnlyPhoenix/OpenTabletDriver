@@ -12,7 +12,6 @@ namespace OpenTabletDriver.Desktop.Reflection
 {
     public class PluginManager : IPluginManager
     {
-        // TODO: Replace Plugin Manager with proper dependency injection
         public PluginManager(IAppInfo appInfo)
             : this(appInfo.PluginDirectory, appInfo.TrashDirectory, appInfo.TemporaryDirectory)
         {
@@ -44,6 +43,8 @@ namespace OpenTabletDriver.Desktop.Reflection
         public IReadOnlyList<DesktopPluginContext> Plugins => _plugins;
 
         public IEnumerable<Assembly> Assemblies => Plugins.SelectMany(c => c.Assemblies).Concat(_coreAssemblies);
+
+        public IEnumerable<Type> ExportedTypes => Assemblies.SelectMany(r => r.ExportedTypes);
 
         public event EventHandler AssembliesChanged;
 
@@ -142,7 +143,7 @@ namespace OpenTabletDriver.Desktop.Reflection
         public bool InstallPlugin(DirectoryInfo target, DirectoryInfo source)
         {
             Log.Write("Plugin", $"Installing plugin '{target.Name}'");
-            source.CopyTo(target);
+            CopyDirectory(source, target);
             LoadPlugin(target);
             return true;
         }
@@ -202,6 +203,34 @@ namespace OpenTabletDriver.Desktop.Reflection
             else
             {
                 Log.Write("Plugin", $"Attempted to load the plugin {directory.Name} when it is already loaded.", LogLevel.Debug);
+            }
+        }
+
+        private static void CopyDirectory(DirectoryInfo source, DirectoryInfo destination)
+        {
+            if (!source.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + source.FullName);
+            }
+
+            // If the destination directory doesn't exist, create it.
+            destination.Create();
+
+            // Get the files in the directory and copy them to the new location.
+            foreach (var file in source.GetFiles())
+            {
+                string tempPath = Path.Combine(destination.FullName, file.Name);
+                file.CopyTo(tempPath, false);
+            }
+
+            foreach (DirectoryInfo subdir in source.GetDirectories())
+            {
+                CopyDirectory(
+                    new DirectoryInfo(subdir.FullName),
+                    new DirectoryInfo(Path.Combine(destination.FullName, subdir.Name))
+                );
             }
         }
     }

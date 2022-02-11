@@ -56,8 +56,8 @@ namespace OpenTabletDriver.UX.Controls
         private TypeListBox<TSource> sourceSelector;
         private ToggleablePluginSettingStoreEditor settingStoreEditor;
 
-        private PluginSettingStoreCollection storeCollection;
-        public PluginSettingStoreCollection StoreCollection
+        private PluginSettingsCollection storeCollection;
+        public PluginSettingsCollection StoreCollection
         {
             set
             {
@@ -90,11 +90,11 @@ namespace OpenTabletDriver.UX.Controls
             this.Content = types.Any() ? mainContent : placeholder;
         }
 
-        public BindableBinding<PluginSettingStoreCollectionEditor<TSource>, PluginSettingStoreCollection> StoreCollectionBinding
+        public BindableBinding<PluginSettingStoreCollectionEditor<TSource>, PluginSettingsCollection> StoreCollectionBinding
         {
             get
             {
-                return new BindableBinding<PluginSettingStoreCollectionEditor<TSource>, PluginSettingStoreCollection>(
+                return new BindableBinding<PluginSettingStoreCollectionEditor<TSource>, PluginSettingsCollection>(
                     this,
                     c => c.StoreCollection,
                     (c, v) => c.StoreCollection = v,
@@ -106,7 +106,7 @@ namespace OpenTabletDriver.UX.Controls
 
         private class ToggleablePluginSettingStoreEditor : PluginSettingStoreEditor<TSource>
         {
-            protected override IEnumerable<Control> GetHeaderControlsForStore(PluginSettingStore store)
+            protected override IEnumerable<Control> GetHeaderControlsForStore(PluginSettings store)
             {
                 var enableButton = new CheckBox
                 {

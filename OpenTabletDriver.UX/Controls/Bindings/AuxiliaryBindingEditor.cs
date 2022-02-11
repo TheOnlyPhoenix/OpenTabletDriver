@@ -30,7 +30,7 @@ namespace OpenTabletDriver.UX.Controls.Bindings
                 }
             };
 
-            auxButtons.ItemSourceBinding.Bind(SettingsBinding.Child(c => (IList<PluginSettingStore>)c.AuxButtons));
+            auxButtons.ItemSourceBinding.Bind(SettingsBinding.Child(c => (IList<PluginSettings>)c.AuxButtons));
         }
 
         private BindingDisplayList auxButtons;
