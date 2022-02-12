@@ -9,6 +9,7 @@ using OpenTabletDriver.Desktop.Reflection.Metadata;
 using OpenTabletDriver.Desktop.RPC;
 using OpenTabletDriver.Devices;
 using OpenTabletDriver.Logging;
+using OpenTabletDriver.Tablet;
 
 #nullable enable
 
@@ -18,7 +19,7 @@ namespace OpenTabletDriver.Desktop.Contracts
     {
         event EventHandler<LogMessage> Message;
         event EventHandler<DebugReportData> DeviceReport;
-        event EventHandler<IEnumerable<InputDevice>>? TabletsChanged;
+        event EventHandler<IEnumerable<TabletConfiguration>>? TabletsChanged;
 
         Task Initialize();
 
@@ -31,8 +32,8 @@ namespace OpenTabletDriver.Desktop.Contracts
 
         Task<IEnumerable<IDeviceEndpoint>> GetDevices();
 
-        Task<IEnumerable<InputDevice>> GetTablets();
-        Task<IEnumerable<InputDevice>> DetectTablets();
+        Task<IEnumerable<TabletConfiguration>> GetTablets();
+        Task<IEnumerable<TabletConfiguration>> DetectTablets();
 
         Task SetSettings(Settings settings);
         Task<Settings> GetSettings();

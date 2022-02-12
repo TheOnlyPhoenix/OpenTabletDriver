@@ -75,7 +75,7 @@ namespace OpenTabletDriver.Desktop.Binding
         private void HandleBinding(InputDevice device, IDeviceReport report)
         {
             if (report is ITabletReport tabletReport)
-                HandleTabletReport(device.Properties.Specifications.Pen, tabletReport);
+                HandleTabletReport(device.Configuration.Specifications.Pen, tabletReport);
             if (report is IAuxReport auxReport)
                 HandleAuxiliaryReport(auxReport);
             if (report is IMouseReport mouseReport)

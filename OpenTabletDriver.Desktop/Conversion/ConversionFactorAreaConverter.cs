@@ -16,7 +16,7 @@ namespace OpenTabletDriver.Desktop.Conversion
 
         private static double GetConversionFactor(InputDevice tablet)
         {
-            var digitizer = tablet.Properties.Specifications.Digitizer;
+            var digitizer = tablet.Configuration.Specifications.Digitizer;
             return digitizer.MaxX / digitizer.Width;
         }
 

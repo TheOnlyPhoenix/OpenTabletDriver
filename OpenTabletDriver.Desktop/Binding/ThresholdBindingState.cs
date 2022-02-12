@@ -32,7 +32,7 @@ namespace OpenTabletDriver.Desktop.Binding
                 }
                 else // remap pressure when beyond threshold
                 {
-                    var maxPressure = _device.Properties.Specifications.Pen.MaxPressure;
+                    var maxPressure = _device.Configuration.Specifications.Pen.MaxPressure;
                     var remappedPressure = (value - ActivationThreshold) / (100f - ActivationThreshold);
                     tabletReport.Pressure = (uint)(maxPressure * remappedPressure);
                 }

@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
+using OpenTabletDriver.Devices;
 using OpenTabletDriver.Output;
 using OpenTabletDriver.Tablet;
 
@@ -9,11 +12,12 @@ using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver
 {
+    [PublicAPI]
     public class InputDevice
     {
         public InputDevice(TabletConfiguration configuration, IList<InputDeviceEndpoint> endpoints)
         {
-            Properties = configuration;
+            Configuration = configuration;
             Endpoints = endpoints;
 
             foreach (var dev in Endpoints)
@@ -21,32 +25,31 @@ namespace OpenTabletDriver
                 // Hook endpoint states
                 dev.ConnectionStateChanged += (sender, reading) =>
                 {
-                    if (this.connected && !reading)
+                    if (_connected && !reading)
                     {
-                        this.connected = false;
-                        Disconnected?.Invoke(this, new EventArgs());
+                        _connected = false;
+                        Disconnected?.Invoke(this, EventArgs.Empty);
                     }
                 };
+                dev.Report += HandleReport;
             }
         }
 
-        private bool connected = true;
-        private IList<InputDeviceEndpoint> endpoints;
+        [JsonConstructor]
+        private InputDevice()
+        {
+            Endpoints = Array.Empty<InputDeviceEndpoint>();
+            Configuration = null!;
+        }
+
+        private bool _connected = true;
 
         public event EventHandler<EventArgs>? Disconnected;
 
-        public TabletConfiguration Properties { protected set; get; }
-        public IList<InputDeviceEndpoint> Endpoints
-        {
-            [MemberNotNull(nameof(endpoints))]
-            protected set
-            {
-                this.endpoints = value;
-                foreach (var dev in Endpoints)
-                    dev.Report += HandleReport;
-            }
-            get => this.endpoints;
-        }
+        public TabletConfiguration Configuration { protected set; get; }
+
+        [JsonIgnore]
+        public IList<InputDeviceEndpoint> Endpoints { get; }
 
         /// <summary>
         /// The active output mode at the end of the data pipeline for all data to be processed.

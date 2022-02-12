@@ -77,7 +77,7 @@ namespace OpenTabletDriver.Output
             var transform = Matrix3x2.CreateRotation(
                 (float)(-Rotation * Math.PI / 180));
 
-            var digitizer = Tablet?.Properties.Specifications.Digitizer;
+            var digitizer = Tablet?.Configuration.Specifications.Digitizer;
             return transform *= Matrix3x2.CreateScale(
                 _sensitivity.X * ((digitizer?.Width / digitizer?.MaxX) ?? 0.01f),
                 _sensitivity.Y * ((digitizer?.Height / digitizer?.MaxY) ?? 0.01f));
@@ -109,7 +109,7 @@ namespace OpenTabletDriver.Output
             if (report is IAbsolutePositionReport absReport)
                 Pointer.SetPosition(absReport.Position);
             if (report is ITabletReport tabletReport && Pointer is IPressureHandler pressureHandler)
-                pressureHandler.SetPressure(tabletReport.Pressure / (float)Tablet.Properties.Specifications.Pen.MaxPressure);
+                pressureHandler.SetPressure(tabletReport.Pressure / (float)Tablet.Configuration.Specifications.Pen.MaxPressure);
             if (report is ITiltReport tiltReport && Pointer is ITiltHandler tiltHandler)
                 tiltHandler.SetTilt(tiltReport.Tilt);
             if (report is IProximityReport proximityReport)

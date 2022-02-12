@@ -45,13 +45,13 @@ namespace OpenTabletDriver.Desktop.Profiles
         public static Profile GetDefaults(IServiceProvider serviceProvider, InputDevice tablet)
         {
             var screen = serviceProvider.GetRequiredService<IVirtualScreen>();
-            var digitizer = tablet.Properties.Specifications.Digitizer;
+            var digitizer = tablet.Configuration.Specifications.Digitizer;
 
             return new Profile
             {
-                Tablet = tablet.Properties.Name,
+                Tablet = tablet.Configuration.Name,
                 OutputMode = typeof(AbsoluteMode).GetDefaultSettings(serviceProvider, digitizer, screen),
-                BindingSettings = BindingSettings.GetDefaults(tablet.Properties.Specifications)
+                BindingSettings = BindingSettings.GetDefaults(tablet.Configuration.Specifications)
             };
         }
     }

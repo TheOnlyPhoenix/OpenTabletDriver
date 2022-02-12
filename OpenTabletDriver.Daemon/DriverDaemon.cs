@@ -72,7 +72,7 @@ namespace OpenTabletDriver.Daemon
                 Message?.Invoke(sender, message);
             };
 
-            _driver.InputDevicesChanged += TabletsChanged;
+            _driver.InputDevicesChanged += (sender, e) => TabletsChanged?.Invoke(sender, e.Select(c => c.Configuration));
             _deviceHub.DevicesChanged += async (sender, args) =>
             {
                 if (args.Additions.Any())
@@ -110,7 +110,7 @@ namespace OpenTabletDriver.Daemon
 
         public event EventHandler<LogMessage>? Message;
         public event EventHandler<DebugReportData>? DeviceReport;
-        public event EventHandler<IEnumerable<InputDevice>>? TabletsChanged;
+        public event EventHandler<IEnumerable<TabletConfiguration>>? TabletsChanged;
 
         private Collection<LogMessage> LogMessages { set; get; } = new Collection<LogMessage>();
         private Collection<ITool> Tools { set; get; } = new Collection<ITool>();
@@ -148,12 +148,12 @@ namespace OpenTabletDriver.Daemon
             return _pluginManager.DownloadPlugin(metadata);
         }
 
-        public Task<IEnumerable<InputDevice>> GetTablets()
+        public Task<IEnumerable<TabletConfiguration>> GetTablets()
         {
-            return Task.FromResult(_driver.InputDevices as IEnumerable<InputDevice>);
+            return Task.FromResult(_driver.InputDevices.Select(c => c.Configuration));
         }
 
-        public async Task<IEnumerable<InputDevice>> DetectTablets()
+        public async Task<IEnumerable<TabletConfiguration>> DetectTablets()
         {
             _driver.Detect();
 
@@ -180,7 +180,7 @@ namespace OpenTabletDriver.Daemon
 
             foreach (var device in _driver.InputDevices)
             {
-                var group = device.Properties.Name;
+                var group = device.Configuration.Name;
 
                 var profile = _settingsManager.Settings.Profiles.GetOrSetDefaults(_serviceProvider, device);
                 device.OutputMode = _pluginFactory.Construct<IOutputMode>(profile.OutputMode, device);
@@ -257,7 +257,7 @@ namespace OpenTabletDriver.Daemon
 
         private void SetOutputModeSettings(InputDevice dev, IOutputMode outputMode, Profile profile)
         {
-            string group = dev.Properties.Name;
+            string group = dev.Configuration.Name;
 
             var elements = from store in profile.Filters
                            where store.Enable

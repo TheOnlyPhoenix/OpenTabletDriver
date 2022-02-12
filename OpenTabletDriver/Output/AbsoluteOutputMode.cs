@@ -93,7 +93,7 @@ namespace OpenTabletDriver.Output
         {
             if (Input != null && Output != null && Tablet != null)
             {
-                var transform = CalculateTransformation(Input, Output, Tablet.Properties.Specifications.Digitizer);
+                var transform = CalculateTransformation(Input, Output, Tablet.Configuration.Specifications.Digitizer);
 
                 var halfDisplayWidth = Output?.Width / 2 ?? 0;
                 var halfDisplayHeight = Output?.Height / 2 ?? 0;
@@ -169,7 +169,7 @@ namespace OpenTabletDriver.Output
             if (report is IAbsolutePositionReport absReport)
                 Pointer.SetPosition(absReport.Position);
             if (report is ITabletReport tabletReport && Pointer is IPressureHandler pressureHandler)
-                pressureHandler.SetPressure(tabletReport.Pressure / (float)Tablet.Properties.Specifications.Pen.MaxPressure);
+                pressureHandler.SetPressure(tabletReport.Pressure / (float)Tablet.Configuration.Specifications.Pen.MaxPressure);
             if (report is ITiltReport tiltReport && Pointer is ITiltHandler tiltHandler)
                 tiltHandler.SetTilt(tiltReport.Tilt);
             if (report is IProximityReport proximityReport)

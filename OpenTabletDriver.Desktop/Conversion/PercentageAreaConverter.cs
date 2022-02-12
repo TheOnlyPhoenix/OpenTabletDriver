@@ -16,7 +16,7 @@ namespace OpenTabletDriver.Desktop.Conversion
 
         public AngledArea Convert(InputDevice tablet, double up, double left, double down, double right)
         {
-            var digitizer = tablet.Properties.Specifications.Digitizer;
+            var digitizer = tablet.Configuration.Specifications.Digitizer;
 
             var width = (float) ((right - left) * digitizer.Width);
             var height = (float) ((down - up) * digitizer.Height);
