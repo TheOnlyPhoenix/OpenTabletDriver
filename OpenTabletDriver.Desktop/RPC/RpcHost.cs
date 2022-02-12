@@ -29,7 +29,8 @@ namespace OpenTabletDriver.Desktop.RPC
                     try
                     {
                         ConnectionStateChanged?.Invoke(this, true);
-                        _rpc = JsonRpc.Attach(stream, host);
+                        _rpc = Utilities.Host(stream, host);
+                        _rpc.StartListening();
                         await _rpc.Completion;
                     }
                     catch (ObjectDisposedException)

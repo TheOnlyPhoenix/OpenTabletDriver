@@ -1,5 +1,7 @@
 using System;
 
+#nullable enable
+
 namespace OpenTabletDriver.Devices
 {
     public interface IDeviceEndpointStream : IDisposable

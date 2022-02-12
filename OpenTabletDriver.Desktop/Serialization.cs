@@ -1,6 +1,7 @@
 using System.IO;
 using Newtonsoft.Json;
 using OpenTabletDriver.Desktop.Converters;
+using OpenTabletDriver.Desktop.Json;
 
 namespace OpenTabletDriver.Desktop
 {
@@ -12,7 +13,7 @@ namespace OpenTabletDriver.Desktop
             Serializer.Converters.Add(new VersionConverter());
         }
 
-        private static readonly JsonSerializer Serializer = new JsonSerializer
+        private static readonly JsonSerializer Serializer = new AdvancedJsonSerializer
         {
             Formatting = Formatting.Indented
         };

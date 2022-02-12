@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Interop.Display;
 using OpenTabletDriver.Desktop.Interop.Environment;
@@ -25,6 +25,7 @@ namespace OpenTabletDriver.Desktop.Interop
         {
             Singleton<IAppInfo, LinuxAppInfo>(),
             Transient<EnvironmentHandler, LinuxEnvironmentHandler>(),
+            Transient<EnvironmentDictionary, LinuxEnvironmentDictionary>(),
             Transient<ITimer, FallbackTimer>(),
             Singleton<IAbsolutePointer, EvdevAbsolutePointer>(),
             Singleton<IRelativePointer, EvdevRelativePointer>(),

@@ -6,23 +6,23 @@ using HidSharp;
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {
     [Attributes.DeviceHub]
-    public class HidSharpDeviceRootHub : IDeviceHub
+    public sealed class HidSharpDeviceRootHub : IDeviceHub
     {
         public HidSharpDeviceRootHub()
         {
             DeviceList.Local.Changed += (sender, e) =>
             {
                 var newList = DeviceList.Local.GetHidDevices().Select(d => new HidSharpEndpoint(d));
-                var changes = new DevicesChangedEventArgs(hidDevices, newList);
+                var changes = new DevicesChangedEventArgs(_hidDevices, newList);
                 if (changes.Changes.Any())
                 {
                     DevicesChanged?.Invoke(this, changes);
-                    hidDevices = newList;
+                    _hidDevices = newList;
                 }
             };
         }
 
-        private IEnumerable<IDeviceEndpoint> hidDevices = DeviceList.Local.GetHidDevices().Select(d => new HidSharpEndpoint(d));
+        private IEnumerable<IDeviceEndpoint> _hidDevices = DeviceList.Local.GetHidDevices().Select(d => new HidSharpEndpoint(d));
 
         public event EventHandler<DevicesChangedEventArgs> DevicesChanged;
 

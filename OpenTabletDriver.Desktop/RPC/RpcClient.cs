@@ -29,7 +29,7 @@ namespace OpenTabletDriver.Desktop.RPC
             _stream = GetStream();
             await _stream.ConnectAsync();
 
-            _rpc = new JsonRpc(_stream);
+            _rpc = Utilities.Client(_stream);
             _rpc.Disconnected += (_, _) =>
             {
                 _stream.Dispose();

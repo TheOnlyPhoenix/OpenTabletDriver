@@ -322,9 +322,9 @@ namespace OpenTabletDriver.Daemon
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<SerializedDeviceEndpoint>> GetDevices()
+        public Task<IEnumerable<IDeviceEndpoint>> GetDevices()
         {
-            return Task.FromResult(_deviceHub.GetDevices().Select(d => new SerializedDeviceEndpoint(d)));
+            return Task.FromResult(_deviceHub.GetDevices());
         }
 
         public Task<AppInfo> GetApplicationInfo()
@@ -332,7 +332,7 @@ namespace OpenTabletDriver.Daemon
             return Task.FromResult(_appInfo as AppInfo)!;
         }
 
-        public async Task<DiagnosticInfo> GetDiagnostics()
+        public async Task<IDiagnosticInfo> GetDiagnostics()
         {
             var devices = await GetDevices();
             return ActivatorUtilities.CreateInstance<DiagnosticInfo>(_serviceProvider, LogMessages, devices);

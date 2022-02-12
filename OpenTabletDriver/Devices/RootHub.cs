@@ -11,7 +11,7 @@ using IDeviceHubsProvider = OpenTabletDriver.Components.IDeviceHubsProvider;
 
 namespace OpenTabletDriver.Devices
 {
-    public class RootHub : ICompositeDeviceHub, IDeviceHub
+    public class RootHub : ICompositeDeviceHub
     {
         public RootHub(IDeviceHubsProvider hubsProvider)
         {

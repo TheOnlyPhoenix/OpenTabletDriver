@@ -29,7 +29,7 @@ namespace OpenTabletDriver.Desktop.Contracts
         Task<bool> UninstallPlugin(string friendlyName);
         Task<bool> DownloadPlugin(PluginMetadata metadata);
 
-        Task<IEnumerable<SerializedDeviceEndpoint>> GetDevices();
+        Task<IEnumerable<IDeviceEndpoint>> GetDevices();
 
         Task<IEnumerable<InputDevice>> GetTablets();
         Task<IEnumerable<InputDevice>> DetectTablets();
@@ -43,7 +43,7 @@ namespace OpenTabletDriver.Desktop.Contracts
         Task SavePreset(string name, Settings settings);
 
         Task<AppInfo> GetApplicationInfo();
-        Task<DiagnosticInfo> GetDiagnostics();
+        Task<IDiagnosticInfo> GetDiagnostics();
 
         Task SetTabletDebug(bool isEnabled);
         Task<string> RequestDeviceString(int vendorID, int productID, int index);

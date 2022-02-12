@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace OpenTabletDriver.Desktop.Interop.AppInfo
 {
     public interface IAppInfo

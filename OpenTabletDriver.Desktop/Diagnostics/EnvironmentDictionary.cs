@@ -7,7 +7,7 @@ namespace OpenTabletDriver.Desktop.Diagnostics
 {
     public class EnvironmentDictionary : Dictionary<string, string>
     {
-        private static readonly string[] EnvironmentVariables = new[]
+        private static readonly string[] EnvironmentVariables =
         {
             "USER",
             "TEMP",
@@ -30,7 +30,7 @@ namespace OpenTabletDriver.Desktop.Diagnostics
             foreach (var variable in variables)
             {
                 var value = Environment.GetEnvironmentVariable(variable);
-                base.Add(variable, value);
+                Add(variable, value);
             }
         }
     }

@@ -255,26 +255,26 @@ namespace OpenTabletDriver.Console
             await Out.WriteLineAsync("Tools: " + settings.Tools.Format());
         }
 
-        [Command("detect")]
+        [Command("get-string", "Requests a device string")]
+        public async Task GetString(int vid, int pid, int index)
+        {
+            var str = await _driverDaemon.RequestDeviceString(vid, pid, index);
+            await Out.WriteLineAsync(str);
+        }
+
+        [Command("detect", "Scan all devices for supported tablets")]
         public async Task Detect()
         {
             await _driverDaemon.DetectTablets();
         }
 
-        [Command("list-tablets")]
+        [Command("list-tablets", "Lists all connected tablets")]
         public async Task ListTablets()
         {
             var tablets = await _driverDaemon.GetTablets();
             var tabletNames = tablets.Select(t => t.Properties.Name);
             var output = string.Join(", ", tabletNames);
             await Out.WriteLineAsync(output);
-        }
-
-        [Command("get-string", "Requests a device string")]
-        public async Task GetString(int vid, int pid, int index)
-        {
-            var str = await _driverDaemon.RequestDeviceString(vid, pid, index);
-            await Out.WriteLineAsync(str);
         }
 
         [Command("list-output-modes", "Lists all output modes")]
@@ -354,7 +354,7 @@ namespace OpenTabletDriver.Console
                 File.Delete(path);
         }
 
-        [Command("diagnostics", "Get OpenTabletDriver diagnostics")]
+        [Command("diagnostics", "Gets OpenTabletDriver diagnostics")]
         public async Task GetDiagnostics()
         {
             try
@@ -369,7 +369,7 @@ namespace OpenTabletDriver.Console
         }
 
         [Command("update", "Install OpenTabletDriver update if available")]
-        private async Task InstallUpdate()
+        public async Task InstallUpdate()
         {
             if (await _driverDaemon.HasUpdate())
             {

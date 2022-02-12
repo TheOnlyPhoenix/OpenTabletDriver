@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Desktop
 {
@@ -21,7 +19,7 @@ namespace OpenTabletDriver.Desktop
                 s => conflictingServiceTypes.Contains(s.ServiceType)
             );
 
-            serviceCollection.RemoveServices(existingConflictingServices);
+            serviceCollection.RemoveServices(existingConflictingServices.ToImmutableArray());
 
             foreach (var service in services)
             {

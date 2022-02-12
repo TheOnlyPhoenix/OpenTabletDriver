@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace OpenTabletDriver.Devices
 {
     public interface IDeviceEndpoint
@@ -16,7 +18,7 @@ namespace OpenTabletDriver.Devices
         string DevicePath { get; }
         bool CanOpen { get; }
 
-        IDeviceEndpointStream Open();
+        IDeviceEndpointStream? Open();
 
         string GetDeviceString(byte index);
     }

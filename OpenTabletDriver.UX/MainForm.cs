@@ -589,7 +589,7 @@ namespace OpenTabletDriver.UX
             try
             {
                 var log = await Driver.Instance.GetCurrentLog();
-                var diagnosticDump = new DiagnosticInfo(log, await Driver.Instance.GetDevices());
+                var diagnosticDump = await Driver.Instance.GetDiagnostics();
                 var fileDialog = new SaveFileDialog
                 {
                     Title = "Save diagnostic information to...",

@@ -15,13 +15,11 @@ namespace OpenTabletDriver.Devices.HidSharpBackend
                 value = predicate(source);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Exception(ex);
+                value = default;
+                return false;
             }
-
-            value = default;
-            return false;
         }
 
         public static TValue SafeGet<TSource, TValue>(

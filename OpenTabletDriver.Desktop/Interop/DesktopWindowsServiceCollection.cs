@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTabletDriver.Desktop.Diagnostics;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
 using OpenTabletDriver.Desktop.Interop.Display;
 using OpenTabletDriver.Desktop.Interop.Environment;
@@ -24,6 +25,7 @@ namespace OpenTabletDriver.Desktop.Interop
         {
             Singleton<IAppInfo, WindowsAppInfo>(),
             Transient<EnvironmentHandler, WindowsEnvironmentHandler>(),
+            Transient<EnvironmentDictionary, WindowsEnvironmentDictionary>(),
             Transient<ITimer, WindowsTimer>(),
             Transient<IAbsolutePointer, WindowsAbsolutePointer>(),
             Transient<IRelativePointer, WindowsRelativePointer>(),

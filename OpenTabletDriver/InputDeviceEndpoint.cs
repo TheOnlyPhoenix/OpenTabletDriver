@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using OpenTabletDriver.Devices;
-using DeviceIdentifier = OpenTabletDriver.Tablet.DeviceIdentifier;
-using IDeviceEndpoint = OpenTabletDriver.Devices.IDeviceEndpoint;
-using IDeviceReport = OpenTabletDriver.Tablet.IDeviceReport;
-using TabletConfiguration = OpenTabletDriver.Tablet.TabletConfiguration;
+using OpenTabletDriver.Tablet;
+
+#nullable enable
 
 namespace OpenTabletDriver
 {
@@ -30,20 +29,15 @@ namespace OpenTabletDriver
         }
 
         /// <summary>
-        /// The driver in which this <see cref="InputDeviceEndpoint"/> was sourced from.
-        /// </summary>
-        public IDriver Driver { private set; get; }
-
-        /// <summary>
         /// The tablet configuration referring to this device.
         /// </summary>
-        public TabletConfiguration Configuration { private set; get; }
+        public TabletConfiguration Configuration { get; }
 
         /// <summary>
         /// The device identifier used to detect this device.
         /// </summary>
         /// <value></value>
-        public DeviceIdentifier Identifier { private set; get; }
+        public DeviceIdentifier Identifier { get; }
 
         protected override bool Initialize()
         {
@@ -61,12 +55,12 @@ namespace OpenTabletDriver
 
             foreach (var report in Identifier.FeatureInitReport ?? new List<byte[]>())
             {
-                if (report == null || report.Length == 0)
+                if (report.Length == 0)
                     continue;
 
                 try
                 {
-                    ReportStream.SetFeature(report);
+                    ReportStream!.SetFeature(report);
                     Log.Debug("Device", "Set device feature: " + BitConverter.ToString(report));
                 }
                 catch
@@ -77,12 +71,12 @@ namespace OpenTabletDriver
 
             foreach (var report in Identifier.OutputInitReport ?? new List<byte[]>())
             {
-                if (report == null || report.Length == 0)
+                if (report.Length == 0)
                     continue;
 
                 try
                 {
-                    ReportStream.Write(report);
+                    ReportStream!.Write(report);
                     Log.Debug("Device", "Set device output: " + BitConverter.ToString(report));
                 }
                 catch
@@ -93,22 +87,5 @@ namespace OpenTabletDriver
 
             return true;
         }
-
-        private bool TryGetDeviceProperty<T>(Func<IDeviceEndpoint, T> predicate, out T value)
-        {
-            try
-            {
-                value = predicate(Endpoint);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log.Exception(ex);
-            }
-            value = default(T);
-            return false;
-        }
-
-        private T SafeGetDeviceProperty<T>(Func<IDeviceEndpoint, T> predicate, T fallback) => TryGetDeviceProperty(predicate, out var val) ? val : fallback;
     }
 }
