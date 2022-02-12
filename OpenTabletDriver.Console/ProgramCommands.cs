@@ -268,6 +268,14 @@ namespace OpenTabletDriver.Console
             await _driverDaemon.DetectTablets();
         }
 
+        [Command("list-presets", "Lists all saved presets")]
+        public async Task ListPresets()
+        {
+            var presets = await _driverDaemon.GetPresets();
+            var output = string.Join(", ", presets);
+            await Out.WriteLineAsync(output);
+        }
+
         [Command("list-tablets", "Lists all connected tablets")]
         public async Task ListTablets()
         {
