@@ -1,5 +1,11 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Output
 {
+    /// <summary>
+    /// Marks the position in a positioned pipeline element.
+    /// </summary>
+    [PublicAPI]
     public enum PipelinePosition
     {
         None = 0,

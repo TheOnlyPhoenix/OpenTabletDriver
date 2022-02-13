@@ -1,12 +1,10 @@
 using HidSharp;
 
-#nullable enable
-
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {
-    public sealed class HidSharpEndpoint : IDeviceEndpoint
+    internal sealed class HidSharpEndpoint : IDeviceEndpoint
     {
-        internal HidSharpEndpoint(HidDevice device)
+        public HidSharpEndpoint(HidDevice device)
         {
             _device = device;
         }
@@ -22,7 +20,7 @@ namespace OpenTabletDriver.Devices.HidSharpBackend
         public string Manufacturer => _device.SafeGet(d => d.GetManufacturer(), "Unknown Manufacturer");
         public string ProductName => _device.SafeGet(d => d.GetProductName(), "Unknown Product Name");
         public string FriendlyName => _device.SafeGet(d => d.GetFriendlyName(), "Unknown Product Name");
-        public string SerialNumber => _device.SafeGet(d => d.GetSerialNumber(), string.Empty);
+        public string? SerialNumber => _device.SafeGet(d => d.GetSerialNumber(), null);
         public string DevicePath => _device.SafeGet(d => d.DevicePath, "Invalid Device Path");
         public bool CanOpen => _device.SafeGet(d => d.CanOpen, false);
 

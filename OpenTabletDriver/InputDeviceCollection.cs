@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// A collection of <see cref="InputDevice"/>s.
+    /// </summary>
+    [PublicAPI]
     public class InputDeviceCollection : Collection<InputDevice>
     {
         protected override void ClearItems()

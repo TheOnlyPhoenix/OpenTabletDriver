@@ -1,9 +1,12 @@
 using System.Numerics;
-
-#nullable enable
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// A working area designating width and height based at a centered origin position.
+    /// </summary>
+    [PublicAPI]
     public class Area
     {
         /// <summary>
@@ -20,7 +23,7 @@ namespace OpenTabletDriver
         /// The center offset of the area.
         /// </summary>
         /// <remarks>
-        /// This is also the rotation point of the area.
+        /// This is also the rotation origin of the area where applicable.
         /// </remarks>
         public Vector2 Position { set; get; }
 

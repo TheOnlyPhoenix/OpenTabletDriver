@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Attributes
 {
@@ -6,6 +7,7 @@ namespace OpenTabletDriver.Attributes
     /// Marks a static function to be executed from the client application.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
+    [PublicAPI]
     public class ActionAttribute : Attribute
     {
         public ActionAttribute(string groupName, string displayText)

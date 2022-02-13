@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Numerics;
+using JetBrains.Annotations;
 using OpenTabletDriver.Attributes;
 using OpenTabletDriver.Platform.Pointer;
 using OpenTabletDriver.Tablet;
@@ -8,9 +9,10 @@ using OpenTabletDriver.Tablet;
 namespace OpenTabletDriver.Output
 {
     /// <summary>
-    /// A relatively positioned output mode.
+    /// A relative positioned output mode.
     /// </summary>
     [PluginIgnore]
+    [PublicAPI]
     public abstract class RelativeOutputMode : OutputMode
     {
         private readonly HPETDeltaStopwatch _stopwatch = new HPETDeltaStopwatch(true);
@@ -83,7 +85,7 @@ namespace OpenTabletDriver.Output
                 _sensitivity.Y * ((digitizer?.Height / digitizer?.MaxY) ?? 0.01f));
         }
 
-        protected override IAbsolutePositionReport Transform(IAbsolutePositionReport report)
+        protected override IAbsolutePositionReport? Transform(IAbsolutePositionReport report)
         {
             var deltaTime = _stopwatch.Restart();
 

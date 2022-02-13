@@ -1,8 +1,10 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Tablet
 {
+    [PublicAPI]
     public struct TabletReport : ITabletReport
     {
         public TabletReport(byte[] report)

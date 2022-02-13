@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 
-#nullable enable
-
 namespace OpenTabletDriver.Devices
 {
+    /// <summary>
+    /// Event triggered by addition or removal of devices.
+    /// </summary>
     [PublicAPI]
     public class DevicesChangedEventArgs : EventArgs
     {

@@ -1,9 +1,17 @@
 using System;
 using System.ComponentModel;
+using JetBrains.Annotations;
 using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Output
 {
+    /// <summary>
+    /// An asynchronous pipeline element, controlled by a hardware scheduler.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The pipeline element type.
+    /// </typeparam>
+    [PublicAPI]
     public abstract class AsyncPositionedPipelineElement<T> : IPositionedPipelineElement<T>, IDisposable
     {
         private readonly ITimer _scheduler;
@@ -29,9 +37,9 @@ namespace OpenTabletDriver.Output
         /// <summary>
         /// The current state of the <see cref="AsyncPositionedPipelineElement{T}"/>.
         /// </summary>
-        protected T State { set; get; }
+        protected T? State { set; get; }
 
-        public event Action<T> Emit;
+        public event Action<T>? Emit;
 
         public abstract PipelinePosition Position { get; }
 
@@ -68,7 +76,6 @@ namespace OpenTabletDriver.Output
         /// <remarks>
         /// This is called by <see cref="Consume"/> whenever a report is received from a linked upstream element.
         /// </remarks>
-        /// <param name="value"></param>
         protected abstract void ConsumeState();
 
         /// <summary>
@@ -106,7 +113,7 @@ namespace OpenTabletDriver.Output
 
         public void Dispose()
         {
-            _scheduler?.Dispose();
+            _scheduler.Dispose();
         }
 
         ~AsyncPositionedPipelineElement() => Dispose();

@@ -1,5 +1,11 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Tablet
 {
+    /// <summary>
+    /// Specifications for a digitizer.
+    /// </summary>
+    [PublicAPI]
     public class DigitizerSpecifications
     {
         /// <summary>

@@ -1,7 +1,12 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// An operating system platform.
+    /// </summary>
+    [PublicAPI]
     [Flags]
     public enum SystemPlatform
     {

@@ -1,5 +1,11 @@
 namespace OpenTabletDriver.Output
 {
+    /// <summary>
+    /// A pipeline element with a predefined position within the pipeline.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The pipeline element type.
+    /// </typeparam>
     public interface IPositionedPipelineElement<T> : IPipelineElement<T>
     {
         /// <summary>

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using JetBrains.Annotations;
 using OpenTabletDriver.Tablet;
-
-#nullable enable
 
 namespace OpenTabletDriver.Devices
 {
+    [PublicAPI]
     public class DeviceReader<T> : IDisposable where T : IDeviceReport
     {
         public DeviceReader(IDeviceEndpoint endpoint, IReportParser<T> reportParser)
@@ -33,7 +33,7 @@ namespace OpenTabletDriver.Devices
         /// <summary>
         /// The raw device endpoint report stream.
         /// </summary>
-        public IDeviceEndpointStream? ReportStream { protected set; get; }
+        public IDeviceEndpointStream? ReportStream { private set; get; }
 
         /// <summary>
         /// The <see cref="Tablet.IReportParser{T}"/> in which the device reports will be parsed with.

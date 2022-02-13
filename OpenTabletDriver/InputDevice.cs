@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
-using OpenTabletDriver.Devices;
 using OpenTabletDriver.Output;
 using OpenTabletDriver.Tablet;
 
-#nullable enable
-
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// A configured input device.
+    /// </summary>
     [PublicAPI]
     public class InputDevice
     {
@@ -57,9 +55,9 @@ namespace OpenTabletDriver
         [JsonIgnore]
         public IOutputMode? OutputMode { set; get; }
 
-        private void HandleReport(object? sender, IDeviceReport report)
+        private void HandleReport(object? sender, IDeviceReport? report)
         {
-            OutputMode?.Read(report);
+            OutputMode?.Read(report!);
         }
     }
 }

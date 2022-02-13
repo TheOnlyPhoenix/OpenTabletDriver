@@ -1,5 +1,11 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Platform.Pointer
 {
+    /// <summary>
+    /// A mouse button.
+    /// </summary>
+    [PublicAPI]
     public enum MouseButton
     {
         None = 0,

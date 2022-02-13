@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
-
-#nullable enable
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Tablet
 {
+    /// <summary>
+    /// A tablet device configuration. Provides everything needed to detect and configure a device.
+    /// </summary>
+    [PublicAPI]
     public class TabletConfiguration
     {
         /// <summary>

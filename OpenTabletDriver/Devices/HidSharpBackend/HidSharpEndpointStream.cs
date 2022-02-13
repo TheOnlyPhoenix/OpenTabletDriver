@@ -1,12 +1,10 @@
 using HidSharp;
 
-#nullable enable
-
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {
-    public sealed class HidSharpEndpointStream : IDeviceEndpointStream
+    internal sealed class HidSharpEndpointStream : IDeviceEndpointStream
     {
-        internal HidSharpEndpointStream(HidStream stream)
+        public HidSharpEndpointStream(HidStream stream)
         {
             _stream = stream;
             _stream.ReadTimeout = int.MaxValue;

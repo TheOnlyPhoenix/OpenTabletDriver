@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using OpenTabletDriver.Tablet;
-
-#nullable enable
 
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// A base driver interface.
+    /// </summary>
+    [PublicAPI]
     public interface IDriver
     {
         /// <summary>
@@ -22,7 +25,7 @@ namespace OpenTabletDriver
         /// Attempts to detect a tablet.
         /// </summary>
         /// <returns>True if any configuration successfully matched.</returns>
-        bool Detect();
+        void Detect();
 
         /// <summary>
         /// Retrieve and construct the the report parser for an identifier.

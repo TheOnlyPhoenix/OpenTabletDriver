@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Numerics;
+using JetBrains.Annotations;
 using OpenTabletDriver.Attributes;
 using OpenTabletDriver.Attributes.UI;
 using OpenTabletDriver.Platform.Display;
@@ -9,9 +10,10 @@ using OpenTabletDriver.Tablet;
 namespace OpenTabletDriver.Output
 {
     /// <summary>
-    /// An absolutely positioned output mode.
+    /// An absolute positioned output mode.
     /// </summary>
     [PluginIgnore]
+    [PublicAPI]
     public abstract class AbsoluteOutputMode : OutputMode
     {
         protected AbsoluteOutputMode(InputDevice tablet, IAbsolutePointer absolutePointer)
@@ -21,8 +23,8 @@ namespace OpenTabletDriver.Output
         }
 
         private Vector2 _min, _max;
-        private AngledArea _inputArea;
-        private Area _outputArea;
+        private AngledArea? _inputArea;
+        private Area? _outputArea;
 
         /// <summary>
         /// The area in which the tablet's input is transformed to.
@@ -30,7 +32,7 @@ namespace OpenTabletDriver.Output
         [Setting("Input Area")]
         [MemberSourcedDefaults(nameof(GetDefaultInputArea), typeof(DigitizerSpecifications))]
         [AspectRatioLock(nameof(Output), nameof(LockAspectRatio))]
-        public AngledArea Input
+        public AngledArea? Input
         {
             set
             {
@@ -46,7 +48,7 @@ namespace OpenTabletDriver.Output
         [Setting("Output Area")]
         [MemberSourcedDefaults(nameof(GetDefaultOutputArea), typeof(IVirtualScreen))]
         [AspectRatioLock(nameof(Input), nameof(LockAspectRatio))]
-        public Area Output
+        public Area? Output
         {
             set
             {
@@ -144,7 +146,7 @@ namespace OpenTabletDriver.Output
         /// Transposes, transforms, and performs all absolute positioning calculations to a <see cref="IAbsolutePositionReport"/>.
         /// </summary>
         /// <param name="report">The <see cref="IAbsolutePositionReport"/> in which to transform.</param>
-        protected override IAbsolutePositionReport Transform(IAbsolutePositionReport report)
+        protected override IAbsolutePositionReport? Transform(IAbsolutePositionReport report)
         {
             // Apply transformation
             var pos = Vector2.Transform(report.Position, TransformationMatrix);

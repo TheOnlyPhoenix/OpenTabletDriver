@@ -1,5 +1,11 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Tablet
 {
+    /// <summary>
+    /// Device specifications for a pen tool.
+    /// </summary>
+    [PublicAPI]
     public class PenSpecifications
     {
         /// <summary>

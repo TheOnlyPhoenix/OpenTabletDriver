@@ -1,8 +1,10 @@
 using System;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Tablet
 {
     [Flags]
+    [PublicAPI]
     public enum DeviceVendor
     {
         Wacom = 0x056A,

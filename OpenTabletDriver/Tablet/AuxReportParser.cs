@@ -1,5 +1,8 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Tablet
 {
+    [PublicAPI]
     public class AuxReportParser : IReportParser<IDeviceReport>
     {
         public IDeviceReport Parse(byte[] data)

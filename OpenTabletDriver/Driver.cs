@@ -3,38 +3,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using OpenTabletDriver.Components;
 using OpenTabletDriver.Devices;
 using OpenTabletDriver.Interop;
 using OpenTabletDriver.Tablet;
 
-#nullable enable
-
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// A base implementation of <see cref="IDriver"/>.
+    /// </summary>
+    [PublicAPI]
     public class Driver : IDriver, IDisposable
     {
-        public Driver(ICompositeDeviceHub deviceHub, IReportParserProvider reportParserProvider, IDeviceConfigurationProvider configurationProvider)
+        private readonly ICompositeDeviceHub _compositeDeviceHub;
+        private readonly IReportParserProvider _reportParserProvider;
+        private readonly IDeviceConfigurationProvider _deviceConfigurationProvider;
+
+        public Driver(
+            ICompositeDeviceHub deviceHub,
+            IReportParserProvider reportParserProvider,
+            IDeviceConfigurationProvider configurationProvider
+        )
         {
-            CompositeDeviceHub = deviceHub;
+            _compositeDeviceHub = deviceHub;
             _reportParserProvider = reportParserProvider;
             _deviceConfigurationProvider = configurationProvider;
         }
 
-        private readonly IReportParserProvider _reportParserProvider;
-        private readonly IDeviceConfigurationProvider _deviceConfigurationProvider;
-
         public event EventHandler<IEnumerable<InputDevice>>? InputDevicesChanged;
 
-        public ICompositeDeviceHub CompositeDeviceHub { get; }
-        public InputDeviceCollection InputDevices { get; } = new();
+        public InputDeviceCollection InputDevices { get; } = new InputDeviceCollection();
 
         public IReportParser<IDeviceReport> GetReportParser(DeviceIdentifier identifier)
         {
             return _reportParserProvider.GetReportParser(identifier.ReportParser);
         }
 
-        public virtual bool Detect()
+        public virtual void Detect()
         {
             bool success = false;
 
@@ -62,8 +69,6 @@ namespace OpenTabletDriver
             {
                 Log.Write("Detect", "No tablets were detected.");
             }
-
-            return success;
         }
 
         protected virtual InputDevice? Match(TabletConfiguration config)
@@ -142,7 +147,7 @@ namespace OpenTabletDriver
 
         private IEnumerable<IDeviceEndpoint> GetMatchingDevices(TabletConfiguration configuration, DeviceIdentifier identifier)
         {
-            return from device in CompositeDeviceHub.GetDevices()
+            return from device in _compositeDeviceHub.GetDevices()
                    where identifier.VendorID == device.VendorID
                    where identifier.ProductID == device.ProductID
                    where device.CanOpen
@@ -153,7 +158,7 @@ namespace OpenTabletDriver
                    select device;
         }
 
-        private bool DeviceMatchesStrings(IDeviceEndpoint device, IDictionary<byte, string> deviceStrings)
+        private bool DeviceMatchesStrings(IDeviceEndpoint device, IDictionary<byte, string>? deviceStrings)
         {
             if (deviceStrings == null || deviceStrings.Count == 0)
                 return true;
@@ -163,7 +168,7 @@ namespace OpenTabletDriver
                 try
                 {
                     // Iterate through each device string, if one doesn't match then its the wrong configuration.
-                    var input = device.GetDeviceString(matchQuery.Key);
+                    var input = device.GetDeviceString(matchQuery.Key) ?? string.Empty;
                     var pattern = matchQuery.Value;
                     if (!Regex.IsMatch(input, pattern))
                         return false;
@@ -185,15 +190,15 @@ namespace OpenTabletDriver
                 {
                     var devName = device.DevicePath;
 
-                    bool interfaceMatches = attributes.ContainsKey("WinInterface") ? Regex.IsMatch(devName, $"&mi_{attributes["WinInterface"]}") : true;
-                    bool keyMatches = attributes.ContainsKey("WinUsage") ? Regex.IsMatch(devName, $"&col{attributes["WinUsage"]}") : true;
+                    var interfaceMatches = !attributes.ContainsKey("WinInterface") || Regex.IsMatch(devName, $"&mi_{attributes["WinInterface"]}");
+                    var keyMatches = !attributes.ContainsKey("WinUsage") || Regex.IsMatch(devName, $"&col{attributes["WinUsage"]}");
 
                     return interfaceMatches && keyMatches;
                 }
                 case SystemPlatform.MacOS:
                 {
                     var devName = device.DevicePath;
-                    bool interfaceMatches = attributes.ContainsKey("MacInterface") ? Regex.IsMatch(devName, $"IOUSBHostInterface@{attributes["MacInterface"]}") : true;
+                    bool interfaceMatches = !attributes.ContainsKey("MacInterface") || Regex.IsMatch(devName, $"IOUSBHostInterface@{attributes["MacInterface"]}");
                     return interfaceMatches;
                 }
                 default:

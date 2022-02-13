@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using OpenTabletDriver.Logging;
 
 namespace OpenTabletDriver
@@ -5,6 +6,7 @@ namespace OpenTabletDriver
     /// <summary>
     /// Various severity levels for <see cref="LogMessage"/>s.
     /// </summary>
+    [PublicAPI]
     public enum LogLevel
     {
         Debug,

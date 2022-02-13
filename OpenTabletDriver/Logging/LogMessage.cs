@@ -1,7 +1,14 @@
 using System;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace OpenTabletDriver.Logging
 {
+    /// <summary>
+    /// A driver log message.
+    /// </summary>
+    [JsonObject]
+    [PublicAPI]
     public class LogMessage
     {
         public LogMessage()
@@ -24,17 +31,17 @@ namespace OpenTabletDriver.Logging
         /// <summary>
         /// The group in which the log message belongs to.
         /// </summary>
-        public string Group { set; get; }
+        public string? Group { set; get; }
 
         /// <summary>
         /// The content of the log message.
         /// </summary>
-        public string Message { set; get; }
+        public string? Message { set; get; }
 
         /// <summary>
         /// The stack trace at the time of the log message.
         /// </summary>
-        public string StackTrace { set; get; }
+        public string? StackTrace { set; get; }
 
         /// <summary>
         /// The severity level of the log message.

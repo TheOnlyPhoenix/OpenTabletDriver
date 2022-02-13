@@ -5,13 +5,13 @@ namespace OpenTabletDriver.SystemDrivers.Providers
 {
     internal class TabletDriverInfoProvider : IDriverInfoProvider
     {
-        private readonly string[] ProcessNames = new string[]
+        private static readonly string[] ProcessNames = new string[]
         {
             "TabletDriverGUI",
             "TabletDriverService"
         };
 
-        public DriverInfo GetDriverInfo()
+        public DriverInfo? GetDriverInfo()
         {
             if (SystemInterop.CurrentPlatform == SystemPlatform.Windows)
             {

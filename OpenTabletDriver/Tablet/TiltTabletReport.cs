@@ -1,8 +1,13 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Tablet
 {
+    /// <summary>
+    /// A pen tilt-supported tablet device report.
+    /// </summary>
+    [PublicAPI]
     public struct TiltTabletReport : ITabletReport, ITiltReport
     {
         public TiltTabletReport(byte[] report)

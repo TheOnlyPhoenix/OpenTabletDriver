@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HidSharp;
+using JetBrains.Annotations;
+using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Devices.HidSharpBackend
 {
-    [Attributes.DeviceHub]
+    /// <summary>
+    /// Device hub implemented with HidSharpCore.
+    /// </summary>
+    [DeviceHub, PublicAPI]
     public sealed class HidSharpDeviceRootHub : IDeviceHub
     {
         public HidSharpDeviceRootHub()
@@ -24,7 +29,7 @@ namespace OpenTabletDriver.Devices.HidSharpBackend
 
         private IEnumerable<IDeviceEndpoint> _hidDevices = DeviceList.Local.GetHidDevices().Select(d => new HidSharpEndpoint(d));
 
-        public event EventHandler<DevicesChangedEventArgs> DevicesChanged;
+        public event EventHandler<DevicesChangedEventArgs>? DevicesChanged;
 
         public IEnumerable<IDeviceEndpoint> GetDevices()
         {

@@ -1,5 +1,8 @@
+using JetBrains.Annotations;
+
 namespace OpenTabletDriver.Tablet
 {
+    [PublicAPI]
     public struct DeviceReport : IDeviceReport
     {
         public DeviceReport(byte[] report)

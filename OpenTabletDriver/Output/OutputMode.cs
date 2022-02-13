@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using JetBrains.Annotations;
 using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Output
 {
+    /// <summary>
+    /// The base implementation of an <see cref="IOutputMode"/>, complete with transformation calculation.
+    /// </summary>
+    [PublicAPI]
     public abstract class OutputMode : PipelineManager<IDeviceReport>, IOutputMode
     {
         protected OutputMode(InputDevice tablet)
@@ -15,11 +20,11 @@ namespace OpenTabletDriver.Output
         }
 
         private bool _passthrough;
-        private InputDevice _tablet;
-        private IList<IPositionedPipelineElement<IDeviceReport>> _elements;
-        private IPipelineElement<IDeviceReport> _entryElement;
+        private InputDevice _tablet = null!;
+        private IList<IPositionedPipelineElement<IDeviceReport>>? _elements;
+        private IPipelineElement<IDeviceReport>? _entryElement;
 
-        public event Action<IDeviceReport> Emit;
+        public event Action<IDeviceReport>? Emit;
 
         protected bool Passthrough
         {
@@ -47,7 +52,7 @@ namespace OpenTabletDriver.Output
 
         public Matrix3x2 TransformationMatrix { protected set; get; }
 
-        public IList<IPositionedPipelineElement<IDeviceReport>> Elements
+        public IList<IPositionedPipelineElement<IDeviceReport>>? Elements
         {
             set
             {
@@ -116,8 +121,27 @@ namespace OpenTabletDriver.Output
 
         public virtual void Read(IDeviceReport deviceReport) => _entryElement?.Consume(deviceReport);
 
+        /// <summary>
+        /// Invoked to calculate the new transformation matrix.
+        /// </summary>
+        /// <returns>A transformation matrix to be applied to the IDeviceReport.</returns>
         protected abstract Matrix3x2 CreateTransformationMatrix();
-        protected abstract IAbsolutePositionReport Transform(IAbsolutePositionReport tabletReport);
+
+        /// <summary>
+        /// Transform an absolutely positioned device report.
+        /// </summary>
+        /// <param name="tabletReport">
+        /// The tablet report to be transformed.
+        /// </param>
+        /// <returns>
+        /// A transformed <see cref="IAbsolutePositionReport"/>.
+        /// </returns>
+        protected abstract IAbsolutePositionReport? Transform(IAbsolutePositionReport tabletReport);
+
+        /// <summary>
+        /// Pushes the final report state to its native handlers.
+        /// </summary>
+        /// <param name="report">A transformed report to output.</param>
         protected abstract void OnOutput(IDeviceReport report);
 
         private void DestroyInternalLinks()

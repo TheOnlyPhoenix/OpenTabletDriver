@@ -2,12 +2,16 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-
-#nullable enable
 
 namespace OpenTabletDriver.Attributes
 {
+    /// <summary>
+    /// Marks a member that is used for validating setting properties.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    [PublicAPI]
     public class MemberValidatedAttribute : Attribute
     {
         public MemberValidatedAttribute(string memberName, bool requiresInstance = false)
@@ -16,7 +20,14 @@ namespace OpenTabletDriver.Attributes
             RequiresInstance = requiresInstance;
         }
 
+        /// <summary>
+        /// The target member for validating setting properties.
+        /// </summary>
         public string MemberName { get; }
+
+        /// <summary>
+        /// Whether an instance of the object is needed for validation to occur.
+        /// </summary>
         public bool RequiresInstance { get; }
 
         public T? GetValue<T>(IServiceProvider serviceProvider, PropertyInfo property)

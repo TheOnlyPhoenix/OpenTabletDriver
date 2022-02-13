@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Attributes
 {
@@ -6,6 +7,8 @@ namespace OpenTabletDriver.Attributes
     /// Applies a friendly name of a plugin class.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
+    [MeansImplicitUse(ImplicitUseTargetFlags.WithMembers)]
+    [PublicAPI]
     public class PluginNameAttribute : Attribute
     {
         public PluginNameAttribute(string name)
@@ -13,6 +16,6 @@ namespace OpenTabletDriver.Attributes
             Name = name;
         }
 
-        public readonly string Name;
+        public string Name { get; }
     }
 }

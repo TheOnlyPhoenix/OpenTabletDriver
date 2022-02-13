@@ -1,14 +1,19 @@
 using System;
+using JetBrains.Annotations;
 using OpenTabletDriver.Logging;
 
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// The core logging service.
+    /// </summary>
+    [PublicAPI]
     public static class Log
     {
         /// <summary>
-        /// Event hook to recieve log messages.
+        /// Event hook to receive log messages.
         /// </summary>
-        public static event EventHandler<LogMessage> Output;
+        public static event EventHandler<LogMessage>? Output;
 
         /// <summary>
         /// Invoke sending a log message.
@@ -26,7 +31,7 @@ namespace OpenTabletDriver
         /// <returns>A formatted string.</returns>
         public static string GetStringFormat(LogMessage message)
         {
-            string text = message.ToString();
+            var text = message.ToString();
 
             // Append stack trace if an exception was caught.
             if (!string.IsNullOrWhiteSpace(message.StackTrace))
@@ -81,7 +86,7 @@ namespace OpenTabletDriver
         /// Writes to the log event with an exception, encoding its stack trace.
         /// </summary>
         /// <param name="ex">The <see cref="System.Exception"/> object to create the <see cref="LogMessage"/> from.</param>
-        public static void Exception(Exception ex)
+        public static void Exception(Exception? ex)
         {
             if (ex == null)
                 return;

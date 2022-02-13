@@ -5,7 +5,7 @@ using OpenTabletDriver.Platform.Pointer;
 namespace OpenTabletDriver.Desktop.Output
 {
     [PluginName("Absolute Mode")]
-    public class AbsoluteMode : AbsoluteOutputMode, IPointerProvider<IAbsolutePointer>
+    public class AbsoluteMode : AbsoluteOutputMode
     {
         public AbsoluteMode(
             InputDevice tablet,

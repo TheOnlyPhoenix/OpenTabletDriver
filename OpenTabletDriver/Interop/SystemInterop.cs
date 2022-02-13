@@ -1,13 +1,17 @@
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Interop
 {
-    public class SystemInterop
+    /// <summary>
+    /// Provides system platform detection.
+    /// </summary>
+    [PublicAPI]
+    public static class SystemInterop
     {
-        protected SystemInterop()
-        {
-        }
-
+        /// <summary>
+        /// The currently running system platform.
+        /// </summary>
         public static SystemPlatform CurrentPlatform
         {
             get

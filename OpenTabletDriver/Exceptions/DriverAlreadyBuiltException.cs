@@ -1,9 +1,9 @@
 using System;
-
-#nullable enable
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Exceptions
 {
+    [PublicAPI]
     public class DriverAlreadyBuiltException : Exception
     {
         public DriverAlreadyBuiltException() : this("A driver instance has already been built")

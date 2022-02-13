@@ -7,7 +7,7 @@ namespace OpenTabletDriver.Devices.HidSharpBackend
         private static bool TryGet<TSource, TValue>(
             this TSource source,
             Func<TSource, TValue> predicate,
-            out TValue value
+            out TValue? value
         )
         {
             try
@@ -26,6 +26,6 @@ namespace OpenTabletDriver.Devices.HidSharpBackend
             this TSource source,
             Func<TSource, TValue> predicate,
             TValue fallback
-        ) => TryGet(source, predicate, out var value) ? value : fallback;
+        ) => TryGet(source, predicate, out var value) ? value! : fallback;
     }
 }

@@ -351,7 +351,7 @@ namespace OpenTabletDriver.Daemon
             return Task.CompletedTask;
         }
 
-        public Task<string> RequestDeviceString(int vid, int pid, int index)
+        public Task<string?> RequestDeviceString(int vid, int pid, int index)
         {
             var tablet = _deviceHub.GetDevices().FirstOrDefault(d => d.VendorID == vid && d.ProductID == pid);
             if (tablet == null)

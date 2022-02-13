@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
-
-#nullable enable
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Tablet
 {
+    /// <summary>
+    /// A device identifier.
+    /// </summary>
+    [PublicAPI]
     public class DeviceIdentifier
     {
         /// <summary>
@@ -44,8 +47,6 @@ namespace OpenTabletDriver.Tablet
         /// <summary>
         /// Device strings to match against, used for identification.
         /// </summary>
-        /// <typeparam name="uint">The index to query</typeparam>
-        /// <typeparam name="string">The value to match to the queried index</typeparam>
         public Dictionary<byte, string> DeviceStrings { set; get; } = new Dictionary<byte, string>();
 
         /// <summary>

@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using System.Numerics;
+using JetBrains.Annotations;
 using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Output
 {
+    /// <summary>
+    /// An output mode in which all reports are ultimately transformed and subsequently handled.
+    /// </summary>
+    [PublicAPI]
     public interface IOutputMode : IPipelineElement<IDeviceReport>
     {
         /// <summary>
@@ -15,12 +20,11 @@ namespace OpenTabletDriver.Output
         /// <summary>
         /// The list of pipeline elements in which the report is modified.
         /// </summary>
-        IList<IPositionedPipelineElement<IDeviceReport>> Elements { set; get; }
+        IList<IPositionedPipelineElement<IDeviceReport>>? Elements { set; get; }
 
         /// <summary>
-        /// The transformation matrix in which the
+        /// The transformation matrix in which the device report will be modified.
         /// </summary>
-        /// <value></value>
         Matrix3x2 TransformationMatrix { get; }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace OpenTabletDriver.SystemDrivers.Providers
             "Wacom"
         };
 
-        protected override DriverInfo GetWinDriverInfo()
+        protected override DriverInfo? GetWinDriverInfo()
         {
             var info = base.GetWinDriverInfo();
             if (info != null)
@@ -26,7 +26,7 @@ namespace OpenTabletDriver.SystemDrivers.Providers
             return info;
         }
 
-        protected override DriverInfo GetLinuxDriverInfo()
+        protected override DriverInfo? GetLinuxDriverInfo()
         {
             var info = base.GetLinuxDriverInfo();
             if (info != null)

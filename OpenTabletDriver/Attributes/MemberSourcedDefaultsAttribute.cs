@@ -1,6 +1,5 @@
 using System;
-
-#nullable enable
+using JetBrains.Annotations;
 
 namespace OpenTabletDriver.Attributes
 {
@@ -8,6 +7,7 @@ namespace OpenTabletDriver.Attributes
     /// Applies the default value to a property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
+    [PublicAPI]
     public class MemberSourcedDefaultsAttribute : Attribute
     {
         public MemberSourcedDefaultsAttribute(string targetMemberName, params Type[] arguments)

@@ -8,6 +8,7 @@ namespace OpenTabletDriver.Attributes
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     [MeansImplicitUse(ImplicitUseKindFlags.Assign | ImplicitUseKindFlags.Access)]
+    [PublicAPI]
     public class SettingAttribute : Attribute
     {
         public SettingAttribute(string displayName)

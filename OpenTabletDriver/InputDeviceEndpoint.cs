@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using OpenTabletDriver.Devices;
 using OpenTabletDriver.Tablet;
 
-#nullable enable
-
 namespace OpenTabletDriver
 {
+    /// <summary>
+    /// An input device endpoint.
+    /// </summary>
+    [PublicAPI]
     public class InputDeviceEndpoint : DeviceReader<IDeviceReport>
     {
         public InputDeviceEndpoint(IDriver driver, IDeviceEndpoint device, TabletConfiguration configuration, DeviceIdentifier identifier)
