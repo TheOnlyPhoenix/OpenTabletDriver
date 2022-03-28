@@ -16,7 +16,7 @@ namespace OpenTabletDriver.UX.RPC
 
         public event EventHandler<LogMessage> Message;
         public event EventHandler<DebugReportData> DeviceReport;
-        public event EventHandler<IEnumerable<TabletReference>> TabletsChanged;
+        public event EventHandler<IEnumerable<TabletConfiguration>> TabletsChanged;
 
         protected override void OnConnected()
         {

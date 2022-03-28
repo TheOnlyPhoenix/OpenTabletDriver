@@ -6,7 +6,7 @@ using OpenTabletDriver.Tablet;
 
 namespace OpenTabletDriver.Desktop.Profiles
 {
-    public class BindingSettings : ViewModel
+    public class BindingSettings : NotifyPropertyChanged
     {
         private float _tP, _eP;
         private PluginSettings _tipButton, _eraserButton, _mouseScrollUp, _mouseScrollDown;

@@ -143,7 +143,7 @@ namespace OpenTabletDriver.UX.Windows.Configurations.Controls
 
             public event EventHandler<EventArgs> EntryChanged;
 
-            protected virtual void OnEntryChanged() => EntryChanged?.Invoke(this, new EventArgs());
+            protected virtual void OnEntryChanged() => EntryChanged?.Invoke(this, EventArgs.Empty);
 
             public BindableBinding<DeviceIdentifierEntry<T>, T> EntryBinding
             {

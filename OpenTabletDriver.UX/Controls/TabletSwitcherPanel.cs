@@ -98,7 +98,7 @@ namespace OpenTabletDriver.UX.Controls
 
             protected virtual async void OnProfilesChanged()
             {
-                ProfilesChanged?.Invoke(this, new EventArgs());
+                ProfilesChanged?.Invoke(this, EventArgs.Empty);
                 var tablets = await App.Driver.Instance.GetTablets();
                 HandleTabletsChanged(this, tablets.ToImmutableArray());
             }

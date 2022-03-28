@@ -10,7 +10,7 @@ namespace OpenTabletDriver.Attributes
     [PublicAPI]
     public class MemberSourcedDefaultsAttribute : Attribute
     {
-        public MemberSourcedDefaultsAttribute(string targetMemberName, params Type[] arguments)
+        public MemberSourcedDefaultsAttribute(string targetMemberName)
         {
             TargetMemberName = targetMemberName;
         }

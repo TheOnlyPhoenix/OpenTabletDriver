@@ -5,53 +5,33 @@ using System.Reflection;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
+using OpenTabletDriver.Desktop.Reflection;
 
 namespace OpenTabletDriver.UX.Controls.Generic.Reflection
 {
-    public class TypeDropDown<T> : DropDown<TypeInfo> where T : class
+    public sealed class TypeDropDown<T> : DropDown<TypeInfo> where T : class
     {
-        public TypeDropDown()
-        {
-            this.ItemTextBinding = Binding.Property<TypeInfo, string>(t => t.GetFriendlyName());
-            this.ItemKeyBinding = Binding.Property<TypeInfo, string>(t => t.FullName);
+        private readonly IPluginManager _pluginManager;
 
-            AppInfo.PluginManager.AssembliesChanged += HandleAssembliesChanged;
-        }
-
-        public T ConstructSelectedType(params object[] args)
+        public TypeDropDown(IPluginManager pluginManager)
         {
-            if (SelectedItem != null)
-            {
-                args ??= Array.Empty<object>();
-                return AppInfo.PluginManager.ConstructObject<T>(SelectedItem.FullName);
-            }
-            return null;
-        }
+            _pluginManager = pluginManager;
 
-        public void Select(Func<T, bool> predicate)
-        {
-            foreach (TypeInfo type in DataStore)
-            {
-                var obj = AppInfo.PluginManager.ConstructObject<T>(type.FullName);
-                if (predicate(obj))
-                {
-                    this.SelectedValue = type;
-                    break;
-                }
-            }
+            ItemTextBinding = Binding.Property<TypeInfo, string>(t => t.GetFriendlyName() ?? t.GetPath());
+            ItemKeyBinding = Binding.Property<TypeInfo, string>(t => t.GetPath());
+
+            pluginManager.AssembliesChanged += HandleAssembliesChanged;
         }
 
         protected override IEnumerable<object> CreateDefaultDataStore()
         {
-            var query = from type in AppInfo.PluginManager.GetChildTypes<T>()
-                        orderby type.GetFriendlyName()
-                        select type;
+            var query = from type in _pluginManager.ExportedTypes
+                where type.IsAssignableTo(typeof(T))
+                orderby type.GetFriendlyName() ?? type.GetPath()
+                select type;
             return query.ToList();
         }
 
-        private void HandleAssembliesChanged(object sender, EventArgs e) => Application.Instance.AsyncInvoke(() =>
-        {
-            this.DataStore = CreateDefaultDataStore();
-        });
+        private void HandleAssembliesChanged(object? sender, EventArgs e) => DataStore = CreateDefaultDataStore();
     }
 }

@@ -18,7 +18,7 @@ namespace OpenTabletDriver.UX.Windows.Configurations.Controls.Specifications
 
         public event EventHandler<EventArgs> SpecificationsChanged;
 
-        protected virtual void OnSpecificationsChanged() => SpecificationsChanged?.Invoke(this, new EventArgs());
+        protected virtual void OnSpecificationsChanged() => SpecificationsChanged?.Invoke(this, EventArgs.Empty);
 
         public BindableBinding<SpecificationsEditor<T>, T> SpecificationsBinding
         {

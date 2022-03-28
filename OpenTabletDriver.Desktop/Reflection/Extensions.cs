@@ -23,12 +23,17 @@ namespace OpenTabletDriver.Desktop.Reflection
                 return type.Namespace + "." + name[..index] + "<" + string.Join(", ", query) + ">";
             }
 
-            return type.GetFullName();
+            return type.GetPath();
         }
 
-        public static string GetFullName(this Type type)
+        public static string GetPath(this Type type)
         {
             return type.Namespace + "." + type.Name;
+        }
+
+        public static string? GetFriendlyName(this Type type)
+        {
+            return type.GetCustomAttribute<PluginNameAttribute>()?.Name;
         }
 
         public static PluginSettings GetDefaultSettings(

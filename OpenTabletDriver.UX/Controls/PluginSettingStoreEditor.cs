@@ -9,49 +9,55 @@ namespace OpenTabletDriver.UX.Controls
 {
     public class PluginSettingStoreEditor<TSource> : Panel
     {
-        public PluginSettingStoreEditor()
+        private readonly IPluginFactory _pluginFactory;
+        private readonly IPluginManager _pluginManager;
+
+        public PluginSettingStoreEditor(IPluginFactory pluginFactory, IPluginManager pluginManager)
         {
-            this.Content = layout = new StackLayout
+            _pluginFactory = pluginFactory;
+            _pluginManager = pluginManager;
+
+            Content = _layout = new StackLayout
             {
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 Spacing = 5
             };
         }
 
-        private StackLayout layout;
+        private readonly StackLayout _layout;
 
-        private PluginSettings store;
-        public PluginSettings Store
+        private PluginSettings? _store;
+        public PluginSettings? Store
         {
             set
             {
-                this.store = value;
-                this.OnStoreChanged();
+                _store = value;
+                OnStoreChanged();
             }
-            get => this.store;
+            get => _store;
         }
 
-        public event EventHandler<EventArgs> StoreChanged;
+        public event EventHandler<EventArgs>? StoreChanged;
 
         protected virtual void OnStoreChanged()
         {
-            StoreChanged?.Invoke(this, new EventArgs());
+            StoreChanged?.Invoke(this, EventArgs.Empty);
 
-            layout.Items.Clear();
+            _layout.Items.Clear();
             if (Store != null)
             {
                 foreach (var control in GetHeaderControlsForStore(Store).Concat(GetControlsForStore(Store)))
                 {
-                    layout.Items.Add(control);
+                    _layout.Items.Add(control);
                 }
             }
         }
 
-        public BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings> StoreBinding
+        public BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings?> StoreBinding
         {
             get
             {
-                return new BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings>(
+                return new BindableBinding<PluginSettingStoreEditor<TSource>, PluginSettings?>(
                     this,
                     c => c.Store,
                     (c, v) => c.Store = v,
@@ -70,6 +76,7 @@ namespace OpenTabletDriver.UX.Controls
         {
             if (store != null)
             {
+                // TODO: fix stores
                 var type = store.GetTypeInfo<TSource>();
                 return GetControlsForType(store, type);
             }

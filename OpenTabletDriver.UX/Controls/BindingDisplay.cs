@@ -8,9 +8,9 @@ namespace OpenTabletDriver.UX.Controls
 {
     public class BindingDisplay : Panel
     {
-        public BindingDisplay()
+        public BindingDisplay(IPluginFactory pluginFactory)
         {
-            this.Content = new StackLayout
+            Content = new StackLayout
             {
                 Spacing = 5,
                 MinimumSize = new Size(300, 0),
@@ -20,11 +20,11 @@ namespace OpenTabletDriver.UX.Controls
                     new StackLayoutItem
                     {
                         Expand = true,
-                        Control = mainButton = new Button()
+                        Control = _mainButton = new Button()
                     },
                     new StackLayoutItem
                     {
-                        Control = advancedButton = new Button
+                        Control = _advancedButton = new Button
                         {
                             Text = "...",
                             Width = 25
@@ -33,34 +33,34 @@ namespace OpenTabletDriver.UX.Controls
                 }
             };
 
-            mainButton.TextBinding.Bind(this.StoreBinding.Convert<string>(s => s?.GetHumanReadableString()));
+            _mainButton.TextBinding.Bind(StoreBinding.Convert<string>(s => pluginFactory.GetFriendlyName(s.Path) ?? s.Path));
 
-            mainButton.Click += async (sender, e) =>
+            _mainButton.Click += async (sender, e) =>
             {
-                var dialog = new BindingEditorDialog(Store);
-                this.Store = await dialog.ShowModalAsync(this);
+                var dialog = new BindingEditorDialog(Settings);
+                Settings = await dialog.ShowModalAsync(this);
             };
 
-            advancedButton.Click += async (sender, e) =>
+            _advancedButton.Click += async (sender, e) =>
             {
-                var dialog = new AdvancedBindingEditorDialog(Store);
-                this.Store = await dialog.ShowModalAsync(this);
+                var dialog = new AdvancedBindingEditorDialog(Settings);
+                Settings = await dialog.ShowModalAsync(this);
             };
         }
 
-        private Button mainButton, advancedButton;
+        private readonly Button _mainButton, _advancedButton;
 
         public event EventHandler<EventArgs> StoreChanged;
 
-        private PluginSettings store;
-        public PluginSettings Store
+        private PluginSettings _settings;
+        public PluginSettings Settings
         {
             set
             {
-                this.store = value;
-                StoreChanged?.Invoke(this, new EventArgs());
+                _settings = value;
+                StoreChanged?.Invoke(this, EventArgs.Empty);
             }
-            get => this.store;
+            get => _settings;
         }
 
         public BindableBinding<BindingDisplay, PluginSettings> StoreBinding
@@ -69,8 +69,8 @@ namespace OpenTabletDriver.UX.Controls
             {
                 return new BindableBinding<BindingDisplay, PluginSettings>(
                     this,
-                    c => c.Store,
-                    (c, v) => c.Store = v,
+                    c => c.Settings,
+                    (c, v) => c.Settings = v,
                     (c, h) => c.StoreChanged += h,
                     (c, h) => c.StoreChanged -= h
                 );

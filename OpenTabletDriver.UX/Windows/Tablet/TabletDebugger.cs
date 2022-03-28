@@ -221,12 +221,12 @@ namespace OpenTabletDriver.UX.Windows.Tablet
 
         protected virtual void OnReportDataChanged()
         {
-            ReportDataChanged?.Invoke(this, new EventArgs());
+            ReportDataChanged?.Invoke(this, EventArgs.Empty);
             ReportPeriod += (stopwatch.Restart().TotalMilliseconds - ReportPeriod) / 10.0f;
         }
 
-        protected virtual void OnReportPeriodChanged() => ReportPeriodChanged?.Invoke(this, new EventArgs());
-        protected virtual void OnNumberOfReportsRecordedChanged() => NumberOfReportsRecordedChanged?.Invoke(this, new EventArgs());
+        protected virtual void OnReportPeriodChanged() => ReportPeriodChanged?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnNumberOfReportsRecordedChanged() => NumberOfReportsRecordedChanged?.Invoke(this, EventArgs.Empty);
 
         public BindableBinding<TabletDebugger, DebugReportData> ReportDataBinding
         {

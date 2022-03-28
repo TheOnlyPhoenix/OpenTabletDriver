@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace OpenTabletDriver.Desktop
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class NotifyPropertyChanged : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -11,16 +11,6 @@ namespace OpenTabletDriver.Desktop
         {
             obj = newValue;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected void RaiseChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void AllPropertiesChanged()
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Numerics;
 using Newtonsoft.Json;
 
 namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V6

@@ -299,7 +299,7 @@ namespace OpenTabletDriver.Console
 
         private async Task ListTypes<T>()
         {
-            foreach (var type in await _driverDaemon.GetMatchingTypes(typeof(T).GetFullName()))
+            foreach (var type in await _driverDaemon.GetMatchingTypes(typeof(T).GetPath()))
             {
                 var output = type.FriendlyName != null ? $"{type.Path} [{type.FriendlyName}]" : type.Path;
                 await Out.WriteLineAsync(output);

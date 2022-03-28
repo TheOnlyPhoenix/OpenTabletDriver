@@ -11,26 +11,26 @@ namespace OpenTabletDriver.Tablet
         /// <summary>
         /// Specifications for the tablet digitizer.
         /// </summary>
-        public DigitizerSpecifications Digitizer { set; get; } = new DigitizerSpecifications();
+        public DigitizerSpecifications? Digitizer { set; get; } = new DigitizerSpecifications();
 
         /// <summary>
         /// Specifications for the tablet's pen.
         /// </summary>
-        public PenSpecifications Pen { set; get; } = new PenSpecifications();
+        public PenSpecifications? Pen { set; get; } = new PenSpecifications();
 
         /// <summary>
         /// Specifications for the auxiliary buttons.
         /// </summary>
-        public ButtonSpecifications AuxiliaryButtons { set; get; } = new ButtonSpecifications();
+        public ButtonSpecifications? AuxiliaryButtons { set; get; } = new ButtonSpecifications();
 
         /// <summary>
         /// Specifications for the mouse buttons.
         /// </summary>
-        public ButtonSpecifications MouseButtons { set; get; } = new ButtonSpecifications();
+        public ButtonSpecifications? MouseButtons { set; get; } = new ButtonSpecifications();
 
         /// <summary>
         /// Specifications for the touch digitizer.
         /// </summary>
-        public DigitizerSpecifications Touch { set; get; } = new DigitizerSpecifications();
+        public DigitizerSpecifications? Touch { set; get; } = new DigitizerSpecifications();
     }
 }

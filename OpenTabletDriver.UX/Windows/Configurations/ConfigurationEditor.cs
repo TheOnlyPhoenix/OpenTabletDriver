@@ -341,7 +341,7 @@ namespace OpenTabletDriver.UX.Windows.Configurations
 
             public event EventHandler<EventArgs> ConfigurationChanged;
 
-            protected virtual void OnConfigurationChanged() => ConfigurationChanged?.Invoke(this, new EventArgs());
+            protected virtual void OnConfigurationChanged() => ConfigurationChanged?.Invoke(this, EventArgs.Empty);
 
             public BindableBinding<ConfigurationSettings, TabletConfiguration> ConfigurationBinding
             {

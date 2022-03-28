@@ -10,7 +10,7 @@ using OpenTabletDriver.Desktop.Reflection;
 
 namespace OpenTabletDriver.Desktop
 {
-    public class Settings : ViewModel
+    public class Settings : NotifyPropertyChanged
     {
         private ProfileCollection _profiles = new ProfileCollection();
         private PluginSettingsCollection _tools = new PluginSettingsCollection();

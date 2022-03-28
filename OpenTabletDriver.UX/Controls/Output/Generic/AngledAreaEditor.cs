@@ -1,15 +1,17 @@
+using System.Numerics;
 using Eto.Forms;
 using OpenTabletDriver.UX.Controls.Generic.Text;
 using OpenTabletDriver.UX.Controls.Utilities;
 
-namespace OpenTabletDriver.UX.Controls.Output.Area
+namespace OpenTabletDriver.UX.Controls.Output.Generic
 {
-    public class RotationAreaEditor : AreaEditor
+    public class AngledAreaEditor : AreaEditor<AngledArea>
     {
-        public RotationAreaEditor()
-            : base()
+        public AngledAreaEditor()
         {
-            settingsPanel.Items.Add(
+            var rotation = new FloatNumberBox();
+
+            SettingsPanel.Items.Add(
                 new StackLayoutItem
                 {
                     Control = new UnitGroup
@@ -18,7 +20,7 @@ namespace OpenTabletDriver.UX.Controls.Output.Area
                         Unit = "°",
                         ToolTip = "Angle of rotation about the center of the area.",
                         Orientation = Orientation.Horizontal,
-                        Content = rotation = new FloatNumberBox()
+                        Content = rotation
                     }
                 }
             );
@@ -27,13 +29,11 @@ namespace OpenTabletDriver.UX.Controls.Output.Area
             rotation.ValueBinding.Bind(rotationBinding);
         }
 
-        private MaskedTextBox<float> rotation;
-
         protected override void CreateMenu()
         {
             base.CreateMenu();
 
-            this.ContextMenu.Items.GetSubmenu("Flip").Items.Add(
+            ContextMenu.Items.GetSubmenu("Flip").Items.Add(
                 new ActionCommand
                 {
                     MenuText = "Handedness",
@@ -41,8 +41,9 @@ namespace OpenTabletDriver.UX.Controls.Output.Area
                     {
                         Area.Rotation += 180;
                         Area.Rotation %= 360;
-                        Area.X = FullAreaBounds.Width - Area.X;
-                        Area.Y = FullAreaBounds.Height - Area.Y;
+                        var x = FullAreaBounds.Width - Area.Position.X;
+                        var y = FullAreaBounds.Height - Area.Position.Y;
+                        Area.Position = new Vector2(x, y);
                     }
                 }
             );

@@ -5,7 +5,7 @@ using OpenTabletDriver.Desktop.Reflection;
 
 namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V6
 {
-    public class Settings : ViewModel
+    public class Settings : NotifyPropertyChanged
     {
         [JsonProperty("Profiles")]
         public Collection<Profile> Profiles { set; get; }

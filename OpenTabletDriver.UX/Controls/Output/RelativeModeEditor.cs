@@ -1,9 +1,12 @@
 using System;
+using System.Numerics;
 using Eto.Forms;
 using OpenTabletDriver.Desktop.Profiles;
+using OpenTabletDriver.Desktop.Reflection;
+using OpenTabletDriver.Output;
 using OpenTabletDriver.UX.Controls.Generic;
 using OpenTabletDriver.UX.Controls.Generic.Text;
-using OpenTabletDriver.UX.Controls.Output.Area;
+using OpenTabletDriver.UX.Controls.Output.Generic;
 
 namespace OpenTabletDriver.UX.Controls.Output
 {
@@ -11,7 +14,12 @@ namespace OpenTabletDriver.UX.Controls.Output
     {
         public RelativeModeEditor()
         {
-            this.Content = new Group
+            var xSens = new FloatNumberBox();
+            var ySens = new FloatNumberBox();
+            var rotation = new FloatNumberBox();
+            var resetDelay = new FloatNumberBox();
+
+            Content = new Group
             {
                 Text = "Relative",
                 Content = new StackLayout
@@ -28,65 +36,76 @@ namespace OpenTabletDriver.UX.Controls.Output
                             Text = "X Sensitivity",
                             Orientation = Orientation.Horizontal,
                             Unit = "px/mm",
-                            Content = xSens = new FloatNumberBox()
+                            Content = xSens
                         },
                         new UnitGroup
                         {
                             Text = "Y Sensitivity",
                             Orientation = Orientation.Horizontal,
                             Unit = "px/mm",
-                            Content = ySens = new FloatNumberBox()
+                            Content = ySens
                         },
                         new UnitGroup
                         {
                             Text = "Rotation",
                             Orientation = Orientation.Horizontal,
                             Unit = "°",
-                            Content = rotation = new FloatNumberBox()
+                            Content = rotation
                         },
                         new UnitGroup
                         {
                             Text = "Reset Time",
                             Orientation = Orientation.Horizontal,
                             Unit = "ms",
-                            Content = resetTime = new FloatNumberBox()
+                            Content = resetDelay
                         },
                         new StackLayoutItem(null, true)
                     }
                 }
             };
 
-            xSens.ValueBinding.Bind(SettingsBinding.Child(s => s.XSensitivity));
-            ySens.ValueBinding.Bind(SettingsBinding.Child(s => s.YSensitivity));
-            rotation.ValueBinding.Bind(SettingsBinding.Child(s => s.RelativeRotation));
-            resetTime.ValueBinding.Convert<TimeSpan>(
+            var sensitivityBinding = SettingsBinding.BindSetting<Vector2>(nameof(RelativeOutputMode.Sensitivity));
+            var xSensBinding = sensitivityBinding.Convert(
+                v => v.X,
+                x => new Vector2(x, sensitivityBinding.DataValue.Y)
+            );
+            var ySensBinding = sensitivityBinding.Convert(
+                v => v.Y,
+                y => new Vector2(sensitivityBinding.DataValue.X, y)
+            );
+
+            var rotationBinding = SettingsBinding.BindSetting<float>(nameof(RelativeOutputMode.Rotation));
+            var resetDelayBinding = SettingsBinding.BindSetting<TimeSpan>(nameof(RelativeOutputMode.ResetDelay));
+
+            xSens.ValueBinding.Bind(xSensBinding);
+            ySens.ValueBinding.Bind(ySensBinding);
+            rotation.ValueBinding.Bind(rotationBinding);
+            resetDelay.ValueBinding.Convert(
                 c => TimeSpan.FromMilliseconds(c),
                 v => (float)v.TotalMilliseconds
-            ).Bind(SettingsBinding.Child(s => s.ResetTime));
+            ).Bind(resetDelayBinding);
         }
 
-        private MaskedTextBox<float> xSens, ySens, rotation, resetTime;
-
-        private RelativeModeSettings settings;
-        public RelativeModeSettings Settings
+        private PluginSettings? _settings;
+        public PluginSettings? Settings
         {
             set
             {
-                this.settings = value;
-                this.OnSettingsChanged();
+                _settings = value;
+                OnSettingsChanged();
             }
-            get => this.settings;
+            get => _settings;
         }
 
         public event EventHandler<EventArgs> SettingsChanged;
 
-        protected virtual void OnSettingsChanged() => SettingsChanged?.Invoke(this, new EventArgs());
+        protected virtual void OnSettingsChanged() => SettingsChanged?.Invoke(this, EventArgs.Empty);
 
-        public BindableBinding<RelativeModeEditor, RelativeModeSettings> SettingsBinding
+        public BindableBinding<RelativeModeEditor, PluginSettings?> SettingsBinding
         {
             get
             {
-                return new BindableBinding<RelativeModeEditor, RelativeModeSettings>(
+                return new BindableBinding<RelativeModeEditor, PluginSettings?>(
                     this,
                     c => c.Settings,
                     (c, v) => c.Settings = v,

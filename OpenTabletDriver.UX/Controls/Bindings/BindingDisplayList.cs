@@ -6,6 +6,13 @@ namespace OpenTabletDriver.UX.Controls.Bindings
 {
     public class BindingDisplayList : GeneratedItemList<PluginSettings>
     {
+        private readonly IControlBuilder _controlBuilder;
+
+        public BindingDisplayList(IControlBuilder controlBuilder)
+        {
+            _controlBuilder = controlBuilder;
+        }
+
         public string Prefix { set; get; }
 
         protected virtual string GetTextForIndex(int index)
@@ -15,7 +22,7 @@ namespace OpenTabletDriver.UX.Controls.Bindings
 
         protected override Control CreateControl(int index, DirectBinding<PluginSettings> itemBinding)
         {
-            BindingDisplay display = new BindingDisplay();
+            var display = _controlBuilder.Build<BindingDisplay>();
             display.StoreBinding.Bind(itemBinding);
 
             return new Group

@@ -30,8 +30,8 @@ namespace OpenTabletDriver.Output
         /// The area in which the tablet's input is transformed to.
         /// </summary>
         [Setting("Input Area")]
-        [MemberSourcedDefaults(nameof(GetDefaultInputArea), typeof(DigitizerSpecifications))]
-        [AspectRatioLock(nameof(Output), nameof(LockAspectRatio))]
+        [MemberSourcedDefaults(nameof(GetDefaultInputArea))]
+        [LinkedSetting(nameof(Output), nameof(LockAspectRatio))]
         public AngledArea? Input
         {
             set
@@ -46,8 +46,8 @@ namespace OpenTabletDriver.Output
         /// The area in which the final processed output is transformed to.
         /// </summary>
         [Setting("Output Area")]
-        [MemberSourcedDefaults(nameof(GetDefaultOutputArea), typeof(IVirtualScreen))]
-        [AspectRatioLock(nameof(Input), nameof(LockAspectRatio))]
+        [MemberSourcedDefaults(nameof(GetDefaultOutputArea))]
+        [LinkedSetting(nameof(Input), nameof(LockAspectRatio))]
         public Area? Output
         {
             set
@@ -62,6 +62,7 @@ namespace OpenTabletDriver.Output
         /// Whether to lock aspect ratio when applying area settings.
         /// </summary>
         [Setting("Lock Aspect Ratio"), DefaultValue(false)]
+        [LinkedSettingSource]
         public bool LockAspectRatio { set; get; }
 
         /// <summary>
@@ -83,8 +84,12 @@ namespace OpenTabletDriver.Output
         [Setting("Area Limiting"), DefaultValue(true)]
         public bool AreaLimiting { set; get; }
 
+        /// <summary>
+        /// Whether to lock the area position and size inside of the maximum bounds.
+        /// Typically used in the user interface.
+        /// </summary>
         [Setting("Keep inside maximum bounds"), DefaultValue(true)]
-        public bool AreaBounds { set; get; }
+        public bool LockToBounds { set; get; }
 
         /// <summary>
         /// The class in which the final absolute positioned output is handled.
@@ -93,7 +98,7 @@ namespace OpenTabletDriver.Output
 
         protected override Matrix3x2 CreateTransformationMatrix()
         {
-            if (Input != null && Output != null && Tablet != null)
+            if (Input != null && Output != null)
             {
                 var transform = CalculateTransformation(Input, Output, Tablet.Configuration.Specifications.Digitizer);
 

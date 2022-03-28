@@ -17,7 +17,7 @@ using OpenTabletDriver.UX.Windows.Updater;
 
 namespace OpenTabletDriver.UX
 {
-    public sealed class App : ViewModel
+    public sealed class App : NotifyPropertyChanged
     {
         private App()
         {

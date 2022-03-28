@@ -374,14 +374,14 @@ namespace OpenTabletDriver.Daemon
 
         public Task<TypeProxy> GetProxiedType(string typeName)
         {
-            var type = _pluginManager.ExportedTypes.First(t => t.GetFullName() == typeName);
+            var type = _pluginManager.ExportedTypes.First(t => t.GetPath() == typeName);
             var proxy = ActivatorUtilities.CreateInstance<TypeProxy>(_serviceProvider, type);
             return Task.FromResult(proxy);
         }
 
         public Task<IEnumerable<TypeProxy>> GetMatchingTypes(string typeName)
         {
-            var baseType = _pluginManager.ExportedTypes.First(t => t.GetFullName() == typeName);
+            var baseType = _pluginManager.ExportedTypes.First(t => t.GetPath() == typeName);
             var matchingTypes = from type in _pluginFactory.GetMatchingTypes(baseType)
                 select ActivatorUtilities.CreateInstance<TypeProxy>(_serviceProvider, type);
             return Task.FromResult(matchingTypes);

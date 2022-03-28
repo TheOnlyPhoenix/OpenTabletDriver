@@ -19,7 +19,7 @@ namespace OpenTabletDriver.Desktop.RPC
         public TypeProxy(IPluginFactory pluginFactory, Type type)
         {
             Path = type.Namespace + "." + type.Name;
-            FriendlyName = pluginFactory.GetFriendlyName(type.GetFullName());
+            FriendlyName = pluginFactory.GetFriendlyName(type.GetPath());
         }
 
         public string Path { set; get; } = string.Empty;

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Eto.Drawing;
+using System.Reflection;
+using System.Threading.Tasks;
 using Eto.Forms;
+using OpenTabletDriver.Desktop.Contracts;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Desktop.Reflection;
 using OpenTabletDriver.Output;
@@ -14,66 +16,92 @@ namespace OpenTabletDriver.UX.Controls.Output
 {
     public class OutputModeEditor : Panel
     {
-        public OutputModeEditor()
+        private readonly IDriverDaemon _daemon;
+        private readonly IPluginManager _pluginManager;
+        private readonly IControlGenerator _controlGenerator;
+
+        public OutputModeEditor(
+            IDriverDaemon daemon,
+            IControlBuilder controlBuilder,
+            IControlGenerator controlGenerator,
+            IPluginManager pluginManager
+        )
         {
-            this.Content = new StackLayout
+            _daemon = daemon;
+            _controlGenerator = controlGenerator;
+            _pluginManager = pluginManager;
+
+            _outputModeSelector = controlBuilder.Build<TypeDropDown<IOutputMode>>();
+
+            _absoluteModeEditor = controlBuilder.Build<AbsoluteModeEditor>();
+            _relativeModeEditor = controlBuilder.Build<RelativeModeEditor>();
+
+            Content = new StackLayout
             {
                 Padding = 5,
                 Spacing = 5,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 Items =
                 {
-                    new StackLayoutItem(editorContainer, true),
-                    new StackLayoutItem(outputModeSelector, HorizontalAlignment.Left)
+                    new StackLayoutItem(_editorContainer, true),
+                    new StackLayoutItem
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Control = new Panel
+                        {
+                            Width = 300,
+                            Content = _outputModeSelector
+                        }
+                    }
                 }
             };
 
-            absoluteModeEditor.SettingsBinding.Bind(ProfileBinding.Child(p => p.AbsoluteModeSettings));
-            relativeModeEditor.SettingsBinding.Bind(ProfileBinding.Child(p => p.RelativeModeSettings));
+            var settingsBinding = ProfileBinding.Child(c => c!.OutputMode);
 
-            outputModeSelector.SelectedItemBinding.Convert<PluginSettings>(
-                c => PluginSettings.FromPath(c?.FullName),
-                v => v?.GetTypeInfo()
-            ).Bind(ProfileBinding.Child(c => c.OutputMode));
+            _absoluteModeEditor.SettingsBinding.Bind(settingsBinding!);
+            _relativeModeEditor.SettingsBinding.Bind(settingsBinding!);
 
-            outputModeSelector.SelectedValueChanged += (sender, e) => UpdateOutputMode(Profile?.OutputMode);
+            _outputModeSelector.SelectedItemBinding.Convert(GetSettingsForType, GetTypeForSettings).Bind(settingsBinding!);
+            _outputModeSelector.SelectedValueChanged += (sender, e) => UpdateOutputMode(Profile?.OutputMode);
 
-            App.Driver.TabletsChanged += (sender, e) => UpdateTablet(e);
-            UpdateTablet();
+            App.Driver.TabletsChanged += (sender, e) => UpdateTablets(e);
+            UpdateTablets();
         }
 
-        private void UpdateTablet(IEnumerable<TabletReference> tablets = null) => Application.Instance.AsyncInvoke(async () =>
-        {
-            tablets ??= await App.Driver.Instance.GetTablets();
-            var selectedTablet = tablets.FirstOrDefault(t => t.Properties.Name == Profile?.Tablet);
-            if (selectedTablet != null)
-                SetTabletSize(selectedTablet);
-        });
+        private void UpdateTablets(IEnumerable<TabletConfiguration>? tablets = null) => Application.Instance.AsyncInvoke(UpdateTabletsAsync(tablets));
 
-        private Profile profile;
-        public Profile Profile
+        private async Task UpdateTabletsAsync(IEnumerable<TabletConfiguration>? tablets)
+        {
+            tablets ??= await _daemon.GetTablets();
+            var selectedTablet = tablets.FirstOrDefault(t => t.Name == Profile?.Tablet);
+            if (selectedTablet != null)
+                SetTabletSize(selectedTablet.Specifications);
+        }
+
+        private Profile? _profile;
+        public Profile? Profile
         {
             set
             {
-                this.profile = value;
-                this.OnProfileChanged();
+                _profile = value;
+                OnProfileChanged();
             }
-            get => this.profile;
+            get => _profile;
         }
 
-        public event EventHandler<EventArgs> ProfileChanged;
+        public event EventHandler<EventArgs>? ProfileChanged;
 
         protected virtual void OnProfileChanged()
         {
-            ProfileChanged?.Invoke(this, new EventArgs());
-            UpdateTablet();
+            ProfileChanged?.Invoke(this, EventArgs.Empty);
+            UpdateTablets();
         }
 
-        public BindableBinding<OutputModeEditor, Profile> ProfileBinding
+        public BindableBinding<OutputModeEditor, Profile?> ProfileBinding
         {
             get
             {
-                return new BindableBinding<OutputModeEditor, Profile>(
+                return new BindableBinding<OutputModeEditor, Profile?>(
                     this,
                     c => c.Profile,
                     (c, v) => c.Profile = v,
@@ -83,50 +111,71 @@ namespace OpenTabletDriver.UX.Controls.Output
             }
         }
 
-        private Panel editorContainer = new Panel();
-        private AbsoluteModeEditor absoluteModeEditor = new AbsoluteModeEditor();
-        private RelativeModeEditor relativeModeEditor = new RelativeModeEditor();
-        private TypeDropDown<IOutputMode> outputModeSelector = new TypeDropDown<IOutputMode> { Width = 300 };
+        private readonly Panel _editorContainer = new Panel();
+        private readonly AbsoluteModeEditor _absoluteModeEditor;
+        private readonly RelativeModeEditor _relativeModeEditor;
+        private readonly TypeDropDown<IOutputMode> _outputModeSelector;
 
-        public void SetTabletSize(TabletReference tablet)
+        private readonly Placeholder _noOutputModePlaceholder = new Placeholder
         {
-            var tabletAreaEditor = absoluteModeEditor.tabletAreaEditor;
-            if (tablet?.Properties?.Specifications?.Digitizer is DigitizerSpecifications digitizer)
+            Text = "No output mode is selected."
+        };
+
+        public void SetTabletSize(TabletSpecifications tablet)
+        {
+            _absoluteModeEditor.SetInputArea(tablet);
+        }
+
+        public void SetDisplaySize(IVirtualScreen virtualScreen)
+        {
+            _absoluteModeEditor.SetOutputArea(virtualScreen);
+        }
+
+        private void UpdateOutputMode(PluginSettings? settings)
+        {
+            if (settings != null)
             {
-                tabletAreaEditor.AreaBounds = new RectangleF[]
+                var outputMode = GetTypeForSettings(settings);
+                var showAbsolute = outputMode?.IsSubclassOf(typeof(AbsoluteOutputMode)) ?? false;
+                var showRelative = outputMode?.IsSubclassOf(typeof(RelativeOutputMode)) ?? false;
+
+                if (showAbsolute)
+                    _editorContainer.Content = _absoluteModeEditor;
+                else if (showRelative)
+                    _editorContainer.Content = _relativeModeEditor;
+                else if (outputMode != null)
                 {
-                    new RectangleF(0, 0, digitizer.Width, digitizer.Height)
-                };
+                    var binding = ProfileBinding.Child(c => c!.OutputMode);
+                    _editorContainer.Content = _controlGenerator.Generate(outputMode, binding);
+                }
+                else
+                    _editorContainer.Content = _noOutputModePlaceholder;
             }
             else
             {
-                tabletAreaEditor.AreaBounds = null;
+                _editorContainer.Content = _noOutputModePlaceholder;
             }
         }
 
-        public void SetDisplaySize(IEnumerable<IDisplay> displays)
+        private TypeInfo? GetTypeForSettings(PluginSettings? settings)
         {
-            var bgs = from disp in displays
-                      where !(disp is IVirtualScreen)
-                      select new RectangleF(disp.Position.X, disp.Position.Y, disp.Width, disp.Height);
-            absoluteModeEditor.displayAreaEditor.AreaBounds = bgs;
+            if (settings is null)
+                return null;
+
+            return _pluginManager.ExportedTypes.FirstOrDefault(t => t.GetPath() == settings.Path)?.GetTypeInfo();
         }
 
-        private void UpdateOutputMode(PluginSettings store)
+        private PluginSettings? GetSettingsForType(TypeInfo? type)
         {
-            bool showAbsolute = false;
-            bool showRelative = false;
-            if (store != null)
+            if (type is null)
+                return null;
+
+            if (Profile?.OutputMode.Path == type.GetPath())
             {
-                var outputMode = store.GetTypeInfo<IOutputMode>();
-                showAbsolute = outputMode.IsSubclassOf(typeof(AbsoluteOutputMode));
-                showRelative = outputMode.IsSubclassOf(typeof(RelativeOutputMode));
+                return Profile.OutputMode;
             }
 
-            if (showAbsolute)
-                editorContainer.Content = absoluteModeEditor;
-            else if (showRelative)
-                editorContainer.Content = relativeModeEditor;
+            return new PluginSettings(type);
         }
     }
 }

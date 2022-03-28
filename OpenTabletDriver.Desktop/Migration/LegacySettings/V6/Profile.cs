@@ -4,7 +4,7 @@ using OpenTabletDriver.Desktop.Reflection;
 
 namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V6
 {
-    public class Profile : ViewModel
+    public class Profile : NotifyPropertyChanged
     {
         [JsonProperty("Tablet")]
         public string Tablet { set; get; }

@@ -1,12 +1,14 @@
 using System;
+using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenTabletDriver.Attributes;
 
 namespace OpenTabletDriver.Desktop.Reflection
 {
-    public class PluginSetting
+    public class PluginSetting : NotifyPropertyChanged
     {
         public PluginSetting(string property, object value)
             : this()
@@ -30,11 +32,22 @@ namespace OpenTabletDriver.Desktop.Reflection
         {
         }
 
-        [JsonProperty]
-        public string Property { set; get; }
+        private string _property;
+        private JToken _value;
 
         [JsonProperty]
-        public JToken Value { set; get; }
+        public string Property
+        {
+            set => RaiseAndSetIfChanged(ref _property, value);
+            get => _property;
+        }
+
+        [JsonProperty]
+        public JToken Value
+        {
+            set => RaiseAndSetIfChanged(ref _value, value);
+            get => _value;
+        }
 
         [JsonIgnore]
         public bool HasValue => Value != null && Value.Type != JTokenType.Null;
@@ -46,7 +59,7 @@ namespace OpenTabletDriver.Desktop.Reflection
 
         public T GetValue<T>()
         {
-            return Value == null ? default(T) : Value.Type != JTokenType.Null ? Value.ToObject<T>() : default(T);
+            return Value == null ? default : Value.Type != JTokenType.Null ? Value.ToObject<T>() : default;
         }
 
         public object GetValue(Type asType)

@@ -3,7 +3,7 @@ using Eto.Forms;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.UX.Attributes;
 using OpenTabletDriver.UX.Controls.Generic;
-using OpenTabletDriver.UX.Controls.Output.Area;
+using OpenTabletDriver.UX.Controls.Output.Generic;
 
 namespace OpenTabletDriver.UX.Windows.Greeter.Pages
 {
@@ -20,7 +20,7 @@ namespace OpenTabletDriver.UX.Windows.Greeter.Pages
                     Control = new Group
                     {
                         Text = "Demo Area Editor",
-                        Content = new RotationAreaEditor
+                        Content = new AngledAreaEditor
                         {
                             Area = new AreaSettings
                             {

@@ -2,35 +2,35 @@ using System;
 using Eto.Forms;
 using OpenTabletDriver.UX.Controls.Generic;
 
-namespace OpenTabletDriver.UX.Controls.Output.Area
+namespace OpenTabletDriver.UX.Controls.Output.Generic
 {
     public class UnitGroup : Group
     {
         public UnitGroup()
         {
-            unitLabel.TextBinding.Bind(UnitBinding);
+            _unitLabel.TextBinding.Bind(UnitBinding);
         }
 
-        private string unit;
-        public string Unit
+        private string? _unit;
+        public string? Unit
         {
             set
             {
-                this.unit = value;
-                this.OnUnitChanged();
+                _unit = value;
+                OnUnitChanged();
             }
-            get => this.unit;
+            get => _unit;
         }
 
-        public event EventHandler<EventArgs> UnitChanged;
+        public event EventHandler<EventArgs>? UnitChanged;
 
-        protected virtual void OnUnitChanged() => UnitChanged?.Invoke(this, new EventArgs());
+        protected virtual void OnUnitChanged() => UnitChanged?.Invoke(this, EventArgs.Empty);
 
-        public BindableBinding<UnitGroup, string> UnitBinding
+        public BindableBinding<UnitGroup, string?> UnitBinding
         {
             get
             {
-                return new BindableBinding<UnitGroup, string>(
+                return new BindableBinding<UnitGroup, string?>(
                     this,
                     c => c.Unit,
                     (c, v) => c.Unit = v,
@@ -40,30 +40,30 @@ namespace OpenTabletDriver.UX.Controls.Output.Area
             }
         }
 
-        private Label unitLabel = new Label();
+        private readonly Label _unitLabel = new Label();
 
-        private Control content;
-        public new Control Content
+        private Control? _content;
+        public new Control? Content
         {
             set
             {
-                this.content = value;
+                _content = value;
                 base.Content = new StackLayout
                 {
                     Spacing = 5,
                     Orientation = Orientation.Horizontal,
                     Items =
                     {
-                        new StackLayoutItem(this.Content, true),
+                        new StackLayoutItem(Content, true),
                         new StackLayoutItem
                         {
                             VerticalAlignment = VerticalAlignment.Center,
-                            Control = this.unitLabel
+                            Control = _unitLabel
                         }
                     }
                 };
             }
-            get => this.content;
+            get => _content;
         }
     }
 }

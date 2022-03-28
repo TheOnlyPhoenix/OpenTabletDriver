@@ -7,7 +7,7 @@ using OpenTabletDriver.Platform.Display;
 
 namespace OpenTabletDriver.Desktop.Profiles
 {
-    public class Profile : ViewModel
+    public class Profile : NotifyPropertyChanged
     {
         private string _tablet;
         private PluginSettings _outputMode;

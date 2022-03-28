@@ -5,52 +5,35 @@ using System.Reflection;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.Desktop.Interop.AppInfo;
+using OpenTabletDriver.Desktop.Reflection;
 
 namespace OpenTabletDriver.UX.Controls.Generic.Reflection
 {
-    public class TypeListBox<T> : ListBox<TypeInfo> where T : class
+    public sealed class TypeListBox<T> : ListBox<TypeInfo> where T : class
     {
-        public TypeListBox()
-        {
-            this.ItemTextBinding = Binding.Property<TypeInfo, string>(t => t.GetFriendlyName());
-            this.ItemKeyBinding = Binding.Property<TypeInfo, string>(t => t.FullName);
+        private readonly IPluginFactory _pluginFactory;
 
-            AppInfo.PluginManager.AssembliesChanged += HandleAssembliesChanged;
+        public TypeListBox(IPluginFactory pluginFactory, IPluginManager pluginManager)
+        {
+            _pluginFactory = pluginFactory;
+
+            ItemTextBinding = Binding.Property<TypeInfo, string>(t => t.GetFriendlyName() ?? t.GetPath());
+            ItemKeyBinding = Binding.Property<TypeInfo, string>(t => t.GetPath());
+
             // Manual update of the DataStore seems to be required, however it isn't on DropDown. Bug?
-            this.DataStore = CreateDefaultDataStore();
-        }
+            DataStore = CreateDefaultDataStore();
 
-        public T ConstructSelectedType(params object[] args)
-        {
-            if (SelectedItem != null)
-            {
-                args ??= Array.Empty<object>();
-                return AppInfo.PluginManager.ConstructObject<T>(SelectedItem.FullName);
-            }
-            return null;
-        }
-
-        public void Select(Func<T, bool> predicate)
-        {
-            foreach (TypeInfo type in DataStore)
-            {
-                var obj = AppInfo.PluginManager.ConstructObject<T>(type.FullName);
-                if (predicate(obj))
-                {
-                    this.SelectedValue = type;
-                    break;
-                }
-            }
+            pluginManager.AssembliesChanged += HandleAssembliesChanged;
         }
 
         protected override IEnumerable<object> CreateDefaultDataStore()
         {
-            var query = from type in AppInfo.PluginManager.GetChildTypes<T>()
-                        orderby type.GetFriendlyName()
-                        select type;
+            var query = from type in _pluginFactory.GetMatchingTypes(typeof(T))
+                orderby type.GetFriendlyName()
+                select type;
             return query.ToList();
         }
 
-        private void HandleAssembliesChanged(object sender, EventArgs e) => Application.Instance.AsyncInvoke(() => this.DataStore = CreateDefaultDataStore());
+        private void HandleAssembliesChanged(object? sender, EventArgs e) => DataStore = CreateDefaultDataStore();
     }
 }

@@ -7,9 +7,12 @@ namespace OpenTabletDriver.UX.Controls.Bindings
 {
     public sealed class AuxiliaryBindingEditor : BindingEditor
     {
-        public AuxiliaryBindingEditor()
+        public AuxiliaryBindingEditor(IControlBuilder controlBuilder)
         {
-            this.Content = new Scrollable
+            var auxButtons = controlBuilder.Build<BindingDisplayList>();
+            auxButtons.Prefix = "Auxiliary Binding";
+
+            Content = new Scrollable
             {
                 Border = BorderType.None,
                 Content = new StackLayout
@@ -21,10 +24,7 @@ namespace OpenTabletDriver.UX.Controls.Bindings
                         new Group
                         {
                             Text = "Auxiliary",
-                            Content = auxButtons = new BindingDisplayList
-                            {
-                                Prefix = "Auxiliary Binding"
-                            }
+                            Content = auxButtons
                         }
                     }
                 }
@@ -32,7 +32,5 @@ namespace OpenTabletDriver.UX.Controls.Bindings
 
             auxButtons.ItemSourceBinding.Bind(SettingsBinding.Child(c => (IList<PluginSettings>)c.AuxButtons));
         }
-
-        private BindingDisplayList auxButtons;
     }
 }

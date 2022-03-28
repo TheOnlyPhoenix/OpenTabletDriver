@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Eto.Forms;
+using OpenTabletDriver.Desktop.Contracts;
 using OpenTabletDriver.Desktop.Interop;
 using OpenTabletDriver.Desktop.Profiles;
 using OpenTabletDriver.Output;
+using OpenTabletDriver.Platform.Display;
 using OpenTabletDriver.Tablet;
 using OpenTabletDriver.UX.Controls.Bindings;
 using OpenTabletDriver.UX.Controls.Output;
@@ -11,49 +15,58 @@ namespace OpenTabletDriver.UX.Controls
 {
     public class ControlPanel : Panel
     {
-        public ControlPanel()
+        private readonly IDriverDaemon _driverDaemon;
+
+        public ControlPanel(IDriverDaemon driverDaemon, IVirtualScreen virtualScreen, IControlBuilder controlBuilder)
         {
-            this.Content = tabControl = new TabControl
+            _driverDaemon = driverDaemon;
+
+            _outputModeEditor = controlBuilder.Build<OutputModeEditor>();
+
+            _auxBindingEditor = controlBuilder.Build<AuxiliaryBindingEditor>();
+            _mouseBindingEditor = controlBuilder.Build<MouseBindingEditor>();
+
+            this.Content = _tabControl = new TabControl
             {
                 Pages =
                 {
                     new TabPage
                     {
                         Text = "Output",
-                        Content = outputModeEditor = new()
+                        Content = _outputModeEditor
                     },
                     new TabPage
                     {
                         Text = "Filters",
                         Padding = 5,
-                        Content = filterEditor = new()
+                        Content = _filterEditor = controlBuilder.Build<PluginSettingStoreCollectionEditor<IPositionedPipelineElement<IDeviceReport>>>()
                     },
                     new TabPage
                     {
                         Text = "Pen Settings",
-                        Content = penBindingEditor = new PenBindingEditor()
+                        Content = _penBindingEditor = controlBuilder.Build<PenBindingEditor>()
                     },
                     new TabPage
                     {
                         Text = "Auxiliary Settings",
-                        Content = auxBindingEditor = new AuxiliaryBindingEditor()
+                        Content = _auxBindingEditor
                     },
                     new TabPage
                     {
                         Text = "Mouse Settings",
-                        Content = mouseBindingEditor = new MouseBindingEditor()
+                        Content = _mouseBindingEditor
                     },
                     new TabPage
                     {
                         Text = "Tools",
                         Padding = 5,
-                        Content = toolEditor = new()
+                        Content = _toolEditor = controlBuilder.Build<PluginSettingStoreCollectionEditor<ITool>>()
                     },
                     new TabPage
                     {
                         Text = "Info",
                         Padding = 5,
-                        Content = placeholder = new Placeholder
+                        Content = _placeholder = new Placeholder
                         {
                             Text = "No tablets are detected."
                         }
@@ -62,96 +75,96 @@ namespace OpenTabletDriver.UX.Controls
                     {
                         Text = "Console",
                         Padding = 5,
-                        Content = logView = new()
+                        Content = _logView = new LogView()
                     }
                 }
             };
 
-            outputModeEditor.ProfileBinding.Bind(ProfileBinding);
-            penBindingEditor.ProfileBinding.Bind(ProfileBinding);
-            auxBindingEditor.ProfileBinding.Bind(ProfileBinding);
-            mouseBindingEditor.ProfileBinding.Bind(ProfileBinding);
-            filterEditor.StoreCollectionBinding.Bind(ProfileBinding.Child(p => p.Filters));
-            toolEditor.StoreCollectionBinding.Bind(App.Current, a => a.Settings.Tools);
+            _outputModeEditor.ProfileBinding.Bind(ProfileBinding);
+            _penBindingEditor.ProfileBinding.Bind(ProfileBinding);
+            _auxBindingEditor.ProfileBinding.Bind(ProfileBinding);
+            _mouseBindingEditor.ProfileBinding.Bind(ProfileBinding);
+            _filterEditor.StoreCollectionBinding.Bind(ProfileBinding.Child(p => p.Filters));
+            _toolEditor.StoreCollectionBinding.Bind(App.Current, a => a.Settings.Tools);
 
-            outputModeEditor.SetDisplaySize(DesktopInterop.VirtualScreen.Displays);
+            _outputModeEditor.SetDisplaySize(virtualScreen);
 
             Log.Output += (_, message) => Application.Instance.AsyncInvoke(() =>
             {
                 if (message.Level > LogLevel.Info)
                 {
-                    tabControl.SelectedPage = logView.Parent as TabPage;
+                    _tabControl.SelectedPage = _logView.Parent as TabPage;
                 }
             });
         }
 
-        private TabControl tabControl;
-        private Placeholder placeholder;
-        private LogView logView;
-        private OutputModeEditor outputModeEditor;
-        private BindingEditor penBindingEditor, auxBindingEditor, mouseBindingEditor;
-        private PluginSettingStoreCollectionEditor<IPositionedPipelineElement<IDeviceReport>> filterEditor;
-        private PluginSettingStoreCollectionEditor<ITool> toolEditor;
+        private readonly TabControl _tabControl;
+        private readonly Placeholder _placeholder;
+        private readonly LogView _logView;
+        private readonly OutputModeEditor _outputModeEditor;
+        private readonly BindingEditor _penBindingEditor, _auxBindingEditor, _mouseBindingEditor;
+        private readonly PluginSettingStoreCollectionEditor<IPositionedPipelineElement<IDeviceReport>> _filterEditor;
+        private readonly PluginSettingStoreCollectionEditor<ITool> _toolEditor;
 
-        private Profile profile;
-        public Profile Profile
+        private Profile? _profile;
+        public Profile? Profile
         {
             set
             {
-                this.profile = value;
+                this._profile = value;
                 this.OnProfileChanged();
             }
-            get => this.profile;
+            get => this._profile;
         }
 
         public event EventHandler<EventArgs> ProfileChanged;
 
-        protected virtual void OnProfileChanged() => Application.Instance.AsyncInvoke(async () =>
+        protected virtual void OnProfileChanged() => Application.Instance.AsyncInvoke(OnProfileChangedAsync);
+
+        private async Task OnProfileChangedAsync()
         {
             ProfileChanged?.Invoke(this, EventArgs.Empty);
 
-            var tablet = Profile != null ? await Profile.GetTabletReference() : null;
+            var tablets = await _driverDaemon.GetTablets();
+            var tablet = Profile != null ? tablets.FirstOrDefault(t => t.Name == Profile.Tablet) : null;
 
-            if (Platform.IsMac)
-                tabControl.Pages.Clear();
+            if (Platform.IsMac) _tabControl.Pages.Clear();
 
             if (tablet != null)
             {
-                bool switchToOutput = tabControl.SelectedPage == placeholder.Parent;
+                bool switchToOutput = _tabControl.SelectedPage == _placeholder.Parent;
 
-                SetPageVisibility(placeholder, false);
-                SetPageVisibility(outputModeEditor, true);
-                SetPageVisibility(filterEditor, true);
-                SetPageVisibility(penBindingEditor, tablet.Properties.Specifications.Pen != null);
-                SetPageVisibility(auxBindingEditor, tablet.Properties.Specifications.AuxiliaryButtons != null);
-                SetPageVisibility(mouseBindingEditor, tablet.Properties.Specifications.MouseButtons != null);
-                SetPageVisibility(toolEditor, true);
+                SetPageVisibility(_placeholder, false);
+                SetPageVisibility(_outputModeEditor, true);
+                SetPageVisibility(_filterEditor, true);
+                SetPageVisibility(_penBindingEditor, tablet.Specifications.Pen != null);
+                SetPageVisibility(_auxBindingEditor, tablet.Specifications.AuxiliaryButtons != null);
+                SetPageVisibility(_mouseBindingEditor, tablet.Specifications.MouseButtons != null);
+                SetPageVisibility(_toolEditor, true);
 
-                if (switchToOutput)
-                    tabControl.SelectedIndex = 0;
+                if (switchToOutput) _tabControl.SelectedIndex = 0;
             }
             else
             {
-                SetPageVisibility(placeholder, true);
-                SetPageVisibility(outputModeEditor, false);
-                SetPageVisibility(filterEditor, false);
-                SetPageVisibility(penBindingEditor, false);
-                SetPageVisibility(auxBindingEditor, false);
-                SetPageVisibility(mouseBindingEditor, false);
-                SetPageVisibility(toolEditor, false);
+                SetPageVisibility(_placeholder, true);
+                SetPageVisibility(_outputModeEditor, false);
+                SetPageVisibility(_filterEditor, false);
+                SetPageVisibility(_penBindingEditor, false);
+                SetPageVisibility(_auxBindingEditor, false);
+                SetPageVisibility(_mouseBindingEditor, false);
+                SetPageVisibility(_toolEditor, false);
 
-                if (tabControl.SelectedPage != logView.Parent)
-                    tabControl.SelectedIndex = 0;
+                if (_tabControl.SelectedPage != _logView.Parent) _tabControl.SelectedIndex = 0;
             }
 
-            SetPageVisibility(logView, true);
-        });
+            SetPageVisibility(_logView, true);
+        }
 
-        public BindableBinding<ControlPanel, Profile> ProfileBinding
+        public BindableBinding<ControlPanel, Profile?> ProfileBinding
         {
             get
             {
-                return new BindableBinding<ControlPanel, Profile>(
+                return new BindableBinding<ControlPanel, Profile?>(
                     this,
                     c => c.Profile,
                     (c, v) => c.Profile = v,
@@ -170,7 +183,7 @@ namespace OpenTabletDriver.UX.Controls
                 if (visible)
                 {
                     var page = control.Parent as TabPage;
-                    tabControl.Pages.Add(page);
+                    _tabControl.Pages.Add(page);
                 }
             }
             else

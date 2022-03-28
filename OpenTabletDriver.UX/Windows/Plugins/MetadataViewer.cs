@@ -188,7 +188,7 @@ namespace OpenTabletDriver.UX.Windows.Plugins
 
         protected virtual void OnMetadataChanged()
         {
-            MetadataChanged?.Invoke(this, new EventArgs());
+            MetadataChanged?.Invoke(this, EventArgs.Empty);
 
             var contexts = AppInfo.PluginManager.GetLoadedPlugins();
 

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Numerics;
 using JetBrains.Annotations;
 
@@ -26,6 +27,48 @@ namespace OpenTabletDriver
         /// This is also the rotation origin of the area where applicable.
         /// </remarks>
         public Vector2 Position { set; get; }
+
+        /// <summary>
+        /// All corners of the area.
+        /// </summary>
+        public virtual Vector2[] Corners
+        {
+            get
+            {
+                var halfWidth = Width / 2;
+                var halfHeight = Height / 2;
+
+                var x = Position.X;
+                var y = Position.Y;
+
+                return new[]
+                {
+                    new Vector2(x - halfWidth, y - halfHeight),
+                    new Vector2(x - halfWidth, y + halfHeight),
+                    new Vector2(x + halfWidth, y + halfHeight),
+                    new Vector2(x + halfWidth, y - halfHeight)
+                };
+            }
+        }
+
+        /// <summary>
+        /// The center offset of the area.
+        /// </summary>
+        public virtual Vector2 CenterOffset
+        {
+            get
+            {
+                var max = new Vector2(
+                    Corners.Max(v => v.X),
+                    Corners.Max(v => v.Y)
+                );
+                var min = new Vector2(
+                    Corners.Min(v => v.X),
+                    Corners.Min(v => v.Y)
+                );
+                return (max - min) / 2;
+            }
+        }
 
         public override string ToString() => $"[{Width}x{Height}@{Position}]";
     }

@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace OpenTabletDriver.Desktop.Migration.LegacySettings.V6
 {
-    public class AbsoluteModeSettings : ViewModel
+    public class AbsoluteModeSettings : NotifyPropertyChanged
     {
         [JsonProperty("Display")]
         public AreaSettings Display { set; get; }
